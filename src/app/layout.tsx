@@ -4,6 +4,7 @@ import './globals.css'
 import Providers from './providers'
 import { Suspense } from 'react'
 import Loading from './loading'
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
   title: 'Bolão QXUTE + BETVIP',
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className="overflow-x-hidden">
         <Providers>{children}</Providers>
         <Suspense fallback={<Loading />} />
+        <Toaster position="bottom-center" />
       </body>
     </html>
   )
