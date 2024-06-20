@@ -27,5 +27,15 @@ export const schemaRegisterUser = yup
           return value && differenceInYears(new Date(), value) >= 14;
         }
       ),
+      askTerms: yup
+      .boolean()
+      .oneOf([true], 'Você precisa aceitar os termos de uso.')
+      .required('Campo Termos de Uso é obrigatório.'),
+  })
+  .required();
+
+export const schemaSendCode = yup
+  .object({
+    code: yup.string().required("Campo Código é obrigatório."),
   })
   .required();

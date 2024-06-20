@@ -16,12 +16,17 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaRegisterUser } from "@/schemas/user";
 import InputMask from "react-input-mask";
+import { createUser } from "./actions";
+import toast from "react-hot-toast";
+import { useAuthContext } from "@/context/AuthContext";
+import { resendCode } from "../login/actions";
 const fontOpenSans = OpenSans({ subsets: ["latin"] });
 
 export default function Register() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { handleSetSendCodeProps } = useAuthContext();
 
   const [loading, setLoading] = useState(false);
   const {
@@ -35,9 +40,19 @@ export default function Register() {
     shouldFocusError: false,
   });
 
-  function handleRegister(data: INewUser) {
-    console.log(data);
-    //onOpen()
+  async function handleRegister(data: INewUser) {
+    setLoading(true);
+    data.phone =
+      "55" + data.phone.replace("(", "").replace(")", "").replace("-", "");
+
+    const { userId, error } = await createUser(data);
+    setLoading(false);
+    if (error) {
+      toast.error(error);
+    } else if (userId) {
+      handleSetSendCodeProps({ userId, phone: data.phone });
+      onOpen();
+    }
   }
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -87,7 +102,6 @@ export default function Register() {
         <Controller
           control={control}
           name={"phone"}
-          
           render={({ field }) => (
             <InputMask mask={"(99)99999-9999"} {...field} type="text">
               <Input
@@ -158,30 +172,33 @@ export default function Register() {
           placeholder="Digite sua senha novamente"
           className="mt-4"
         />
-
-        <Button
-          type="submit"
-          className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] ${fontOpenSans.className}`}
-        >
-          Criar conta
-        </Button>
-
         <Checkbox
-          onClick={() => {
-            setIsChecked(!isChecked);
-            console.log(isChecked);
-          }}
-          checked={isChecked}
-          value={"Eu aceito os Termos de Use e Políticas de Privacidade"}
+          {...register("askTerms")}
+          isInvalid={!!errors.askTerms?.message}
           className="my-6"
           classNames={{
             label: "text-white",
           }}
         >
-          Eu aceito os{" "}
-          <span className="font-bold text-white">Termos de Use</span> e{" "}
-          <span className="font-bold text-white">Políticas de Privacidade</span>
+          <div>
+            Eu aceito os{" "}
+            <span className="font-bold text-white">Termos de Use</span> e{" "}
+            <span className="font-bold text-white">
+              Políticas de Privacidade
+            </span>
+          </div>
+          <p className="text-[0.75rem] text-red-600">
+            {errors.askTerms?.message}
+          </p>
         </Checkbox>
+
+        <Button
+          isLoading={loading}
+          type="submit"
+          className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] ${fontOpenSans.className}`}
+        >
+          Criar conta
+        </Button>
       </form>
       <ConfirmationCodeModal isOpen={isOpen} onClose={onOpenChange} />
     </div>

@@ -1,25 +1,27 @@
 "use client";
 
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Input, Link, useDisclosure } from "@nextui-org/react";
 import { Open_Sans as OpenSans } from "next/font/google";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { schemaLogin } from "@/schemas/login";
-import { createSession } from "./actions";
+import { createSession, resendCode } from "./actions";
 import { toast } from "react-hot-toast";
 import { useAuthContext } from "@/context/AuthContext";
 import { useState } from "react";
 import { EyeSlashFilledIcon } from "@/app/components/EyeSlashFilledIcon/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "@/app/components/EyeFilledIcon/EyeFilledIcon";
 import InputMask from "react-input-mask";
+import ConfirmationCodeModal from "@/app/components/ConfirmationCodeModal/ConfirmationCodeModal";
 
 const fontOpenSans = OpenSans({ subsets: ["latin"] });
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const { handleAuthWithToken } = useAuthContext();
+  const { handleAuthWithToken, handleSetSendCodeProps } = useAuthContext();
   const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     register,
     handleSubmit,
@@ -36,14 +38,23 @@ export default function Login() {
     data.phone =
       "55" + data.phone.replace("(", "").replace(")", "").replace("-", "");
 
-    const { access_token, error } = await createSession(data);
+    const { access_token, error, phone, userId } = await createSession(data);
     setLoading(false);
+
     if (error) {
       toast.error(error);
     } else if (access_token) {
       handleAuthWithToken(access_token);
+    } else if (phone && userId) {
+      handleResendCode(userId)
+      handleSetSendCodeProps({ userId, phone });
+      onOpen();
     }
   };
+
+  async function handleResendCode(userId: string) {
+    await resendCode(userId);
+  }
 
   return (
     <div className="h-full w-screen bg-[#1F67CE] flex flex-col">
@@ -140,6 +151,10 @@ export default function Login() {
           Criar conta
         </Button>
       </form>
+      <ConfirmationCodeModal
+        isOpen={isOpen}
+        onClose={onOpenChange}
+      />
     </div>
   );
 }
