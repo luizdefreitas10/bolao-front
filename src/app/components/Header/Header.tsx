@@ -1,4 +1,5 @@
-import React from 'react'
+"use client";
+import React, { useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -8,26 +9,57 @@ import {
   NavbarContent,
   Link,
   Image,
-} from '@nextui-org/react'
+  Button,
+} from "@nextui-org/react";
+import { useAuthContext } from "@/context/AuthContext";
+import { parseCookies } from "nookies";
+import { decodeToken } from "@/utils/jwt";
+import { useRouter } from "next/navigation";
 
 export default function App() {
-  const menuItems = [
+  const { handleSignOut } = useAuthContext();
+  const { "qxute-bolao:x-token": sessionKey } = parseCookies();
+  const decoded = decodeToken(sessionKey);
+  const { push } = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuItemsDefault = [
     {
-      menuItem: 'Home',
-      route: '/',
+      menuItem: "Home",
+      route: "/",
     },
     {
-      menuItem: 'Login',
-      route: '/login',
+      menuItem: "Login",
+      route: "/login",
     },
     {
-      menuItem: 'Recuperar senha',
-      route: '/recover-password',
+      menuItem: "Recuperar senha",
+      route: "/recover-password",
     },
-  ]
+  ];
+
+  const menuItemsAuth = [
+    {
+      menuItem: "Home",
+      function: () => {
+        decoded?.role === "ADMIN" ? push("/home-admin") : push("/home-user");
+        setIsMenuOpen(false);
+      },
+    },
+    {
+      menuItem: "Sair",
+      function: () => handleSignOut(),
+    },
+  ];
 
   return (
-    <Navbar isBordered maxWidth="full" className="bg-[#184076]">
+    <Navbar
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+      isBordered
+      maxWidth="full"
+      className="bg-[#184076]"
+    >
       <NavbarContent className="">
         <NavbarMenuToggle />
       </NavbarContent>
@@ -41,25 +73,44 @@ export default function App() {
       </NavbarContent>
 
       <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              className="w-full"
-              color={
-                index === 2
-                  ? 'warning'
-                  : index === menuItems.length - 1
-                    ? 'danger'
-                    : 'foreground'
-              }
-              href={item.route.toLowerCase()}
-              size="lg"
-            >
-              {item.menuItem}
-            </Link>
-          </NavbarMenuItem>
-        ))}
+        {!sessionKey ? (
+          <>
+            {menuItemsDefault.map((item, index) => (
+              <NavbarMenuItem key={`${item}-${index}`}>
+                <Link
+                  className="w-full"
+                  color={
+                    index === 2
+                      ? "warning"
+                      : index === menuItemsDefault.length - 1
+                        ? "danger"
+                        : "foreground"
+                  }
+                  href={item.route.toLowerCase()}
+                  size="lg"
+                >
+                  {item.menuItem}
+                </Link>
+              </NavbarMenuItem>
+            ))}
+          </>
+        ) : (
+          <>
+            {menuItemsAuth.map((item, index) => (
+              <NavbarMenuItem key={`${item}-${index}`}>
+                <Link
+                  className="w-full cursor-pointer"
+                  onPress={item.function}
+                  size="lg"
+                  color={"warning"}
+                >
+                  {item.menuItem}
+                </Link>
+              </NavbarMenuItem>
+            ))}
+          </>
+        )}
       </NavbarMenu>
     </Navbar>
-  )
+  );
 }

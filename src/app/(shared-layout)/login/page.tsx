@@ -1,17 +1,49 @@
-'use client'
+"use client";
 
-import { Button, Input, Link } from '@nextui-org/react'
-import { Open_Sans as OpenSans } from 'next/font/google'
-import { useState } from 'react'
-import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon/EyeSlashFilledIcon'
-import { EyeFilledIcon } from '../../components/EyeFilledIcon/EyeFilledIcon'
+import { Button, Input, Link } from "@nextui-org/react";
+import { Open_Sans as OpenSans } from "next/font/google";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { schemaLogin } from "@/schemas/login";
+import { createSession } from "./actions";
+import { toast } from "react-hot-toast";
+import { useAuthContext } from "@/context/AuthContext";
+import { useState } from "react";
+import { EyeSlashFilledIcon } from "@/app/components/EyeSlashFilledIcon/EyeSlashFilledIcon";
+import { EyeFilledIcon } from "@/app/components/EyeFilledIcon/EyeFilledIcon";
+import InputMask from "react-input-mask";
 
-const fontOpenSans = OpenSans({ subsets: ['latin'] })
+const fontOpenSans = OpenSans({ subsets: ["latin"] });
 
 export default function Login() {
-  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const { handleAuthWithToken } = useAuthContext();
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<ILogin>({
+    resolver: yupResolver(schemaLogin),
+    mode: "onSubmit",
+    shouldFocusError: false,
+  });
 
-  const toggleVisibility = () => setIsVisible(!isVisible)
+  const handleLogin = async (data: ILogin) => {
+    setLoading(true);
+    data.phone =
+      "55" + data.phone.replace("(", "").replace(")", "").replace("-", "");
+
+    const { access_token, error } = await createSession(data);
+    setLoading(false);
+    if (error) {
+      toast.error(error);
+    } else if (access_token) {
+      handleAuthWithToken(access_token);
+    }
+  };
 
   return (
     <div className="h-full w-screen bg-[#1F67CE] flex flex-col">
@@ -25,17 +57,48 @@ export default function Login() {
       >
         Estamos felizes em te ver novamente! Conecte-se e aproveite!
       </p>
-      <form className="flex flex-col w-[90%] mx-auto">
-        <Input
-          size="md"
-          type="text"
-          label="Celular"
-          labelPlacement="inside"
-          placeholder="(xx)90000-0000"
-          className="mt-4"
+      <form
+        className="flex flex-col w-[90%] mx-auto"
+        onSubmit={handleSubmit(handleLogin)}
+      >
+        <label htmlFor={"phone"} className="text-[#CCFFFFFF] text-sm mb-1 mt-2">
+          Celular <span className="text-[#DA1414]">*</span>
+        </label>
+        <Controller
+          control={control}
+          name={"phone"}
+          defaultValue=""
+          render={({ field }) => (
+            <InputMask mask={"(99)99999-9999"} {...field} type="text">
+              <Input
+                placeholder={"(99)99999-9999"}
+                size="md"
+                type="tel"
+                labelPlacement="inside"
+                errorMessage={errors.phone?.message}
+                isInvalid={!!errors.phone?.message}
+                color={errors.phone?.message ? "danger" : undefined}
+                variant={errors.phone?.message ? "bordered" : undefined}
+              />
+            </InputMask>
+          )}
         />
+        <label
+          htmlFor={"password"}
+          className="text-[#CCFFFFFF] text-sm mb-1 mt-2"
+        >
+          Senha <span className="text-[#DA1414]">*</span>
+        </label>
         <Input
           size="md"
+          type={!isVisible ? "password" : "text"}
+          {...register("password")}
+          labelPlacement="inside"
+          errorMessage={errors.password?.message}
+          isInvalid={!!errors.password?.message}
+          placeholder={"Senha"}
+          color={errors.password?.message ? "danger" : undefined}
+          variant={errors.password?.message ? "bordered" : undefined}
           endContent={
             <button
               className="focus:outline-none"
@@ -49,22 +112,21 @@ export default function Login() {
               )}
             </button>
           }
-          type={isVisible ? 'text' : 'password'}
-          label="Senha"
-          labelPlacement="inside"
-          placeholder="Digite sua senha"
-          className="mt-4"
         />
-        <Link href={'/recover-password'} className="justify-end">
-          <p
-            className={`text-white text-[12px] my-2 ${fontOpenSans.className}`}
-          >
-            Esqueci minha senha
-          </p>
-        </Link>
+
+        <div className="w-full flex justify-end">
+          <Link href={"/recover-password"}>
+            <p
+              className={`text-white text-[12px] my-2 ${fontOpenSans.className}`}
+            >
+              Esqueci minha senha
+            </p>
+          </Link>
+        </div>
+
         <Button
-          as={Link}
-          href="/home-user"
+          type="submit"
+          isLoading={loading}
           className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] ${fontOpenSans.className}`}
         >
           Entrar
@@ -79,5 +141,5 @@ export default function Login() {
         </Button>
       </form>
     </div>
-  )
+  );
 }
