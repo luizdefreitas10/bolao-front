@@ -1,6 +1,7 @@
+import { phoneRegExp } from "@/utils/phoneRegex";
 import * as yup from "yup";
 
-export const schemaChampionship = yup
+export const schemaRound = yup
   .object({
     name: yup
       .string()

@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   
   if (currentUser) {
     const decoded = decodeToken(currentUser);
-    console.log(decoded)
+    // console.log(decoded)
     if(decoded?.role !== 'ADMIN' && request.nextUrl.pathname.startsWith("/home-admin")){
         return Response.redirect(new URL("/home-user", request.url));
     }
