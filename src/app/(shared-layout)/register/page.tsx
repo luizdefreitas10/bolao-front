@@ -33,6 +33,7 @@ export default function Register() {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<INewUser>({
     resolver: yupResolver(schemaRegisterUser),
@@ -50,6 +51,7 @@ export default function Register() {
     if (error) {
       toast.error(error);
     } else if (userId) {
+      reset()
       handleSetSendCodeProps({ userId, phone: data.phone });
       onOpen();
     }

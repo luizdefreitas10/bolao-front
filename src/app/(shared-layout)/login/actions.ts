@@ -1,8 +1,8 @@
 "use server";
 
 import { handleAxiosError } from "@/services/api/error";
-import SessionService from "@/services/api/session";
-import UserService from "@/services/api/user";
+import SessionService from "@/services/api/models/session";
+import UserService from "@/services/api/models/user";
 
 export async function createSession(data: ILogin): Promise<ISession> {
   try {

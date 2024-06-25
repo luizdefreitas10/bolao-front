@@ -1,7 +1,7 @@
 "use server";
 
 import { handleAxiosError } from "@/services/api/error";
-import UserService from "@/services/api/user";
+import UserService from "@/services/api/models/user";
 
 export async function createUser(data: IRequestNewUser): Promise<IResponseNewUser> {
   try {
