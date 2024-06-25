@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios";
-import { api } from "../..";
 import { handleAxiosError } from "../../error";
+import { api } from "../../api";
 
 export const get = async <Response>(
   url: string,

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 interface EventsContextType {
-  selectedChampionship: number | null
-  setSelectedChampionship: React.Dispatch<React.SetStateAction<number | null>>
+  selectedChampionship: string | null
+  setSelectedChampionship: React.Dispatch<React.SetStateAction<string | null>>
   newChampionshipName: string
   setNewChampionshipName: React.Dispatch<React.SetStateAction<string>>
   isDisabledInput: boolean
@@ -23,7 +23,7 @@ interface ProviderProps {
 
 export const EventsProvider = ({ children }: ProviderProps) => {
   const [selectedChampionship, setSelectedChampionship] = useState<
-    number | null
+    string | null
   >(null)
   const [newChampionshipName, setNewChampionshipName] = useState<string>('')
   const [isDisabledInput, setIsDisabledInput] = useState<boolean>(true)

@@ -1,4 +1,4 @@
-import { post } from "../methods/post";
+import { post } from "../../methods/post";
 
 export default async function UserService() {
   async function create(data: IRequestNewUser): Promise<IResponseNewUser> {
