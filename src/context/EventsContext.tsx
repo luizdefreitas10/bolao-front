@@ -13,6 +13,11 @@ interface EventsContextType {
   setCurrentModalIndex: React.Dispatch<React.SetStateAction<number>>
   handleNextModal: () => void
   handlePreviousModal: () => void
+  selectedTeams: ITeam[]
+  handleSetSelectedTeams: (teams:ITeam[]) => void
+  selectedRound?: string
+  handleSetSelectedRound: (id: string) => void
+  setSelectedTeams: React.Dispatch<React.SetStateAction<ITeam[]>>
 }
 
 const EventsContext = createContext<EventsContextType | undefined>(undefined)
@@ -29,7 +34,10 @@ export const EventsProvider = ({ children }: ProviderProps) => {
   const [isDisabledInput, setIsDisabledInput] = useState<boolean>(true)
   const [isDisabledCheckbox, setIsDisabledCheckbox] = useState<boolean>(false)
   const [currentModalIndex, setCurrentModalIndex] = useState<number>(0)
+  const [selectedRound, setSelectedRound] = useState<string>();
   const modalSteps = ['championship', 'rounds', 'teams', 'matches']
+
+  const [selectedTeams, setSelectedTeams] = useState<ITeam[]>([])
 
   const handleNextModal = () => {
     if (currentModalIndex < modalSteps.length - 1) {
@@ -37,10 +45,20 @@ export const EventsProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  const handleSetSelectedRound = (id: string) => {
+    setSelectedRound(id)
+  }
+
   const handlePreviousModal = () => {
     if (currentModalIndex > 0) {
       setCurrentModalIndex(currentModalIndex - 1)
     }
+  }
+
+ 
+
+  const handleSetSelectedTeams = (teams: ITeam[]) => {
+    setSelectedTeams(teams);
   }
 
   return (
@@ -58,6 +76,12 @@ export const EventsProvider = ({ children }: ProviderProps) => {
         setCurrentModalIndex,
         handleNextModal,
         handlePreviousModal,
+        selectedTeams,
+        handleSetSelectedTeams,
+        selectedRound,
+        handleSetSelectedRound,
+        setSelectedTeams
+        
       }}
     >
       {children}

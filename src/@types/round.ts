@@ -13,3 +13,13 @@ declare interface INewRound {
 declare interface INewRoundForm {
   name: string
 }
+
+
+declare enum RoundStatus {
+  "WAITING",
+  "IN_PROGRESS",
+  "DONE",
+  "CANCELED",
+  "INACTIVE",
+}
+

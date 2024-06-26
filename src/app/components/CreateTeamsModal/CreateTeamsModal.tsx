@@ -1,6 +1,8 @@
-import { useEventsContext } from '@/context/EventsContext'
-import { schemaTeams } from '@/schemas/team'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { useEventsContext } from "@/context/EventsContext";
+import { schemaTeams } from "@/schemas/team";
+import { handleAxiosError } from "@/services/api/error";
+import TeamService from "@/services/api/models/teams";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ModalHeader,
   ModalBody,
@@ -10,51 +12,134 @@ import {
   Image,
   Select,
   SelectItem,
-} from '@nextui-org/react'
-import { useState } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+  Divider,
+} from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
 
 interface CloseButtonprops {
-  onClose: () => void
+  onClose: () => void;
 }
 
 export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
-  const { handleNextModal, handlePreviousModal } = useEventsContext()
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
+  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true);
+  const {
+    handleNextModal,
+    handlePreviousModal,
+    currentModalIndex,
+    handleSetSelectedTeams,
+    selectedTeams,
+  } = useEventsContext();
+  const [teams, setTeams] = useState<ITeam[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // console.log(selectedTeams.length);
+    if (
+      (selectedTeams.length === 0 || selectedTeams.length === 1) &&
+      shouldDisableAddNewTeam
+    ) {
+      setIsDisabledButton(true);
+    } else {
+      setIsDisabledButton(false);
+    }
+  }, [selectedTeams, shouldDisableAddNewTeam]);
 
   const {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<INewTeams>({
+  } = useForm<INewTeamsForm>({
     resolver: yupResolver(schemaTeams),
-    mode: 'onSubmit',
+    mode: "onSubmit",
     shouldFocusError: false,
     defaultValues: {
-      names: [{ name: '' }, { name: '' }], // Dois inputs por padrão
+      names: [{ name: "" }], 
     },
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'names',
-  })
+    name: "names",
+  });
 
-  // const teamsInputLabels = [
-  //   'Time 1',
-  //   'Time 2',
-  //   'Time 3',
-  //   'Time 4',
-  //   'Time 5',
-  //   'Time 6',
-  //   'Time 7',
-  //   'Time 8',
-  // ]
+  useEffect(() => {
+    if (shouldDisableAddNewTeam) reset();
+  }, [shouldDisableAddNewTeam]);
 
-  const handleCreateTeams = (data: INewTeams) => {
-    console.log(data)
+  useEffect(() => {
+    if (currentModalIndex === 2) handleFetchTeams();
+  }, [currentModalIndex]);
+
+  async function handleFetchTeams() {
+    setLoading(true);
+    try {
+      const { fetchTeams } = await TeamService();
+      const response = await fetchTeams();
+      setTeams(response);
+    } catch (error) {
+      const customError = handleAxiosError(error);
+      toast.error(customError.message);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const handleCreateTeams = async (data: INewTeamsForm) => {
+    setLoading(true);
+    const newTeams: ITeam[] = [];
+    const { create } = await TeamService();
+    for (let team of data.names) {
+      try {
+        const isExist = selectedTeams.find((item) => item.name === team.name);
+        if (!isExist) {
+          const response = await create({ name: team.name });
+          newTeams.push({
+            id: response.teamId,
+            name: response.teamName,
+          });
+        }
+      } catch (error) {
+        const customError = handleAxiosError(error);
+        toast.error(
+          `'Ocorreu o seguinte erro na criação do time ${team.name}: '${customError.message}`
+        );
+      }
+    }
+    selectedTeams.map((item, index) => {
+      newTeams.push({
+        id: item.id,
+        name: item.name,
+        // selected: item.selected,
+      });
+    });
+    handleSetSelectedTeams(newTeams);
+    setLoading(false);
+    if (newTeams.length <= 1) {
+      toast.error("Adicione pelo menos dois times.");
+    } else {
+      handleNextModal();
+    }
+  };
+
+  const handleSelectTeams = (selectedIds: string[]) => {
+    const selectedTeams = selectedIds
+      .map((id) => {
+        const team = teams.find((team) => team.id === id);
+        return team ? { id: team.id, name: team.name, selected: false } : null;
+      })
+      .filter(Boolean) as ITeam[];
+    console.log(selectedTeams);
+    handleSetSelectedTeams(selectedTeams);
+  };
+  const onChange = (values: string[]) => {
+    handleSelectTeams(values);
+  };
 
   return (
     <>
@@ -69,21 +154,16 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
             netus diam. Vel urna mattis.
           </p>
           <Select
-            // onChange={(e) => setSelectedChampionship(e.target.value)}
             classNames={{
-              selectorIcon: 'text-black',
+              selectorIcon: "text-black",
             }}
+            defaultSelectedKeys={selectedTeams.map((item) => item.id) || ""}
             color="default"
-            label="Selecione o campeonato"
+            label="Selecione os times"
             className="w-full"
             selectionMode="multiple"
+            onSelectionChange={(keys) => onChange(Array.from(keys) as string[])}
           >
-            <SelectItem key={1} value={1} className="text-black">
-              {1}
-            </SelectItem>
-            <SelectItem key={2} value={2} className="text-black">
-              {2}
-            </SelectItem>
             {/* {championships.map((championship) => (
                 <SelectItem
                   key={championship.id}
@@ -93,58 +173,96 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
                   {championship.name}
                 </SelectItem>
               ))} */}
+            {teams.map((team) => (
+              <SelectItem key={team.id} value={team.id} className="text-black">
+                {team.name}
+              </SelectItem>
+            ))}
           </Select>
-          <div className="space-y-10">
+          <div className="space-y-5">
             {fields.map((field, index) => (
               <div key={field.id} className="flex space-x-2 items-center">
-                <Input
-                  type="text"
-                  placeholder={`Nome ${index + 1}`}
-                  {...register(`names.${index}.name`)}
-                  className={`border ${errors.names?.[index]?.name ? 'border-red-500' : 'border-gray-300'}`}
-                />
-                {index > 1 && (
+                {shouldDisableAddNewTeam ? (
                   <Button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="bg-red-500 text-white"
+                    className={`min-w-[1rem] bg-[#fff]`}
+                    onClick={() =>
+                      setShouldDisableAddNewTeam(!shouldDisableAddNewTeam)
+                    }
                   >
-                    Remover
+                    <MdAddCircleOutline className="text-[#1F66CE] text-[16px]" />
+                  </Button>
+                ) : (
+                  <Button
+                    className={`min-w-[1rem] bg-[#E40000]`}
+                    onClick={() =>
+                      fields.length === 1
+                        ? setShouldDisableAddNewTeam(true)
+                        : remove(index)
+                    }
+                  >
+                    <MdOutlineRemoveCircle className="text-[#fff]" />
                   </Button>
                 )}
-                {errors.names?.[index]?.name && (
-                  <span className="text-red-500 text-sm">
-                    {errors?.names[index]?.name?.message}
-                  </span>
-                )}
+                
+                <Input
+                  type="text"
+                  isDisabled={index === 0 && shouldDisableAddNewTeam}
+                  placeholder={`Nome novo time ${index + 1}`}
+                  errorMessage={
+                    errors?.names && errors?.names[index]?.name?.message
+                  }
+                  isInvalid={
+                    errors?.names && !!errors?.names[index]?.name?.message
+                  }
+                  color={
+                    errors?.names && errors?.names[index]?.name?.message
+                      ? "danger"
+                      : undefined
+                  }
+                  variant={
+                    errors?.names && errors?.names[index]?.name?.message
+                      ? "bordered"
+                      : undefined
+                  }
+                  {...register(`names.${index}.name`)}
+                />
               </div>
             ))}
-            {/* {teamsInputLabels.map((label) => (
-            <Input
-              key={label}
-              label={<label className="text-white font-bold">{label}</label>}
-              placeholder="Nome do time"
-              labelPlacement="outside"
-              type="text"
-            />
-          ))} */}
+            {!shouldDisableAddNewTeam && (
+              <Button
+                type="button"
+                onClick={() => append({ name: "" })}
+                variant="bordered"
+                className={`text-[14px] text-white font-bold border-white rounded-full w-full`}
+              >
+                Adicionar novo time
+              </Button>
+            )}
           </div>
+          <Divider className="my-4 bg-[#FFFFFF]" />
         </ModalBody>
+
         <ModalFooter className="flex flex-col space-y-4">
-          <Button
-            type="button"
-            onClick={() => append({ name: '' })}
-            className="bg-blue-500 text-white"
-          >
-            Adicionar
-          </Button>
-          <Button
-            isDisabled={isDisabledButton}
-            onClick={handleNextModal}
-            className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
-          >
-            Avançar
-          </Button>
+          {selectedTeams.length > 0 && shouldDisableAddNewTeam ? (
+            <Button
+              isDisabled={isDisabledButton}
+              onClick={handleNextModal}
+              type="button"
+              className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+            >
+              Avançar
+            </Button>
+          ) : (
+            <Button
+              isDisabled={isDisabledButton}
+              // onClick={handleNextModal}
+              type="submit"
+              className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+            >
+              Avançar
+            </Button>
+          )}
+
           <Button
             onClick={handlePreviousModal}
             variant="bordered"
@@ -161,5 +279,5 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         </ModalFooter>
       </form>
     </>
-  )
+  );
 }
