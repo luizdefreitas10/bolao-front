@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client'
+import React, { useState } from 'react'
 import {
   Navbar,
   NavbarBrand,
@@ -10,47 +10,57 @@ import {
   Link,
   Image,
   Button,
-} from "@nextui-org/react";
-import { useAuthContext } from "@/context/AuthContext";
-import { parseCookies } from "nookies";
-import { decodeToken } from "@/utils/jwt";
-import { useRouter } from "next/navigation";
+} from '@nextui-org/react'
+import { useAuthContext } from '@/context/AuthContext'
+import { parseCookies } from 'nookies'
+import { decodeToken } from '@/utils/jwt'
+import { useRouter } from 'next/navigation'
 
 export default function App() {
-  const { handleSignOut } = useAuthContext();
-  const { "qxute-bolao:x-token": sessionKey } = parseCookies();
-  const decoded = decodeToken(sessionKey);
-  const { push } = useRouter();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { handleSignOut } = useAuthContext()
+  const { 'qxute-bolao:x-token': sessionKey } = parseCookies()
+  const decoded = decodeToken(sessionKey)
+  const { push } = useRouter()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const menuItemsDefault = [
     {
-      menuItem: "Home",
-      route: "/",
+      menuItem: 'Home',
+      route: '/',
     },
     {
-      menuItem: "Login",
-      route: "/login",
+      menuItem: 'Login',
+      route: '/login',
     },
-    {
-      menuItem: "Recuperar senha",
-      route: "/recover-password",
-    },
-  ];
+    // {
+    //   menuItem: "Redefinir senha",
+    //   route: "/recover-password",
+    // },
+  ]
 
   const menuItemsAuth = [
     {
-      menuItem: "Home",
+      menuItem: 'Home',
       function: () => {
-        decoded?.role === "ADMIN" ? push("/home-admin") : push("/home-user");
-        setIsMenuOpen(false);
+        decoded?.role === 'ADMIN' ? push('/home-admin') : push('/home-user')
+        setIsMenuOpen(false)
       },
     },
     {
-      menuItem: "Sair",
-      function: () => handleSignOut(),
+      menuItem: 'Redefinir senha',
+      function: () => {
+        push('/recover-password')
+        setIsMenuOpen(false)
+      },
     },
-  ];
+    {
+      menuItem: 'Sair',
+      function: () => {
+        handleSignOut()
+        setIsMenuOpen(false)
+      },
+    },
+  ]
 
   return (
     <Navbar
@@ -81,10 +91,10 @@ export default function App() {
                   className="w-full"
                   color={
                     index === 2
-                      ? "warning"
+                      ? 'warning'
                       : index === menuItemsDefault.length - 1
-                        ? "danger"
-                        : "foreground"
+                        ? 'danger'
+                        : 'foreground'
                   }
                   href={item.route.toLowerCase()}
                   size="lg"
@@ -102,7 +112,7 @@ export default function App() {
                   className="w-full cursor-pointer"
                   onPress={item.function}
                   size="lg"
-                  color={"warning"}
+                  color={'warning'}
                 >
                   {item.menuItem}
                 </Link>
@@ -112,5 +122,5 @@ export default function App() {
         )}
       </NavbarMenu>
     </Navbar>
-  );
+  )
 }

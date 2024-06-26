@@ -1,11 +1,11 @@
-import { phoneRegExp } from "@/utils/phoneRegex";
-import * as yup from "yup";
+import { phoneRegExp } from '@/utils/phoneRegex'
+import * as yup from 'yup'
 
 export const schemaChampionship = yup
   .object({
     name: yup
       .string()
-      .required("Campo Nome Obrigatório.")
-      .min(5, "O nome deve ter no mínimo 5 caracteres."),
+      .required('Campo Nome Obrigatório.')
+      .min(5, 'O nome deve ter no mínimo 5 caracteres.'),
   })
-  .required();
+  .required()
