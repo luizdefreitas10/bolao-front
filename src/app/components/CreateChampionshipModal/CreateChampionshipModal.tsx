@@ -33,8 +33,6 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
   const {
     register,
     handleSubmit,
-    control,
-    reset,
     formState: { errors },
   } = useForm<INewChampionship>({
     resolver: yupResolver(schemaChampionship),
@@ -162,6 +160,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
           {selectedChampionship && isDisabledInput ? (
             <Button
               type="button"
+              isLoading={loading}
               onClick={() => handleNextModal()}
               isDisabled={isDisabledButton}
               className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
