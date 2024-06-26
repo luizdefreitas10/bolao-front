@@ -7,7 +7,7 @@ import { Link } from '@nextui-org/react'
 
 export default function Footer() {
   return (
-    <footer className="h-auto space-y-4 md:h-[140px] bg-[#184076] py-5 md:py-0 flex flex-col md:flex-row items-center justify-around fixed bottom-0 w-full">
+    <footer className="h-auto space-y-4 md:h-[140px] bg-[#184076] py-5 md:py-0 flex flex-col md:flex-row items-center justify-around fixed bottom-0 w-full z-50">
       <Image src={qxutelogo} alt="logoedsfooter" className="h-[28px]" />
       <p className="font-robotoRegular text-white">@2024 Copyright - QXUTE</p>
       <div className="flex space-x-3 cursor-pointer">
