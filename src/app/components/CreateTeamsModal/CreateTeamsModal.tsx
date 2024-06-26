@@ -1,6 +1,6 @@
-import { useEventsContext } from "@/context/EventsContext";
-import { schemaTeams } from "@/schemas/team";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useEventsContext } from '@/context/EventsContext'
+import { schemaTeams } from '@/schemas/team'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   ModalHeader,
   ModalBody,
@@ -10,17 +10,17 @@ import {
   Image,
   Select,
   SelectItem,
-} from "@nextui-org/react";
-import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+} from '@nextui-org/react'
+import { useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
 
 interface CloseButtonprops {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
-  const { handleNextModal, handlePreviousModal } = useEventsContext();
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
+  const { handleNextModal, handlePreviousModal } = useEventsContext()
 
   const {
     register,
@@ -29,17 +29,17 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
     formState: { errors },
   } = useForm<INewTeams>({
     resolver: yupResolver(schemaTeams),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
     defaultValues: {
-      names: [{ name: "" }, { name: "" }], // Dois inputs por padrão
+      names: [{ name: '' }, { name: '' }], // Dois inputs por padrão
     },
-  });
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "names",
-  });
+    name: 'names',
+  })
 
   // const teamsInputLabels = [
   //   'Time 1',
@@ -53,8 +53,8 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
   // ]
 
   const handleCreateTeams = (data: INewTeams) => {
-    console.log(data);
-  };
+    console.log(data)
+  }
 
   return (
     <>
@@ -71,25 +71,17 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
           <Select
             // onChange={(e) => setSelectedChampionship(e.target.value)}
             classNames={{
-              selectorIcon: "text-black",
+              selectorIcon: 'text-black',
             }}
             color="default"
             label="Selecione o campeonato"
             className="w-full"
             selectionMode="multiple"
           >
-            <SelectItem
-              key={1}
-              value={1}
-              className="text-black"
-            >
+            <SelectItem key={1} value={1} className="text-black">
               {1}
             </SelectItem>
-            <SelectItem
-              key={2}
-              value={2}
-              className="text-black"
-            >
+            <SelectItem key={2} value={2} className="text-black">
               {2}
             </SelectItem>
             {/* {championships.map((championship) => (
@@ -109,7 +101,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
                   type="text"
                   placeholder={`Nome ${index + 1}`}
                   {...register(`names.${index}.name`)}
-                  className={`border ${errors.names?.[index]?.name ? "border-red-500" : "border-gray-300"}`}
+                  className={`border ${errors.names?.[index]?.name ? 'border-red-500' : 'border-gray-300'}`}
                 />
                 {index > 1 && (
                   <Button
@@ -141,7 +133,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         <ModalFooter className="flex flex-col space-y-4">
           <Button
             type="button"
-            onClick={() => append({ name: "" })}
+            onClick={() => append({ name: '' })}
             className="bg-blue-500 text-white"
           >
             Adicionar
@@ -169,5 +161,5 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         </ModalFooter>
       </form>
     </>
-  );
+  )
 }

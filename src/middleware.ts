@@ -5,7 +5,6 @@ export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get('qxute-bolao:x-token')?.value
 
   if (currentUser) {
-
     const decoded = decodeToken(currentUser)
     console.log(decoded)
     if (
@@ -13,12 +12,6 @@ export function middleware(request: NextRequest) {
       request.nextUrl.pathname.startsWith('/home-admin')
     ) {
       return Response.redirect(new URL('/home-user', request.url))
-
-    const decoded = decodeToken(currentUser);
-    // console.log(decoded)
-    if(decoded?.role !== 'ADMIN' && request.nextUrl.pathname.startsWith("/home-admin")){
-        return Response.redirect(new URL("/home-user", request.url));
-
     }
   }
 
