@@ -29,12 +29,14 @@ interface CustomModalProps {
   isOpen: boolean
   onClose: () => void
   phone: string
+  userId: string
 }
 
 export default function RecoverPasswordModal({
   isOpen,
   onClose,
   phone,
+  userId,
 }: CustomModalProps) {
   const { push } = useRouter()
   const [isVisible, setIsVisible] = useState<boolean>(false)
@@ -60,20 +62,16 @@ export default function RecoverPasswordModal({
     const { 'qxute-bolao:x-token': token } = parseCookies()
     const decode = decodeToken(token)
 
-    if (decode?.sub) {
-      const { error, userId } = await resetPassword(
-        data.code,
-        data.newPassword,
-        decode.sub,
-      )
-      setLoading(false)
+    const { error } = await resetPassword(data.code, data.newPassword, userId)
+    setLoading(false)
 
-      if (error) {
-        toast.error(error)
-      } else if (userId) {
-        toast.success('Senha alterada com sucesso!')
-        onClose()
-        decode?.role === 'ADMIN' ? push('/home-admin') : push('/home-user')
+    if (error) {
+      toast.error(error)
+    } else if (userId) {
+      toast.success('Senha alterada com sucesso!')
+      onClose()
+      if (decode?.role) {
+        push(decode.role === 'ADMIN' ? '/home-admin' : '/home-user')
       }
     }
   }

@@ -32,10 +32,10 @@ export default function App() {
       menuItem: 'Login',
       route: '/login',
     },
-    // {
-    //   menuItem: "Redefinir senha",
-    //   route: "/recover-password",
-    // },
+    {
+      menuItem: 'Redefinir senha',
+      route: '/recover-password',
+    },
   ]
 
   const menuItemsAuth = [
