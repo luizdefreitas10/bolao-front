@@ -1,6 +1,6 @@
-import { useEventsContext } from "@/context/EventsContext";
-import { schemaRound } from "@/schemas/round";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useEventsContext } from '@/context/EventsContext'
+import { schemaRound } from '@/schemas/round'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   ModalHeader,
   ModalBody,
@@ -8,17 +8,18 @@ import {
   Button,
   Input,
   Image,
-} from "@nextui-org/react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+} from '@nextui-org/react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 interface CloseButtonprops {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
-  const { handleNextModal, handlePreviousModal, selectedChampionship } = useEventsContext();
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
+  const { handleNextModal, handlePreviousModal, selectedChampionship } =
+    useEventsContext()
 
   const {
     register,
@@ -26,11 +27,9 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
     formState: { errors },
   } = useForm<INewRoundForm>({
     resolver: yupResolver(schemaRound),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
-  });
-
-
+  })
 
   const handleCreateRound = (data: INewRoundForm) => {
     handleNextModal()
@@ -57,8 +56,8 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
             placeholder="Ex: 11ª Rodada"
             errorMessage={errors.name?.message}
             isInvalid={!!errors.name?.message}
-            color={errors.name?.message ? "danger" : undefined}
-            variant={errors.name?.message ? "bordered" : undefined}
+            color={errors.name?.message ? 'danger' : undefined}
+            variant={errors.name?.message ? 'bordered' : undefined}
             // onChange={(e) => handleInputChange(e)}
             {...register('name')}
           />
@@ -88,5 +87,5 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
         </ModalFooter>
       </form>
     </>
-  );
+  )
 }

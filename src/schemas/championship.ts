@@ -1,6 +1,4 @@
-
-import * as yup from "yup";
-
+import * as yup from 'yup'
 
 export const schemaChampionship = yup
   .object({
