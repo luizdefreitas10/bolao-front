@@ -15,6 +15,7 @@ export default function RecoverPassword() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [loading, setLoading] = useState(false)
   const [phone, setPhone] = useState<string>('')
+  const [userIdForgotPassword, setUserIdForgotPassword] = useState<string>('')
 
   const {
     handleSubmit,
@@ -32,15 +33,21 @@ export default function RecoverPassword() {
       '55' + data.phone.replace('(', '').replace(')', '').replace('-', '')
     setPhone(data.phone)
 
-    const response = await resetPasswordValidateCode(data.phone)
+    const { isError, error, userId } = await resetPasswordValidateCode(
+      data.phone,
+    )
+
+    if (userId) {
+      setUserIdForgotPassword(userId)
+    }
 
     setLoading(false)
 
-    if (response.error) {
-      toast.error(response.error)
+    if (error) {
+      toast.error(error)
     }
 
-    if (response.isError === false) {
+    if (isError === false) {
       onOpen()
     }
   }
@@ -93,6 +100,7 @@ export default function RecoverPassword() {
         isOpen={isOpen}
         onClose={onOpenChange}
         phone={phone}
+        userId={userIdForgotPassword}
       />
     </div>
   )
