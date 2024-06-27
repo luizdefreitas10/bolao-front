@@ -94,8 +94,8 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     if (selectedChampionship) {
       setLoading(true);
       try {
-        const { fetchRoundsByStatus } = await RoundService();
-        const response = await fetchRoundsByStatus(
+        const { fetchRoundsByStatusAndChampionship } = await RoundService();
+        const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
           "WAITING"
         );
