@@ -8,7 +8,13 @@ export default async function RoundService() {
     const response = await post<{ roundId: string }, string>('/round', payload)
     return response
   }
-  async function fetchRoundsByStatus(champId: string, status: string): Promise<IRound[]> {
+  async function fetchRoundsByStatus(status: string): Promise<IRoundWithMatchsAndChampionship[]> {
+    const response = await get<{rounds: IRoundWithMatchsAndChampionship[]}>(
+      `/rounds/status/${status}`
+    );
+    return response.rounds;
+  }
+  async function fetchRoundsByStatusAndChampionship(champId: string, status: string): Promise<IRound[]> {
     const response = await get<{rounds: IRound[]}>(
       `/rounds/${champId}/status/${status}`
     );
@@ -18,6 +24,7 @@ export default async function RoundService() {
 
   return {
     create,
+    fetchRoundsByStatusAndChampionship,
     fetchRoundsByStatus
   };
 }
