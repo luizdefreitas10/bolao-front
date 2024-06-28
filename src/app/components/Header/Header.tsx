@@ -53,7 +53,7 @@ export default function App() {
     {
       menuItem: "Partidas",
       function: () => {
-        push("/home-admin/partidas");
+        push("/home-admin/matches");
         setIsMenuOpen(false);
       },
       onlyAdmin: true,

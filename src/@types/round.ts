@@ -37,6 +37,7 @@ declare interface IRoundWithMatchAndChampionship {
 }
 
 declare interface IMatchRound {
+  id: string
   creator: {
     fullName: string;
   } | null;
@@ -54,6 +55,14 @@ declare interface IMatchRound {
   teamHome: {
     name: string;
   };
+  players:{
+    name: string
+    id: string
+  }[]
+  lastPlayerToScore?: {
+    id: string,
+    name: string, 
+  },
 }
 
 declare enum RoundStatus {

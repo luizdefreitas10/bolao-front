@@ -14,12 +14,10 @@ import {
 } from "@nextui-org/react";
 import { useEventsContext } from "@/context/EventsContext";
 import toast from "react-hot-toast";
-import * as yup from "yup";
 import { handleAxiosError } from "@/services/api/error";
 import RoundService from "@/services/api/models/round";
-import { parseZonedDateTime } from "@internationalized/date";
-import { format, formatInTimeZone } from "date-fns-tz";
 import MatchService from "@/services/api/models/match";
+import { matchesSchema } from "@/schemas/match";
 
 interface IFormInput {
   matches: {
@@ -30,22 +28,7 @@ interface IFormInput {
   }[];
 }
 
-const matchesSchema = yup.object().shape({
-  matches: yup.array().of(
-    yup.object().shape({
-      homeTeam: yup.string().required("Time da casa é obrigatório"),
-      awayTeam: yup
-        .string()
-        .required("Time visitante é obrigatório")
-        .notOneOf(
-          [yup.ref("homeTeam"), null],
-          "Times da casa e visitante não podem ser iguais"
-        ),
-      round: yup.string().required("Rodada é obrigatória"),
-      dateTime: yup.string().required("Data e hora são obrigatórias"),
-    })
-  ),
-});
+
 
 interface CloseButtonProps {
   onClose: () => void;
@@ -70,7 +53,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>({
-    resolver: yupResolver(matchesSchema) as any, // Use `as any` temporarily to resolve the type issue
+    resolver: yupResolver(matchesSchema) as any, 
     defaultValues: {
       matches: Array(calculatePairs()).fill({
         homeTeam: "",

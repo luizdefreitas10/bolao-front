@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, useDisclosure, Image } from "@nextui-org/react";
+import { Button, useDisclosure, Image, Tabs, Tab } from "@nextui-org/react";
 import { Open_Sans as OpenSans } from "next/font/google";
 import CreateEventModal from "@/app/components/CreateEventModal/CreateEventModal";
 import { useEventsContext } from "@/context/EventsContext";
@@ -17,24 +17,39 @@ const fontOpenSans = OpenSans({ subsets: ["latin"] });
 export default function HomeAdmin() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [rounds, setRounds] = useState<IRoundWithMatchsAndChampionship[]>([])
-  const {
-    isOpen: isOpenSetResultModal,
-    onOpen: onOpenSetResultModal,
-    onOpenChange: onOpenChangeSetResultModal,
-  } = useDisclosure();
-  const { setCurrentModalIndex } = useEventsContext();
+  const [roundsWaiting, setRoundsWaiting] = useState<
+    IRoundWithMatchsAndChampionship[]
+  >([]);
+  const [roundsDone, setRoundsDone] = useState<
+    IRoundWithMatchsAndChampionship[]
+  >([]);
+  const { setCurrentModalIndex, refreshRounds, setRefreshRounds } =
+    useEventsContext();
 
   useEffect(() => {
-    fetchRounds();
-  }, []);
+    if (refreshRounds) {
+      fetchRounds("WAITING");
+      fetchRounds("DONE");
+      setRefreshRounds(false);
+    }
+  }, [refreshRounds]);
 
-  const fetchRounds = async () => {
+  const fetchRounds = async (status: "WAITING" | "DONE") => {
     setLoading(true);
     try {
       const { fetchRoundsByStatus } = await RoundService();
-      const response = await fetchRoundsByStatus("WAITING");
-      setRounds(response);
+      const response = await fetchRoundsByStatus(status);
+
+      console.log(response);
+      switch (status) {
+        case "DONE":
+          setRoundsDone([]);
+          setRoundsDone(response);
+          break;
+        default:
+          setRoundsWaiting([]);
+          setRoundsWaiting(response);
+      }
     } catch (error) {
       const customError = handleAxiosError(error);
       toast.error(customError.message);
@@ -44,17 +59,38 @@ export default function HomeAdmin() {
   };
 
   return (
-    <div className={`w-full h-full flex flex-col ${fontOpenSans.className}`}>
+    <div
+      className={`w-full h-full flex flex-col items-center ${fontOpenSans.className}`}
+    >
       <h1 className={`text-center text-[#00409F] text-[18px] font-bold mt-10`}>
         Lorem Ipsum
       </h1>
       <p className="text-[#00409F] mt-2 mb-4 text-center">
         Lorem ipsum dolor sit amet consectetur. Laoreet.
       </p>
-      {rounds.map((round) => (
-        <RoundMatchsCardAdmin round={round} key={round.id} />
-      ))}
-   
+      <div className="flex flex-col items-center w-[90%]">
+        <Tabs
+          radius="full"
+          variant="solid"
+          color="secondary"
+          
+        >
+          <Tab key="waiting" title="Aguardando" className="w-full">
+            {roundsWaiting.map((round) => (
+              <RoundMatchsCardAdmin round={round} key={round.id} />
+            ))}
+          </Tab>
+          <Tab key="done" title="Finalizadas" className="w-full">
+            {roundsDone.map((round) => (
+              <RoundMatchsCardAdmin
+                round={round}
+                key={round.id}
+                isDone={true}
+              />
+            ))}
+          </Tab>
+        </Tabs>
+      </div>
       <Button
         onClick={() => setCurrentModalIndex(0)}
         onPress={onOpen}
