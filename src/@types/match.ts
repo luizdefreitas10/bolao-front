@@ -4,3 +4,17 @@ declare interface INewMatch{
     roundId: string
     date: string | Date
 } 
+
+declare interface ISetResultMatch{
+    scoreAway: number
+    scoreHome: number
+    lastPlayerId?: string
+}
+
+declare interface IPayloadSetResutMatch{
+    scoreAway: number
+    scoreHome: number
+    lastPlayerId?: string
+    matchId: string
+}
+

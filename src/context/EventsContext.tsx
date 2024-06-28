@@ -20,6 +20,8 @@ interface EventsContextType {
   setSelectedTeams: React.Dispatch<React.SetStateAction<ITeam[]>>
   selectedMatchSetResult?: IRoundWithMatchAndChampionship
   setSelectedMatchSetResult: React.Dispatch<React.SetStateAction<IRoundWithMatchAndChampionship | undefined>>
+  refreshRounds: boolean;
+  setRefreshRounds: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const EventsContext = createContext<EventsContextType | undefined>(undefined)
@@ -37,6 +39,8 @@ export const EventsProvider = ({ children }: ProviderProps) => {
   const [isDisabledCheckbox, setIsDisabledCheckbox] = useState<boolean>(false)
   const [currentModalIndex, setCurrentModalIndex] = useState<number>(0)
   const [selectedRound, setSelectedRound] = useState<string>();
+  const [refreshRounds, setRefreshRounds] = useState(true)
+  
   const [selectedMatchSetResult, setSelectedMatchSetResult] = useState<IRoundWithMatchAndChampionship>();
 
   const modalSteps = ['championship', 'rounds', 'teams', 'matches']
@@ -86,7 +90,9 @@ export const EventsProvider = ({ children }: ProviderProps) => {
         handleSetSelectedRound,
         setSelectedTeams,
         selectedMatchSetResult,
-        setSelectedMatchSetResult
+        setSelectedMatchSetResult,
+        refreshRounds,
+        setRefreshRounds
         
       }}
     >
