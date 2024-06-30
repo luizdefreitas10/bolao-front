@@ -7,6 +7,7 @@ export async function resetPasswordValidateCode(phone: string) {
   try {
     const { resetPasswordValidateCode } = await RecoverPasswordService()
     const response = await resetPasswordValidateCode(phone)
+
     return { isError: false, userId: response.userId }
   } catch (error) {
     const customError = handleAxiosError(error)
