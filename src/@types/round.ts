@@ -13,3 +13,46 @@ declare interface INewRound {
 declare interface INewRoundForm {
   name: string
 }
+
+declare interface IFetchActiveRounds {
+  champId: string
+  page?: string
+}
+
+declare interface IFetchActiveRoundsResponse {
+  rounds: {
+    id: string
+    name: string
+    status: string
+    matchs: {
+      scoreAway: number
+      scoreHome: number
+      status: string
+      date: Date
+      teamAway: {
+        name: string
+      }
+      teamHome: {
+        name: string
+      }
+    }[]
+  }[]
+}
+
+declare interface IRounds {
+  id: string
+  name: string
+  status: string
+  matchs: {
+    scoreAway: number
+    scoreHome: number
+    status: string
+    date: Date
+    teamAway: {
+      name: string
+    }
+    teamHome: {
+      name: string
+    }
+  }[]
+}

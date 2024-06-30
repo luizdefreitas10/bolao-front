@@ -11,15 +11,23 @@ export default async function ChampionshipService() {
     return response.championship
   }
 
-  async function fetchChampionships(): Promise<IChampionship[]> {
-    const response = await get<{ championships: IChampionship[] }>(
-      '/championship',
+  async function fetchChampionshipsWithRounds(
+    token: string,
+  ): Promise<IChampionshipWithRounds[]> {
+    const response = await get<{ championships: IChampionshipWithRounds[] }>(
+      '/championship/waiting-rounds',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     )
+
     return response.championships
   }
 
   return {
     create,
-    fetchChampionships,
+    fetchChampionshipsWithRounds,
   }
 }

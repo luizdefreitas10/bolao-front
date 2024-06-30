@@ -1,3 +1,4 @@
+import { get } from '../../methods/get'
 import { post } from '../../methods/post'
 
 export default async function RoundService() {
@@ -7,7 +8,21 @@ export default async function RoundService() {
     return response
   }
 
+  async function fetchRounds(data: IFetchActiveRounds, token: string) {
+    const response = await get<IFetchActiveRoundsResponse>(
+      `/rounds/${data.champId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    return response
+  }
+
   return {
     create,
+    fetchRounds,
   }
 }
