@@ -78,7 +78,6 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
 
   async function handleCreateChampionship(data: INewChampionship) {
     setLoading(true)
-
     try {
       const { create } = await ChampionshipService()
       const response = await create({ name: data.name })

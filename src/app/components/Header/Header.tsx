@@ -1,5 +1,5 @@
-'use client'
-import React, { useState } from 'react'
+"use client";
+import React, { useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -10,57 +10,70 @@ import {
   Link,
   Image,
   Button,
-} from '@nextui-org/react'
-import { useAuthContext } from '@/context/AuthContext'
-import { parseCookies } from 'nookies'
-import { decodeToken } from '@/utils/jwt'
-import { useRouter } from 'next/navigation'
+} from "@nextui-org/react";
+import { useAuthContext } from "@/context/AuthContext";
+import { parseCookies } from "nookies";
+import { decodeToken } from "@/utils/jwt";
+import { useRouter } from "next/navigation";
 
 export default function App() {
-  const { handleSignOut } = useAuthContext()
-  const { 'qxute-bolao:x-token': sessionKey } = parseCookies()
-  const decoded = decodeToken(sessionKey)
-  const { push } = useRouter()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { handleSignOut } = useAuthContext();
+  const { "qxute-bolao:x-token": sessionKey } = parseCookies();
+  const decoded = decodeToken(sessionKey);
+  const { push } = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItemsDefault = [
     {
-      menuItem: 'Home',
-      route: '/',
+      menuItem: "Home",
+      route: "/",
     },
     {
-      menuItem: 'Login',
-      route: '/login',
+      menuItem: "Registro",
+      route: "/register",
     },
     {
-      menuItem: 'Redefinir senha',
-      route: '/recover-password',
+      menuItem: "Login",
+      route: "/login",
     },
-  ]
+    {
+      menuItem: "Redefinir senha",
+      route: "/recover-password",
+    },
+  ];
 
   const menuItemsAuth = [
     {
-      menuItem: 'Home',
+      menuItem: "Home",
       function: () => {
-        decoded?.role === 'ADMIN' ? push('/home-admin') : push('/home-user')
-        setIsMenuOpen(false)
+        decoded?.role === "ADMIN" ? push("/home-admin") : push("/home-user");
+        setIsMenuOpen(false);
       },
     },
     {
-      menuItem: 'Redefinir senha',
+      menuItem: "Partidas",
       function: () => {
-        push('/recover-password')
-        setIsMenuOpen(false)
+        push("/home-admin/matches");
+        setIsMenuOpen(false);
       },
+      onlyAdmin: true,
     },
     {
-      menuItem: 'Sair',
+      menuItem: "Redefinir senha",
       function: () => {
-        handleSignOut()
-        setIsMenuOpen(false)
+        push("/recover-password");
+        setIsMenuOpen(false);
       },
     },
-  ]
+
+    {
+      menuItem: "Sair",
+      function: () => {
+        handleSignOut();
+        setIsMenuOpen(false);
+      },
+    },
+  ];
 
   return (
     <Navbar
@@ -91,10 +104,10 @@ export default function App() {
                   className="w-full"
                   color={
                     index === 2
-                      ? 'warning'
+                      ? "warning"
                       : index === menuItemsDefault.length - 1
-                        ? 'danger'
-                        : 'foreground'
+                        ? "danger"
+                        : "foreground"
                   }
                   href={item.route.toLowerCase()}
                   size="lg"
@@ -107,20 +120,24 @@ export default function App() {
         ) : (
           <>
             {menuItemsAuth.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  className="w-full cursor-pointer"
-                  onPress={item.function}
-                  size="lg"
-                  color={'warning'}
-                >
-                  {item.menuItem}
-                </Link>
-              </NavbarMenuItem>
+              <>
+                {!(item.onlyAdmin && decoded?.role !== "ADMIN") && (
+                  <NavbarMenuItem key={`${item}-${index}`}>
+                    <Link
+                      className="w-full cursor-pointer"
+                      onPress={item.function}
+                      size="lg"
+                      color={"warning"}
+                    >
+                      {item.menuItem}
+                    </Link>
+                  </NavbarMenuItem>
+                )}
+              </>
             ))}
           </>
         )}
       </NavbarMenu>
     </Navbar>
-  )
+  );
 }

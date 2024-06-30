@@ -1,10 +1,14 @@
-declare interface ITeam {
-  id: string
-  name: string
-  status: string
-  createdAt?: Date
+
+declare interface ITeam{
+    id: string
+    name: string
+    createdAt?: Date
 }
 
-declare interface INewTeams {
-  names: { name: string }[]
+declare interface INewTeamsForm{
+    names: { name: string }[];
+}
+
+declare interface INewTeam{
+    name: string
 }
