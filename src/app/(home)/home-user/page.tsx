@@ -14,6 +14,7 @@ import { fetchChampionshipsWithRounds, submitPredictions } from './actions'
 import { useEffect, useState } from 'react'
 import { parseCookies } from 'nookies'
 import toast from 'react-hot-toast'
+import { BoolEnum } from 'sharp'
 
 export default function HomeUser() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -25,6 +26,7 @@ export default function HomeUser() {
     IPrediction[]
   >([])
   const [fetchCompleted, setFetchCompleted] = useState<boolean>(false)
+  const [existMatches, setExistMatches] = useState<boolean>(false)
 
   const windowWidth = useWindowWidth()
   const isMobile = windowWidth && windowWidth < 640
@@ -73,6 +75,14 @@ export default function HomeUser() {
     )
 
     setMatchPredictionScores(initialScores)
+
+    const matchs = championships.flatMap((championship) =>
+      championship.rounds.flatMap((round) => round.matchs),
+    )
+
+    if (matchs.length > 0) {
+      setExistMatches(true)
+    }
   }, [championships])
 
   const increaseScore = (index: number, type: 'home' | 'away') => {
@@ -168,7 +178,7 @@ export default function HomeUser() {
         <Spinner />
       ) : (
         <div className="flex flex-col w-[100%] space-y-6 mx-auto">
-          {fetchCompleted && championships.length === 0 ? (
+          {fetchCompleted && !existMatches ? (
             <h1 className="text-center text-[#00409F] text-[18px] font-bold">
               Nenhuma partida encontrada!
             </h1>
@@ -189,7 +199,7 @@ export default function HomeUser() {
                           </h1>
                         </div>
                         <h1 className="text-white text-[12px] font-normal">
-                          {new Date(match.date).toLocaleString()}
+                          {new Date(match.date).toLocaleDateString('pt-BR')}
                         </h1>
                       </div>
                       <div className="flex justify-center items-center mt-4">
@@ -286,7 +296,7 @@ export default function HomeUser() {
                         </h1>
                       </div>
                       <h1 className="text-white text-[12px] font-normal">
-                        {new Date(match.date).toLocaleString()}
+                        {new Date(match.date).toLocaleDateString('pt-BR')}
                       </h1>
                     </div>
                     <div className="flex space-x-2 items-center mt-4">

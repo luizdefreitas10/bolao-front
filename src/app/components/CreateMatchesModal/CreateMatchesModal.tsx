@@ -1,6 +1,6 @@
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from 'react'
 import {
   ModalHeader,
   ModalBody,
@@ -11,27 +11,25 @@ import {
   Image,
   DateInput,
   DateValue,
-} from "@nextui-org/react";
-import { useEventsContext } from "@/context/EventsContext";
-import toast from "react-hot-toast";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import MatchService from "@/services/api/models/match";
-import { matchesSchema } from "@/schemas/match";
+} from '@nextui-org/react'
+import { useEventsContext } from '@/context/EventsContext'
+import toast from 'react-hot-toast'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import MatchService from '@/services/api/models/match'
+import { matchesSchema } from '@/schemas/match'
 
 interface IFormInput {
   matches: {
-    homeTeam: string;
-    awayTeam: string;
-    round: string;
-    dateTime: DateValue;
-  }[];
+    homeTeam: string
+    awayTeam: string
+    round: string
+    dateTime: DateValue
+  }[]
 }
 
-
-
 interface CloseButtonProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
@@ -42,10 +40,10 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     selectedChampionship,
     setCurrentModalIndex,
     selectedRound,
-  } = useEventsContext();
+  } = useEventsContext()
 
-  const [rounds, setRounds] = useState<IRound[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [rounds, setRounds] = useState<IRound[]>([])
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -53,97 +51,97 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>({
-    resolver: yupResolver(matchesSchema) as any, 
+    resolver: yupResolver(matchesSchema) as any,
     defaultValues: {
       matches: Array(calculatePairs()).fill({
-        homeTeam: "",
-        awayTeam: "",
+        homeTeam: '',
+        awayTeam: '',
         round: selectedRound,
         dateTime: null,
       }),
     },
-  });
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "matches",
-  });
+    name: 'matches',
+  })
 
   useEffect(() => {
-    if (currentModalIndex === 3) fetchRounds();
-  }, [currentModalIndex]);
+    if (currentModalIndex === 3) fetchRounds()
+  }, [currentModalIndex])
 
   const fetchRounds = async () => {
     if (selectedChampionship) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { fetchRoundsByStatusAndChampionship } = await RoundService();
+        const { fetchRoundsByStatusAndChampionship } = await RoundService()
         const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
-          "WAITING"
-        );
-        setRounds(response);
+          'WAITING',
+        )
+        setRounds(response)
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      toast.error("Necessário criar um campeonato.");
-      setCurrentModalIndex(0);
+      toast.error('Necessário criar um campeonato.')
+      setCurrentModalIndex(0)
     }
-  };
+  }
 
   const onSubmit = async (data: IFormInput) => {
-    const seenTeams = new Set<string>();
-    let duplicateFound = false;
+    const seenTeams = new Set<string>()
+    let duplicateFound = false
 
     for (const match of data.matches) {
-      const key = `${match.homeTeam}-${match.round}`;
-      const reverseKey = `${match.awayTeam}-${match.round}`;
+      const key = `${match.homeTeam}-${match.round}`
+      const reverseKey = `${match.awayTeam}-${match.round}`
 
       if (seenTeams.has(key) || seenTeams.has(reverseKey)) {
-        duplicateFound = true;
-        break;
+        duplicateFound = true
+        break
       }
 
-      seenTeams.add(key);
-      seenTeams.add(reverseKey);
+      seenTeams.add(key)
+      seenTeams.add(reverseKey)
     }
 
     if (duplicateFound) {
-      toast.error(`Existem times repetidos na mesma rodada.`);
-      return;
+      toast.error(`Existem times repetidos na mesma rodada.`)
+      return
     }
 
-    setLoading(true);
-    let wasError = false;
-    for (let match of data.matches) {
+    setLoading(true)
+    let wasError = false
+    for (const match of data.matches) {
       try {
-        const { create } = await MatchService();
+        const { create } = await MatchService()
         const response = await create({
           date: new Date(match.dateTime.toString()),
           roundId: match.round,
           teamIdAway: match.awayTeam,
           teamIdHome: match.homeTeam,
-        });
+        })
         // console.log(response);
       } catch (error) {
-        wasError = true;
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        wasError = true
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       }
     }
-    setLoading(false);
+    setLoading(false)
     if (!wasError) {
-      onClose();
-      setCurrentModalIndex(0);
+      onClose()
+      setCurrentModalIndex(0)
     }
-  };
+  }
 
   function calculatePairs(): number {
-    return Math.floor(selectedTeams.length / 2);
+    return Math.floor(selectedTeams.length / 2)
   }
 
   return (
@@ -164,18 +162,18 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               <Select
                 {...register(`matches.${index}.round`)}
                 classNames={{
-                  selectorIcon: "text-black",
+                  selectorIcon: 'text-black',
                 }}
                 isInvalid={
                   !!(errors?.matches && errors?.matches[index]?.round?.message)
                 }
                 errorMessage={
                   (errors?.matches && errors?.matches[index]?.round?.message) ||
-                  ""
+                  ''
                 }
                 color="default"
                 label="Selecione a rodada"
-                defaultSelectedKeys={[selectedRound || ""]}
+                defaultSelectedKeys={[selectedRound || '']}
               >
                 {rounds.map((item) => (
                   <SelectItem
@@ -200,7 +198,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                     {...field}
                     isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
                     errorMessage={
-                      errors?.matches?.[index]?.dateTime?.message || ""
+                      errors?.matches?.[index]?.dateTime?.message || ''
                     }
                   />
                 )}
@@ -208,7 +206,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               <Select
                 {...register(`matches.${index}.homeTeam`)}
                 classNames={{
-                  selectorIcon: "text-black",
+                  selectorIcon: 'text-black',
                 }}
                 color="default"
                 label="Selecione o time da casa"
@@ -220,7 +218,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 errorMessage={
                   (errors?.matches &&
                     errors?.matches[index]?.homeTeam?.message) ||
-                  ""
+                  ''
                 }
               >
                 {selectedTeams.map((team) => (
@@ -237,7 +235,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               <Select
                 {...register(`matches.${index}.awayTeam`)}
                 classNames={{
-                  selectorIcon: "text-black",
+                  selectorIcon: 'text-black',
                 }}
                 color="default"
                 label="Selecione o time visitante"
@@ -249,7 +247,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 errorMessage={
                   (errors?.matches &&
                     errors?.matches[index]?.awayTeam?.message) ||
-                  ""
+                  ''
                 }
               >
                 {selectedTeams.map((team) => (
@@ -288,5 +286,5 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </Button>
       </ModalFooter>
     </form>
-  );
+  )
 }

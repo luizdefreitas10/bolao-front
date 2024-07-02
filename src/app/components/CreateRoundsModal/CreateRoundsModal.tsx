@@ -1,8 +1,8 @@
 import { useEventsContext } from '@/context/EventsContext'
 import { schemaRound } from '@/schemas/round'
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   ModalHeader,
   ModalBody,
@@ -11,18 +11,23 @@ import {
   Input,
   Image,
 } from '@nextui-org/react'
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 interface CloseButtonprops {
   onClose: () => void
 }
 
 export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
-  const { handleNextModal, handlePreviousModal, selectedChampionship, handleSetSelectedRound } = useEventsContext();
-  const [loading, setLoading] = useState(false);
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
+  const {
+    handleNextModal,
+    handlePreviousModal,
+    selectedChampionship,
+    handleSetSelectedRound,
+  } = useEventsContext()
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -35,26 +40,27 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
   })
 
   const handleCreateRound = async (data: INewRoundForm) => {
-   
-    if(selectedChampionship){
-      setLoading(true);
+    if (selectedChampionship) {
+      setLoading(true)
       try {
-        const { create } = await RoundService();
-        const response = await create({ name: data.name, championshipId: selectedChampionship });
-        console.log(response);
-        handleSetSelectedRound(response.roundId);
-        handleNextModal();
+        const { create } = await RoundService()
+        const response = await create({
+          name: data.name,
+          championshipId: selectedChampionship,
+        })
+        console.log(response)
+        handleSetSelectedRound(response.roundId)
+        handleNextModal()
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    }else{
+    } else {
       toast.error('Necessário criar um campeonato para essa rodada.')
       handlePreviousModal()
     }
-    
   }
 
   return (

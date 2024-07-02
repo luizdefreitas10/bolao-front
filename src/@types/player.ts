@@ -1,4 +1,4 @@
-declare interface IPlayer{
-    name: string
-    id: string
+declare interface IPlayer {
+  name: string
+  id: string
 }
