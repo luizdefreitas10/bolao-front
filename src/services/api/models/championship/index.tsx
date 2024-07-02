@@ -6,13 +6,13 @@ export default async function ChampionshipService() {
     const payload = JSON.stringify(data);
     const response = await post<{ championship: IChampionship }, string>(
       "/championship",
-      payload
+      payload,
     );
     return response.championship;
   }
 
   async function fetchChampionshipsWithRounds(
-    token: string
+    token: string,
   ): Promise<IChampionshipWithRounds[]> {
     const response = await get<{ championships: IChampionshipWithRounds[] }>(
       "/championship/waiting-rounds",
@@ -20,7 +20,7 @@ export default async function ChampionshipService() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return response.championships;
@@ -28,7 +28,7 @@ export default async function ChampionshipService() {
 
   async function fetchChampionships(): Promise<IChampionship[]> {
     const response = await get<{ championships: IChampionship[] }>(
-      "/championship"
+      "/championship",
     );
 
     return response.championships;

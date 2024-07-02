@@ -1,6 +1,6 @@
-import { AxiosRequestConfig } from 'axios'
-import { handleAxiosError } from '../../error'
-import { api } from '../../api'
+import { AxiosRequestConfig } from "axios";
+import { handleAxiosError } from "../../error";
+import { api } from "../../api";
 
 export const post = async <Response, Body>(
   url: string,
@@ -8,9 +8,9 @@ export const post = async <Response, Body>(
   config?: AxiosRequestConfig,
 ) => {
   try {
-    const { data } = await api.post<Response>(url, body, config)
-    return data
+    const { data } = await api.post<Response>(url, body, config);
+    return data;
   } catch (e) {
-    throw handleAxiosError(e)
+    throw handleAxiosError(e);
   }
-}
+};

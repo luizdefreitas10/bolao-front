@@ -1,40 +1,40 @@
-import { get } from '../../methods/get'
-import { post } from '../../methods/post'
+import { get } from "../../methods/get";
+import { post } from "../../methods/post";
 
 export default async function PredictionsService() {
   async function submitPredictions(
     data: IPrediction,
     token: string,
   ): Promise<IPredictionResponse> {
-    const payload = JSON.stringify(data)
+    const payload = JSON.stringify(data);
     const response = await post<IPredictionResponse, string>(
-      '/predictions',
+      "/predictions",
       payload,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       },
-    )
-    return response
+    );
+    return response;
   }
 
   async function getPredictions(
     token: string,
   ): Promise<{ predictions: IPredictionsGetResponse[] }> {
     const response = await get<{ predictions: IPredictionsGetResponse[] }>(
-      '/prediction',
+      "/prediction",
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       },
-    )
-    return response
+    );
+    return response;
   }
 
   return {
     submitPredictions,
     getPredictions,
-  }
+  };
 }

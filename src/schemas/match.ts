@@ -1,17 +1,16 @@
 import { isAfter, isPast } from "date-fns";
 import * as yup from "yup";
 
-
 export const matchesSchema = yup.object().shape({
   matches: yup.array().of(
     yup.object().shape({
-      homeTeam: yup.string().required('Time da casa é obrigatório'),
+      homeTeam: yup.string().required("Time da casa é obrigatório"),
       awayTeam: yup
         .string()
-        .required('Time visitante é obrigatório')
+        .required("Time visitante é obrigatório")
         .notOneOf(
-          [yup.ref('homeTeam'), null],
-          'Times da casa e visitante não podem ser iguais',
+          [yup.ref("homeTeam"), null],
+          "Times da casa e visitante não podem ser iguais",
         ),
       round: yup.string().required("Rodada é obrigatória"),
       dateTime: yup
@@ -22,7 +21,7 @@ export const matchesSchema = yup.object().shape({
           "Data e hora não podem estar no passado",
           (value) => {
             return value ? !isPast(new Date(value)) : false;
-          }
+          },
         ),
       // lastPlayerCheckbox: yup.boolean(),
       // lastPlayerTeam: yup
@@ -47,32 +46,32 @@ export const matchesSchema = yup.object().shape({
       //     })
       //   )
       //   .required("É necessário ter pelo menos um nome."),
-    })
+    }),
   ),
-})
+});
 
 export const schemaSetResultMatch = (
-  players: IPlayer[]
+  players: IPlayer[],
 ): yup.ObjectSchema<ISetResultMatch> =>
   yup
     .object({
-      scoreAway: yup.number().required('Campo Placa Fora Obrigatório.'),
-      scoreHome: yup.number().required('Campo Placar Casa Obrigatório.'),
+      scoreAway: yup.number().required("Campo Placa Fora Obrigatório."),
+      scoreHome: yup.number().required("Campo Placar Casa Obrigatório."),
       lastPlayerId: yup
         .string()
         .test(
-          'required-if-players',
-          'Campo Último Jogador Obrigatório.',
+          "required-if-players",
+          "Campo Último Jogador Obrigatório.",
           function (value) {
-            const { createError, path } = this
+            const { createError, path } = this;
             if (players.length > 0 && !value) {
               return createError({
                 path,
-                message: 'Campo Último Jogador Obrigatório.',
-              })
+                message: "Campo Último Jogador Obrigatório.",
+              });
             }
-            return true
+            return true;
           },
         ),
     })
-    .required()
+    .required();
