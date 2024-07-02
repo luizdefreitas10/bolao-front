@@ -9,7 +9,7 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
       <EventsProvider>
-        <NextUIProvider>
+        <NextUIProvider locale='pt-BR'>
           <main>{children}</main>
         </NextUIProvider>
       </EventsProvider>
