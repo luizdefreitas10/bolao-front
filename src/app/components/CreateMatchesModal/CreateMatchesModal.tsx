@@ -3,7 +3,6 @@
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ChangeEvent, useEffect, useState } from "react";
-
 import {
   ModalHeader,
   ModalBody,
@@ -27,14 +26,8 @@ import PlayerService from "@/services/api/models/players";
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
 import { NewPlayer } from "../NewPlayer/NewPlayer";
 
-
 export interface IFormInput {
   matches: {
-    homeTeam: string
-    awayTeam: string
-    round: string
-    dateTime: DateValue
-  }[]
     homeTeam: string;
     awayTeam: string;
     round: string;
@@ -47,7 +40,7 @@ export interface IFormInput {
 }
 
 interface CloseButtonProps {
-  onClose: () => void
+  onClose: () => void;
 }
 
 export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
@@ -80,10 +73,11 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
   } = useForm<IFormInput>({
     mode: "onChange",
     resolver: yupResolver(matchesSchema) as any,
+
     defaultValues: {
       matches: Array(calculatePairs()).fill({
-        homeTeam: '',
-        awayTeam: '',
+        homeTeam: "",
+        awayTeam: "",
         round: selectedRound,
         dateTime: null,
         lastPlayerTeam: "",
@@ -92,13 +86,13 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         players: [{ name: "" }],
       }),
     },
-  })
+  });
 
 
   const { fields} = useFieldArray({
     control,
-    name: 'matches',
-  })
+    name: "matches",
+  });
 
   const watchCheckboxes = watch("matches");
 
@@ -119,30 +113,30 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
   }, [watchCheckboxes, setError, clearErrors, getValues]);
 
   useEffect(() => {
-    if (currentModalIndex === 3) fetchRounds()
-  }, [currentModalIndex])
+    if (currentModalIndex === 3) fetchRounds();
+  }, [currentModalIndex]);
 
   const fetchRounds = async () => {
     if (selectedChampionship) {
-      setLoading(true)
+      setLoading(true);
       try {
-        const { fetchRoundsByStatusAndChampionship } = await RoundService()
+        const { fetchRoundsByStatusAndChampionship } = await RoundService();
         const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
-          'WAITING',
-        )
-        setRounds(response)
+          "WAITING"
+        );
+        setRounds(response);
       } catch (error) {
-        const customError = handleAxiosError(error)
-        toast.error(customError.message)
+        const customError = handleAxiosError(error);
+        toast.error(customError.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     } else {
-      toast.error('Necessário criar um campeonato.')
-      setCurrentModalIndex(0)
+      toast.error("Necessário criar um campeonato.");
+      setCurrentModalIndex(0);
     }
-  }
+  };
 
   const fetchPlayers = async (index: number, teamId: string) => {
     if (teamId) {
@@ -185,24 +179,26 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
   const onSubmit = async (data: IFormInput) => {
     console.log(data);
+
     const seenTeams = new Set<string>();
     let duplicateFound = false;
+
     for (const match of data.matches) {
-      const key = `${match.homeTeam}-${match.round}`
-      const reverseKey = `${match.awayTeam}-${match.round}`
+      const key = `${match.homeTeam}-${match.round}`;
+      const reverseKey = `${match.awayTeam}-${match.round}`;
 
       if (seenTeams.has(key) || seenTeams.has(reverseKey)) {
-        duplicateFound = true
-        break
+        duplicateFound = true;
+        break;
       }
 
-      seenTeams.add(key)
-      seenTeams.add(reverseKey)
+      seenTeams.add(key);
+      seenTeams.add(reverseKey);
     }
 
     if (duplicateFound) {
-      toast.error(`Existem times repetidos na mesma rodada.`)
-      return
+      toast.error(`Existem times repetidos na mesma rodada.`);
+      return;
     }
 
     setLoading(true);
@@ -252,21 +248,21 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           // }
         }
       } catch (error) {
-        wasError = true
-        const customError = handleAxiosError(error)
-        toast.error(customError.message)
+        wasError = true;
+        const customError = handleAxiosError(error);
+        toast.error(customError.message);
       }
     }
-    setLoading(false)
+    setLoading(false);
     if (!wasError) {
       onClose();
       setCurrentModalIndex(0);
       setRefreshRounds(true)
     }
-  }
+  };
 
   function calculatePairs(): number {
-    return Math.floor(selectedTeams.length / 2)
+    return Math.floor(selectedTeams.length / 2);
   }
 
   function nameTeams(id: string) {
@@ -659,5 +655,5 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </Button>
       </ModalFooter>
     </form>
-  )
+  );
 }
