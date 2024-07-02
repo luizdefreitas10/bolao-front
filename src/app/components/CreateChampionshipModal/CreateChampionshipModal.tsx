@@ -1,8 +1,8 @@
-import { useEventsContext } from '@/context/EventsContext'
-import { schemaChampionship } from '@/schemas/championship'
-import { handleAxiosError } from '@/services/api/error'
-import ChampionshipService from '@/services/api/models/championship'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { useEventsContext } from "@/context/EventsContext";
+import { schemaChampionship } from "@/schemas/championship";
+import { handleAxiosError } from "@/services/api/error";
+import ChampionshipService from "@/services/api/models/championship";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ModalHeader,
   ModalBody,
@@ -13,22 +13,22 @@ import {
   Button,
   Input,
   Image,
-} from '@nextui-org/react'
-import { Open_Sans as OpenSans } from 'next/font/google'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
+} from "@nextui-org/react";
+import { Open_Sans as OpenSans } from "next/font/google";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
-const fontOpenSans = OpenSans({ subsets: ['latin'] })
+const fontOpenSans = OpenSans({ subsets: ["latin"] });
 
 interface CloseButtonprops {
-  onClose: () => void
+  onClose: () => void;
 }
 
 export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(true)
-  const [championships, setChampionships] = useState<IChampionship[]>([])
-  const [loading, setLoading] = useState(false)
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(true);
+  const [championships, setChampionships] = useState<IChampionship[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -36,9 +36,9 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
     formState: { errors },
   } = useForm<INewChampionship>({
     resolver: yupResolver(schemaChampionship),
-    mode: 'onSubmit',
+    mode: "onSubmit",
     shouldFocusError: false,
-  })
+  });
 
   const {
     setSelectedChampionship,
@@ -50,46 +50,47 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
     selectedChampionship,
     newChampionshipName,
     currentModalIndex,
-  } = useEventsContext()
+  } = useEventsContext();
 
   useEffect(() => {
-    if (currentModalIndex === 0) fetchChampionships()
-  }, [currentModalIndex])
+    if (currentModalIndex === 0) fetchChampionships();
+  }, [currentModalIndex]);
 
   useEffect(() => {
-    const shouldDisableButton = selectedChampionship === null && isDisabledInput
-    setIsDisabledButton(shouldDisableButton)
-  }, [selectedChampionship, isDisabledInput])
+    const shouldDisableButton =
+      selectedChampionship === null && isDisabledInput;
+    setIsDisabledButton(shouldDisableButton);
+  }, [selectedChampionship, isDisabledInput]);
 
   async function fetchChampionships() {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { fetchChampionships } = await ChampionshipService()
-      const response = await fetchChampionships()
-      console.log(response)
-      setChampionships(response)
+      const { fetchChampionships } = await ChampionshipService();
+      const response = await fetchChampionships();
+      console.log(response);
+      setChampionships(response);
     } catch (error) {
-      const customError = handleAxiosError(error)
-      toast.error(customError.message)
+      const customError = handleAxiosError(error);
+      toast.error(customError.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleCreateChampionship(data: INewChampionship) {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { create } = await ChampionshipService()
-      const response = await create({ name: data.name })
-      console.log(response)
-      setSelectedChampionship(response.id)
-      handleNextModal()
-      setIsDisabledInput(true)
+      const { create } = await ChampionshipService();
+      const response = await create({ name: data.name });
+      console.log(response);
+      setSelectedChampionship(response.id);
+      handleNextModal();
+      setIsDisabledInput(true);
     } catch (error) {
-      const customError = handleAxiosError(error)
-      toast.error(customError.message)
+      const customError = handleAxiosError(error);
+      toast.error(customError.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -107,10 +108,10 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
           </p>
           {championships.length > 0 && (
             <Select
-              defaultSelectedKeys={[selectedChampionship || '']}
+              defaultSelectedKeys={[selectedChampionship || ""]}
               onChange={(e) => setSelectedChampionship(e.target.value)}
               classNames={{
-                selectorIcon: 'text-black',
+                selectorIcon: "text-black",
               }}
               color="default"
               label="Selecione o campeonato"
@@ -134,7 +135,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
             size="lg"
             className="text-[12px]"
             classNames={{
-              label: 'text-white',
+              label: "text-white",
             }}
           >
             Novo campeonato
@@ -148,9 +149,9 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
               placeholder="Digite o nome do campeonato"
               errorMessage={errors.name?.message}
               isInvalid={!!errors.name?.message}
-              color={errors.name?.message ? 'danger' : undefined}
-              variant={errors.name?.message ? 'bordered' : undefined}
-              {...register('name')}
+              color={errors.name?.message ? "danger" : undefined}
+              variant={errors.name?.message ? "bordered" : undefined}
+              {...register("name")}
               // onChange={(e) => setNewChampionshipName(e.target.value)}
             />
           )}
@@ -185,5 +186,5 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
         </ModalFooter>
       </form>
     </>
-  )
+  );
 }

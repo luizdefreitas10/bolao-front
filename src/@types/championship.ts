@@ -1,43 +1,43 @@
 declare interface IChampionship {
-  id: string
-  name: string
-  status: string
-  createdAt?: Date
+  id: string;
+  name: string;
+  status: string;
+  createdAt?: Date;
 }
 
 declare interface INewChampionship {
-  name: string
+  name: string;
 }
 
 declare interface IChampionshipWithRounds {
-  id: string
-  name: string
-  status: string
+  id: string;
+  name: string;
+  status: string;
   rounds: {
-    name: string
-    status: string
-    createdAt: string
-    updatedAt: string
+    name: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
     matchs: {
-      id: string
-      scoreAway: number
-      scoreHome: number
-      status: string
-      date: Date
+      id: string;
+      scoreAway: number;
+      scoreHome: number;
+      status: string;
+      date: Date;
       players: {
-        name: string
-        id: string
-      }[]
+        name: string;
+        id: string;
+      }[];
       lastPlayerTeam: {
-        id: string
-        name: string
-      }
+        id: string;
+        name: string;
+      };
       teamAway: {
-        name: string
-      }
+        name: string;
+      };
       teamHome: {
-        name: string
-      }
-    }[]
-  }[]
+        name: string;
+      };
+    }[];
+  }[];
 }

@@ -1,5 +1,5 @@
-import { post } from '../../methods/post'
-import { put } from '../../methods/put'
+import { post } from "../../methods/post";
+import { put } from "../../methods/put";
 
 export default async function MatchService() {
   async function create(data: INewMatch): Promise<{ matchId: string }> {
@@ -9,12 +9,12 @@ export default async function MatchService() {
   }
 
   async function updateScore(data: IPayloadSetResutMatch): Promise<void> {
-    const payload = JSON.stringify(data)
-    await put('/match', payload)
+    const payload = JSON.stringify(data);
+    await put("/match", payload);
   }
 
   return {
     create,
     updateScore,
-  }
+  };
 }

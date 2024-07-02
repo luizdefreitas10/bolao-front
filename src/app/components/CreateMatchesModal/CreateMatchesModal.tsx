@@ -51,7 +51,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     selectedChampionship,
     setCurrentModalIndex,
     selectedRound,
-    setRefreshRounds
+    setRefreshRounds,
   } = useEventsContext();
 
   const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({});
@@ -88,8 +88,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     },
   });
 
-
-  const { fields} = useFieldArray({
+  const { fields } = useFieldArray({
     control,
     name: "matches",
   });
@@ -123,7 +122,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         const { fetchRoundsByStatusAndChampionship } = await RoundService();
         const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
-          "WAITING"
+          "WAITING",
         );
         setRounds(response);
       } catch (error) {
@@ -257,7 +256,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     if (!wasError) {
       onClose();
       setCurrentModalIndex(0);
-      setRefreshRounds(true)
+      setRefreshRounds(true);
     }
   };
 
@@ -324,7 +323,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               getValues(`matches.${index}.awayTeam`),
             ];
             const selectedPlayers = getValues(
-              `matches.${index}.selectedPlayers`
+              `matches.${index}.selectedPlayers`,
             );
 
             return (
@@ -439,19 +438,19 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <div className="flex flex-col gap-4">
                   <Checkbox
                     {...register(
-                      `matches.${index}.lastPlayerCheckbox` as const
+                      `matches.${index}.lastPlayerCheckbox` as const,
                     )}
                     isDisabled={!isFormValid(index)}
                     classNames={{
                       label: "text-white",
                     }}
                     defaultChecked={watch(
-                      `matches.${index}.lastPlayerCheckbox`
+                      `matches.${index}.lastPlayerCheckbox`,
                     )}
                     onChange={(e) =>
                       handleSelectCheckbox(
                         index,
-                        e.target.checked ? true : false
+                        e.target.checked ? true : false,
                       )
                     }
                   >
