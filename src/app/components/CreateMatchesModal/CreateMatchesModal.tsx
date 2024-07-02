@@ -1,6 +1,9 @@
-import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
+"use client";
+
+import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ChangeEvent, useEffect, useState } from "react";
+
 import {
   ModalHeader,
   ModalBody,
@@ -11,21 +14,36 @@ import {
   Image,
   DateInput,
   DateValue,
-} from '@nextui-org/react'
-import { useEventsContext } from '@/context/EventsContext'
-import toast from 'react-hot-toast'
-import { handleAxiosError } from '@/services/api/error'
-import RoundService from '@/services/api/models/round'
-import MatchService from '@/services/api/models/match'
-import { matchesSchema } from '@/schemas/match'
+  Checkbox,
+  Input,
+} from "@nextui-org/react";
+import { useEventsContext } from "@/context/EventsContext";
+import toast from "react-hot-toast";
+import { handleAxiosError } from "@/services/api/error";
+import RoundService from "@/services/api/models/round";
+import MatchService from "@/services/api/models/match";
+import { matchesSchema } from "@/schemas/match";
+import PlayerService from "@/services/api/models/players";
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
+import { NewPlayer } from "../NewPlayer/NewPlayer";
 
-interface IFormInput {
+
+export interface IFormInput {
   matches: {
     homeTeam: string
     awayTeam: string
     round: string
     dateTime: DateValue
   }[]
+    homeTeam: string;
+    awayTeam: string;
+    round: string;
+    dateTime: DateValue;
+    lastPlayerCheckbox: boolean;
+    lastPlayerTeam: string;
+    players: { name: string }[];
+    selectedPlayers: string;
+  }[];
 }
 
 interface CloseButtonProps {
@@ -40,17 +58,27 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     selectedChampionship,
     setCurrentModalIndex,
     selectedRound,
-  } = useEventsContext()
+    setRefreshRounds
+  } = useEventsContext();
 
-  const [rounds, setRounds] = useState<IRound[]>([])
-  const [loading, setLoading] = useState(false)
+  const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({});
+
+  const [rounds, setRounds] = useState<IRound[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [shouldGetPlayers, setShouldGetPlayers] = useState(false);
 
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
+    getValues,
+    setError,
+    watch,
+    clearErrors,
+    setValue,
   } = useForm<IFormInput>({
+    mode: "onChange",
     resolver: yupResolver(matchesSchema) as any,
     defaultValues: {
       matches: Array(calculatePairs()).fill({
@@ -58,14 +86,37 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         awayTeam: '',
         round: selectedRound,
         dateTime: null,
+        lastPlayerTeam: "",
+        lastPlayerCheckbox: false,
+        selectedPlayers: [],
+        players: [{ name: "" }],
       }),
     },
   })
 
-  const { fields, append, remove } = useFieldArray({
+
+  const { fields} = useFieldArray({
     control,
     name: 'matches',
   })
+
+  const watchCheckboxes = watch("matches");
+
+  useEffect(() => {
+    watchCheckboxes.forEach((match, index) => {
+      if (
+        match.lastPlayerCheckbox &&
+        !getValues(`matches.${index}.lastPlayerTeam`)
+      ) {
+        setError(`matches.${index}.lastPlayerTeam`, {
+          type: "required",
+          message: "Selecione o time do último marcador",
+        });
+      } else {
+        clearErrors(`matches.${index}.lastPlayerTeam`);
+      }
+    });
+  }, [watchCheckboxes, setError, clearErrors, getValues]);
 
   useEffect(() => {
     if (currentModalIndex === 3) fetchRounds()
@@ -93,10 +144,49 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     }
   }
 
-  const onSubmit = async (data: IFormInput) => {
-    const seenTeams = new Set<string>()
-    let duplicateFound = false
+  const fetchPlayers = async (index: number, teamId: string) => {
+    if (teamId) {
+      setLoading(true);
+      try {
+        const { fetchPlayersByTeam } = await PlayerService();
+        const response = await fetchPlayersByTeam(teamId);
+        return response;
+      } catch (error) {
+        const customError = handleAxiosError(error);
+        toast.error(customError.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
+  useEffect(() => {
+    // console.log(shouldGetPlayers)
+    if (shouldGetPlayers) {
+      fields.forEach((field, index) => {
+        const teamId = watch(`matches.${index}.lastPlayerTeam`);
+        console.log(teamId);
+        if (teamId) {
+          setLoading(true);
+          fetchPlayers(index, teamId)
+            .then((result) => {
+              setPlayers((prev) => ({ ...prev, [index]: result || [] }));
+            })
+            .catch((error) => {
+              const customError = handleAxiosError(error);
+              toast.error(customError.message);
+            })
+            .finally(() => setLoading(false));
+        }
+      });
+    }
+    setShouldGetPlayers(false);
+  }, [fields, watch, shouldGetPlayers]);
+
+  const onSubmit = async (data: IFormInput) => {
+    console.log(data);
+    const seenTeams = new Set<string>();
+    let duplicateFound = false;
     for (const match of data.matches) {
       const key = `${match.homeTeam}-${match.round}`
       const reverseKey = `${match.awayTeam}-${match.round}`
@@ -115,18 +205,52 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
       return
     }
 
-    setLoading(true)
-    let wasError = false
-    for (const match of data.matches) {
+    setLoading(true);
+    let wasError = false;
+    const { create } = await MatchService();
+    const { create: createPlayer } = await PlayerService();
+    for (let match of data.matches) {
       try {
-        const { create } = await MatchService()
         const response = await create({
           date: new Date(match.dateTime.toString()),
           roundId: match.round,
           teamIdAway: match.awayTeam,
           teamIdHome: match.homeTeam,
-        })
-        // console.log(response);
+          lastPlayerTeamId: match.lastPlayerTeam,
+        });
+        if (match.players.length > 0 && response.matchId) {
+          for (let player of match.players) {
+            if (player.name) {
+              await createPlayer({
+                matchId: response.matchId,
+                name: player.name,
+                teamId: match.lastPlayerTeam,
+              });
+            }
+          }
+          // const index = data.matches.findIndex(
+          //   (item) => item.lastPlayerTeam === match.lastPlayerTeam
+          // );
+          // const listSelectedPlayers =
+          //   getValues(`matches.${index}.selectedPlayers`) &&
+          //   getValues(`matches.${index}.selectedPlayers`).split(",");
+          // // console.log(listSelectedPlayers)
+          // for (let player of listSelectedPlayers) {
+          //   console.log(players[index]);
+          //   console.log(player);
+          //   const playerExist = players[index].find(
+          //     (item) => item.id === player
+          //   );
+          //   console.log(playerExist?.name);
+          //   if (playerExist?.name) {
+          //     await createPlayer({
+          //       matchId: response.matchId,
+          //       name: playerExist.name,
+          //       teamId: match.lastPlayerTeam,
+          //     });
+          //   }
+          // }
+        }
       } catch (error) {
         wasError = true
         const customError = handleAxiosError(error)
@@ -135,14 +259,55 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     }
     setLoading(false)
     if (!wasError) {
-      onClose()
-      setCurrentModalIndex(0)
+      onClose();
+      setCurrentModalIndex(0);
+      setRefreshRounds(true)
     }
   }
 
   function calculatePairs(): number {
     return Math.floor(selectedTeams.length / 2)
   }
+
+  function nameTeams(id: string) {
+    const team = selectedTeams.find((item) => item.id === id);
+
+    return team?.name || null;
+  }
+
+  function isFormValid(index: number) {
+    const homeTeam = watch(`matches.${index}`).homeTeam;
+    const awayTeam = watch(`matches.${index}`).awayTeam;
+    const dateTime = watch(`matches.${index}`).dateTime;
+    const round = watch(`matches.${index}`).round;
+
+    if (homeTeam && awayTeam && dateTime && round) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function handleSelectCheckbox(index: number, value: boolean) {
+    if (isFormValid(index)) {
+      setValue(`matches.${index}.lastPlayerCheckbox`, value);
+    }
+  }
+
+  // const handleSelectPlayers = (selectedIds: string[]) => {
+  //   const selectedTeams = selectedIds
+  //     .map((id) => {
+  //       const team = teams.find((team) => team.id === id);
+  //       return team ? { id: team.id, name: team.name, selected: false } : null;
+  //     })
+  //     .filter(Boolean) as ITeam[];
+  //   console.log(selectedTeams);
+  //   handleSetSelectedTeams(selectedTeams);
+  // };
+
+  // const onChange = (values: string[]) => {
+  //   handleSelectPlayers(values);
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -156,112 +321,326 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           netus diam. Vel urna mattis.
         </p>
         <div className="space-y-10">
-          {fields.map((field, index) => (
-            <div className="space-y-4" key={field.id}>
-              <h1>{`Partida ${index + 1}`}</h1>
-              <Select
-                {...register(`matches.${index}.round`)}
-                classNames={{
-                  selectorIcon: 'text-black',
-                }}
-                isInvalid={
-                  !!(errors?.matches && errors?.matches[index]?.round?.message)
-                }
-                errorMessage={
-                  (errors?.matches && errors?.matches[index]?.round?.message) ||
-                  ''
-                }
-                color="default"
-                label="Selecione a rodada"
-                defaultSelectedKeys={[selectedRound || '']}
-              >
-                {rounds.map((item) => (
-                  <SelectItem
-                    key={item.id}
-                    value={item.id}
-                    className="text-black"
-                  >
-                    {item.name}
-                  </SelectItem>
-                ))}
-              </Select>
+          {fields.map((field, index) => {
+            const watchCheckbox = watch(`matches.${index}.lastPlayerCheckbox`);
+            const teamsLastPlayer = [
+              getValues(`matches.${index}.homeTeam`),
+              getValues(`matches.${index}.awayTeam`),
+            ];
+            const selectedPlayers = getValues(
+              `matches.${index}.selectedPlayers`
+            );
 
-              <Controller
-                control={control}
-                name={`matches.${index}.dateTime`}
-                render={({ field }) => (
-                  <DateInput
-                    label="Data e Hora"
-                    hideTimeZone
-                    hourCycle={24}
-                    granularity="minute"
-                    {...field}
-                    isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
-                    errorMessage={
-                      errors?.matches?.[index]?.dateTime?.message || ''
+            return (
+              <div className="space-y-4" key={field.id}>
+                <h1>{`Partida ${index + 1}`}</h1>
+                <Select
+                  {...register(`matches.${index}.round`)}
+                  classNames={{
+                    selectorIcon: "text-black",
+                  }}
+                  isInvalid={
+                    !!(
+                      errors?.matches && errors?.matches[index]?.round?.message
+                    )
+                  }
+                  errorMessage={
+                    (errors?.matches &&
+                      errors?.matches[index]?.round?.message) ||
+                    ""
+                  }
+                  color="default"
+                  label="Selecione a rodada"
+                  defaultSelectedKeys={[selectedRound || ""]}
+                >
+                  {rounds.map((item) => (
+                    <SelectItem
+                      key={item.id}
+                      value={item.id}
+                      className="text-black"
+                    >
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                <Controller
+                  control={control}
+                  name={`matches.${index}.dateTime`}
+                  render={({ field }) => (
+                    <DateInput
+                      label="Data e Hora"
+                      hideTimeZone
+                      hourCycle={24}
+                      granularity="minute"
+                      {...field}
+                      isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
+                      errorMessage={
+                        errors?.matches?.[index]?.dateTime?.message || ""
+                      }
+                    />
+                  )}
+                />
+                <Select
+                  {...register(`matches.${index}.homeTeam`)}
+                  classNames={{
+                    selectorIcon: "text-black",
+                  }}
+                  color="default"
+                  label="Selecione o time da casa"
+                  isInvalid={
+                    !!(
+                      errors?.matches &&
+                      errors?.matches[index]?.homeTeam?.message
+                    )
+                  }
+                  errorMessage={
+                    (errors?.matches &&
+                      errors?.matches[index]?.homeTeam?.message) ||
+                    ""
+                  }
+                >
+                  {selectedTeams.map((team) => (
+                    <SelectItem
+                      key={team.id}
+                      value={team.id}
+                      className="text-black"
+                    >
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                <Select
+                  {...register(`matches.${index}.awayTeam`)}
+                  classNames={{
+                    selectorIcon: "text-black",
+                  }}
+                  color="default"
+                  label="Selecione o time visitante"
+                  isInvalid={
+                    !!(
+                      errors?.matches &&
+                      errors?.matches[index]?.awayTeam?.message
+                    )
+                  }
+                  errorMessage={
+                    (errors?.matches &&
+                      errors?.matches[index]?.awayTeam?.message) ||
+                    ""
+                  }
+                >
+                  {selectedTeams.map((team) => (
+                    <SelectItem
+                      key={team.id}
+                      value={team.id}
+                      className="text-black"
+                    >
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <div className="flex flex-col gap-4">
+                  <Checkbox
+                    {...register(
+                      `matches.${index}.lastPlayerCheckbox` as const
+                    )}
+                    isDisabled={!isFormValid(index)}
+                    classNames={{
+                      label: "text-white",
+                    }}
+                    defaultChecked={watch(
+                      `matches.${index}.lastPlayerCheckbox`
+                    )}
+                    onChange={(e) =>
+                      handleSelectCheckbox(
+                        index,
+                        e.target.checked ? true : false
+                      )
                     }
-                  />
-                )}
-              />
-              <Select
-                {...register(`matches.${index}.homeTeam`)}
-                classNames={{
-                  selectorIcon: 'text-black',
-                }}
-                color="default"
-                label="Selecione o time da casa"
-                isInvalid={
-                  !!(
-                    errors?.matches && errors?.matches[index]?.homeTeam?.message
-                  )
-                }
-                errorMessage={
-                  (errors?.matches &&
-                    errors?.matches[index]?.homeTeam?.message) ||
-                  ''
-                }
-              >
-                {selectedTeams.map((team) => (
-                  <SelectItem
-                    key={team.id}
-                    value={team.id}
-                    className="text-black"
                   >
-                    {team.name}
-                  </SelectItem>
-                ))}
-              </Select>
+                    <p>Adicionar jogadores para palpite de último marcador.</p>
+                  </Checkbox>
+                  {watchCheckbox && (
+                    <>
+                      <Controller
+                        name={`matches.${index}.lastPlayerTeam`}
+                        control={control}
+                        // rules={{
+                        //   required: watchCheckbox
+                        //     ? "Selecione o time do último marcador"
+                        //     : false,
+                        // }}
+                        render={({ field: { onChange } }) => (
+                          <Select
+                            {...field}
+                            classNames={{
+                              selectorIcon: "text-black",
+                            }}
+                            isInvalid={
+                              !!(
+                                errors?.matches &&
+                                errors?.matches[index]?.lastPlayerTeam?.message
+                              )
+                            }
+                            errorMessage={
+                              (errors?.matches &&
+                                errors?.matches[index]?.lastPlayerTeam
+                                  ?.message) ||
+                              ""
+                            }
+                            defaultSelectedKeys={
+                              [getValues(`matches.${index}.lastPlayerTeam`)] ||
+                              ""
+                            }
+                            color="default"
+                            label="Selecione o time do último marcador"
+                            onChange={(e) => {
+                              setShouldGetPlayers(true);
+                              onChange(e.target.value);
+                            }}
 
-              <Select
-                {...register(`matches.${index}.awayTeam`)}
-                classNames={{
-                  selectorIcon: 'text-black',
-                }}
-                color="default"
-                label="Selecione o time visitante"
-                isInvalid={
-                  !!(
-                    errors?.matches && errors?.matches[index]?.awayTeam?.message
-                  )
-                }
-                errorMessage={
-                  (errors?.matches &&
-                    errors?.matches[index]?.awayTeam?.message) ||
-                  ''
-                }
-              >
-                {selectedTeams.map((team) => (
-                  <SelectItem
-                    key={team.id}
-                    value={team.id}
-                    className="text-black"
-                  >
-                    {team.name}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
-          ))}
+                            // }
+                          >
+                            {teamsLastPlayer.map((team, indexTeams) => (
+                              <SelectItem
+                                key={team}
+                                value={team}
+                                className="text-black"
+                              >
+                                {nameTeams(team)}
+                              </SelectItem>
+                            ))}
+                          </Select>
+                        )}
+                      />
+
+                      {watch(`matches.${index}`).lastPlayerTeam && (
+                        <>
+                          {/* {players[index]?.length > 0 && (
+                            <Select
+                              classNames={{ selectorIcon: "text-black" }}
+                              color="default"
+                              label="Selecione os jogadores"
+                              className="w-full"
+                              selectionMode="multiple"
+                              // defaultSelectedKeys={
+                              //   (selectedPlayers &&
+                              //     selectedPlayers?.length > 0 &&
+                              //     selectedPlayers?.map((item) => item.id) || "")
+
+                              // }
+                              {...register(
+                                `matches.${index}.selectedPlayers` as const
+                              )}
+                            >
+                              {players[index]?.map((player) => (
+                                <SelectItem
+                                  key={player.id}
+                                  value={player.id}
+                                  className="text-black"
+                                >
+                                  {player.name}
+                                </SelectItem>
+                              ))}
+                            </Select>
+                          )} */}
+
+                          <NewPlayer
+                            errors={errors}
+                            matchId={index}
+                            register={register}
+                            control={control}
+                          />
+                          {/* {field.players.map((player, indexPlayers) => (
+                            <div
+                              key={indexPlayers}
+                              className="flex space-x-2 items-center"
+                            >
+                              {shouldDisableAddNewTeam ? (
+                                <Button
+                                  className={`min-w-[1rem] bg-[#fff]`}
+                                  onClick={() =>
+                                    setShouldDisableAddNewTeam({
+                                      [index]: false,
+                                    })
+                                  }
+                                >
+                                  <MdAddCircleOutline className="text-[#1F66CE] text-[16px]" />
+                                </Button>
+                              ) : (
+                                <Button
+                                  className={`min-w-[1rem] bg-[#E40000]`}
+                                  onClick={() =>
+                                    fields.length === 1
+                                      ? setShouldDisableAddNewTeam({
+                                          [index]: true,
+                                        })
+                                      : remove(indexPlayers)
+                                  }
+                                >
+                                  <MdOutlineRemoveCircle className="text-[#fff]" />
+                                </Button>
+                              )}
+
+                              <Input
+                                type="text"
+                                isDisabled={
+                                  index === 0 &&
+                                  shouldDisableAddNewTeam[indexPlayers]
+                                }
+                                placeholder={`Nome novo time ${index + 1}`}
+                                // isInvalid={
+                                //   !!(
+                                //     errors?.matches &&
+                                //     errors?.matches[index] &&
+                                //     errors?.matches[index].players &&
+                                //     errors?.matches[index].players[
+                                //       indexPlayers
+                                //     ] &&
+                                //     errors?.matches[index].players[
+                                //       indexPlayers
+                                //     ]?.name?.message
+                                //   )
+                                // }
+                                // errorMessage={
+                                //   (errors?.matches &&
+                                //     errors?.matches[index]?.lastPlayerTeam
+                                //       ?.message) ||
+                                //   ""
+                                // }
+                                // color={
+                                //   errors?.names &&
+                                //   errors?.names[index]?.name?.message
+                                //     ? "danger"
+                                //     : undefined
+                                // }
+                                // variant={
+                                //   errors?.names &&
+                                //   errors?.names[index]?.name?.message
+                                //     ? "bordered"
+                                //     : undefined
+                                // }
+                                {...register(
+                                  `matches.${index}.players.${indexPlayers}.name`
+                                )}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => addPlayer(matchIndex)}
+                              >
+                                Adicionar Jogador
+                              </button>
+                            </div>
+                          ))} */}
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </ModalBody>
       <ModalFooter className="flex flex-col space-y-4">
@@ -274,15 +653,9 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         <Button
           onClick={handlePreviousModal}
           variant="bordered"
-          className={`text-[14px] text-white font-bold border-white rounded-full`}
+          className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
         >
           Voltar
-        </Button>
-        <Button
-          onClick={onClose}
-          className={`text-[14px] text-white font-bold bg-[#E40000] rounded-full`}
-        >
-          Fechar
         </Button>
       </ModalFooter>
     </form>

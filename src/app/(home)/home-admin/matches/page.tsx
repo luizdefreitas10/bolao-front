@@ -27,6 +27,11 @@ export default function HomeAdmin() {
     useEventsContext()
 
   useEffect(() => {
+    fetchRounds("WAITING");
+    fetchRounds("DONE");
+  }, []);
+
+  useEffect(() => {
     if (refreshRounds) {
       fetchRounds('WAITING')
       fetchRounds('DONE')
