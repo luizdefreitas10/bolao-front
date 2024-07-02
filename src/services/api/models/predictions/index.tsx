@@ -1,3 +1,4 @@
+import { get } from '../../methods/get'
 import { post } from '../../methods/post'
 
 export default async function PredictionsService() {
@@ -18,7 +19,22 @@ export default async function PredictionsService() {
     return response
   }
 
+  async function getPredictions(
+    token: string,
+  ): Promise<{ predictions: IPredictionsGetResponse[] }> {
+    const response = await get<{ predictions: IPredictionsGetResponse[] }>(
+      '/prediction',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return response
+  }
+
   return {
     submitPredictions,
+    getPredictions,
   }
 }

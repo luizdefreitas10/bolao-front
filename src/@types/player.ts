@@ -8,3 +8,4 @@ declare interface INewPlayer{
     teamId: string
     matchId: string
 }
+

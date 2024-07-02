@@ -14,13 +14,15 @@ interface EventsContextType {
   handleNextModal: () => void
   handlePreviousModal: () => void
   selectedTeams: ITeam[]
-  handleSetSelectedTeams: (teams:ITeam[]) => void
+  handleSetSelectedTeams: (teams: ITeam[]) => void
   selectedRound?: string
   handleSetSelectedRound: (id: string) => void
   setSelectedTeams: React.Dispatch<React.SetStateAction<ITeam[]>>
   selectedMatchSetResult?: IRoundWithMatchAndChampionship
-  setSelectedMatchSetResult: React.Dispatch<React.SetStateAction<IRoundWithMatchAndChampionship | undefined>>
-  refreshRounds: boolean;
+  setSelectedMatchSetResult: React.Dispatch<
+    React.SetStateAction<IRoundWithMatchAndChampionship | undefined>
+  >
+  refreshRounds: boolean
   setRefreshRounds: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -38,10 +40,11 @@ export const EventsProvider = ({ children }: ProviderProps) => {
   const [isDisabledInput, setIsDisabledInput] = useState<boolean>(true)
   const [isDisabledCheckbox, setIsDisabledCheckbox] = useState<boolean>(false)
   const [currentModalIndex, setCurrentModalIndex] = useState<number>(0)
-  const [selectedRound, setSelectedRound] = useState<string>();
+  const [selectedRound, setSelectedRound] = useState<string>()
   const [refreshRounds, setRefreshRounds] = useState(true)
-  
-  const [selectedMatchSetResult, setSelectedMatchSetResult] = useState<IRoundWithMatchAndChampionship>();
+
+  const [selectedMatchSetResult, setSelectedMatchSetResult] =
+    useState<IRoundWithMatchAndChampionship>()
 
   const modalSteps = ['championship', 'rounds', 'teams', 'matches']
 
@@ -63,10 +66,8 @@ export const EventsProvider = ({ children }: ProviderProps) => {
     }
   }
 
- 
-
   const handleSetSelectedTeams = (teams: ITeam[]) => {
-    setSelectedTeams(teams);
+    setSelectedTeams(teams)
   }
 
   return (
@@ -92,8 +93,7 @@ export const EventsProvider = ({ children }: ProviderProps) => {
         selectedMatchSetResult,
         setSelectedMatchSetResult,
         refreshRounds,
-        setRefreshRounds
-        
+        setRefreshRounds,
       }}
     >
       {children}

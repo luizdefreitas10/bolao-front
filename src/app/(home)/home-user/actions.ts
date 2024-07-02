@@ -27,3 +27,15 @@ export async function submitPredictions(data: IPrediction, token: string) {
     return { isError: true, error: customError.message }
   }
 }
+
+export async function getPredictions(token: string) {
+  try {
+    const { getPredictions } = await PredictionsService()
+    const { predictions } = await getPredictions(token)
+
+    return { isError: false, predictions }
+  } catch (error) {
+    const customError = handleAxiosError(error)
+    return { isError: true, error: customError.message }
+  }
+}

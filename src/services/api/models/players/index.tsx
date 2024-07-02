@@ -9,7 +9,7 @@ export default async function PlayerService() {
   }
   async function fetchPlayersByMatchAndTeam(
     roundId: string,
-    teamId: string
+    teamId: string,
   ): Promise<IPlayer[]> {
     const response = await get<{ players: IPlayer[] }>(
       `/player/match/${roundId}/team/${teamId}`

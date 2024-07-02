@@ -6,16 +6,15 @@ declare interface INewMatch{
     lastPlayerTeamId?: string 
 } 
 
-declare interface ISetResultMatch{
-    scoreAway: number
-    scoreHome: number
-    lastPlayerId?: string
+declare interface ISetResultMatch {
+  scoreAway: number
+  scoreHome: number
+  lastPlayerId?: string
 }
 
-declare interface IPayloadSetResutMatch{
-    scoreAway: number
-    scoreHome: number
-    lastPlayerId?: string
-    matchId: string
+declare interface IPayloadSetResutMatch {
+  scoreAway: number
+  scoreHome: number
+  lastPlayerId?: string
+  matchId: string
 }
-

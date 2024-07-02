@@ -1,76 +1,76 @@
 declare interface IRound {
-  id: string;
-  name: string;
-  status: string;
-  createdAt?: Date;
+  id: string
+  name: string
+  status: string
+  createdAt?: Date
 }
 
 declare interface INewRound {
-  name: string;
-  championshipId: string;
+  name: string
+  championshipId: string
 }
 
 declare interface INewRoundForm {
-  name: string;
+  name: string
 }
 
 declare interface IRoundWithMatchsAndChampionship {
-  id: string;
-  name: string;
-  status: string;
-  createdAt?: Date;
-  matchs: IMatchRound[];
+  id: string
+  name: string
+  status: string
+  createdAt?: Date
+  matchs: IMatchRound[]
   championship: {
-    name: string;
-  };
+    name: string
+  }
 }
 
 declare interface IRoundWithMatchAndChampionship {
-  id: string;
-  name: string;
-  status: string;
-  createdAt?: Date;
-  match: IMatchRound;
+  id: string
+  name: string
+  status: string
+  createdAt?: Date
+  match: IMatchRound
   championship: {
-    name: string;
-  };
+    name: string
+  }
 }
 
 declare interface IMatchRound {
   id: string
   creator: {
-    fullName: string;
-  } | null;
+    fullName: string
+  } | null
   lastPlayerTeam: {
-    id: string;
-    name: string;
-  } | null;
-  scoreAway: number;
-  scoreHome: number;
-  status: string;
-  date: string;
+    id: string
+    name: string
+  } | null
+  scoreAway: number
+  scoreHome: number
+  status: string
+  date: string
   teamAway: {
-    name: string;
-  };
+    name: string
+  }
   teamHome: {
-    name: string;
-  };
-  players:{
+    name: string
+  }
+  players: {
     name: string
     id: string
   }[]
   lastPlayerToScore?: {
-    id: string,
-    name: string, 
-  },
+    id: string
+    name: string
+  }
 }
 
 declare enum RoundStatus {
-  "WAITING",
-  "IN_PROGRESS",
-  "DONE",
-  "CANCELED",
-  "INACTIVE",
+  'WAITING',
+  'IN_PROGRESS',
+  'DONE',
+  'CANCELED',
+  'INACTIVE',
 }
 
 declare interface IFetchActiveRounds {
