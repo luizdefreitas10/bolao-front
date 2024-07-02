@@ -38,10 +38,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (decode?.role) {
       switch (decode?.role) {
         case 'ADMIN':
-          push('/home-admin')
+          window.location.href = '/home-admin'
           break
         default:
-          push('/home-user')
+          window.location.href = '/home-user'
       }
     }
   }
