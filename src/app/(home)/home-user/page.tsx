@@ -12,8 +12,10 @@ import {
   useDisclosure,
 } from '@nextui-org/react'
 import { parseCookies } from 'nookies'
+import { useEffect, useState } from "react";
 import toast from 'react-hot-toast'
 import { BoolEnum } from 'sharp'
+import { fetchChampionshipsWithRounds, submitPredictions } from "./actions";
 
 
 export default function HomeUser() {
