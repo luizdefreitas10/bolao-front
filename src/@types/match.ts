@@ -3,7 +3,6 @@ declare interface INewMatch{
     teamIdAway: string
     roundId: string
     date: string | Date
-    lastPlayerTeamId?: string 
 } 
 
 declare interface ISetResultMatch{

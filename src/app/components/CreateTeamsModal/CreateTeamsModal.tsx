@@ -164,7 +164,15 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
             selectionMode="multiple"
             onSelectionChange={(keys) => onChange(Array.from(keys) as string[])}
           >
-  
+            {/* {championships.map((championship) => (
+                <SelectItem
+                  key={championship.id}
+                  value={championship.id}
+                  className="text-black"
+                >
+                  {championship.name}
+                </SelectItem>
+              ))} */}
             {teams.map((team) => (
               <SelectItem key={team.id} value={team.id} className="text-black">
                 {team.name}

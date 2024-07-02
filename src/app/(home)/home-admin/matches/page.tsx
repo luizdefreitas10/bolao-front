@@ -27,11 +27,6 @@ export default function HomeAdmin() {
     useEventsContext();
 
   useEffect(() => {
-    fetchRounds("WAITING");
-    fetchRounds("DONE");
-  }, []);
-
-  useEffect(() => {
     if (refreshRounds) {
       fetchRounds("WAITING");
       fetchRounds("DONE");
@@ -74,7 +69,12 @@ export default function HomeAdmin() {
         Lorem ipsum dolor sit amet consectetur. Laoreet.
       </p>
       <div className="flex flex-col items-center w-[90%]">
-        <Tabs radius="full" variant="solid" color="secondary">
+        <Tabs
+          radius="full"
+          variant="solid"
+          color="secondary"
+          
+        >
           <Tab key="waiting" title="Aguardando" className="w-full">
             {roundsWaiting.map((round) => (
               <RoundMatchsCardAdmin round={round} key={round.id} />
