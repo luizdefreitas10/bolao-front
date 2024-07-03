@@ -46,7 +46,7 @@ export default function RoundMatchsCardAdmin({
 
   return (
     <>
-      {round.matchs.length > 0 && (
+      {round.matchs.length > 0 &&  (
         <div className="flex flex-col gap-4 w-full">
           {round.matchs.map((match) => (
             <div className="flex flex-col gap-4 p-4 my-[16px] bg-[#00409F] rounded-lg w-[90%] mx-auto">
@@ -140,7 +140,7 @@ export default function RoundMatchsCardAdmin({
             </div>
           ))}
         </div>
-      )}
+      ) }
       <SetResultModal
         isOpen={isOpenSetResultModal}
         onClose={onOpenChangeSetResultModal}

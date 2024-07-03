@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setCookie(undefined, "qxute-bolao:x-token", acessToken, {
       maxAge: 60 * 60 * 168, // 1 week
     });
+   
     const decode = decodeToken(acessToken);
 
     if (decode?.role) {
