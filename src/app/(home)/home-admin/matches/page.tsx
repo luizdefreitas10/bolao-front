@@ -1,68 +1,75 @@
-"use client";
+'use client'
+import React, { useState, useEffect } from 'react'
+import {
+  Button,
+  useDisclosure,
+  Image,
+  Tabs,
+  Tab,
+  Spinner,
+} from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import CreateEventModal from '@/app/components/CreateEventModal/CreateEventModal'
+import { useEventsContext } from '@/context/EventsContext'
+import toast from 'react-hot-toast'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import RoundMatchsCardAdmin from '@/app/components/RoundMatchsCardAdmin/RoundMatchsCardAdmin'
 
-import { Button, useDisclosure, Image, Tabs, Tab } from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import CreateEventModal from "@/app/components/CreateEventModal/CreateEventModal";
-import { useEventsContext } from "@/context/EventsContext";
-import { MdPerson, MdEdit } from "react-icons/md";
-import SetResultModal from "@/app/components/SetResultModal/SetResultModal";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import RoundMatchsCardAdmin from "@/app/components/RoundMatchsCardAdmin/RoundMatchsCardAdmin";
-
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function HomeAdmin() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [loading, setLoading] = useState(true)
   const [roundsWaiting, setRoundsWaiting] = useState<
     IRoundWithMatchsAndChampionship[]
-  >([]);
+  >([])
   const [roundsDone, setRoundsDone] = useState<
     IRoundWithMatchsAndChampionship[]
-  >([]);
+  >([])
   const { setCurrentModalIndex, refreshRounds, setRefreshRounds } =
-    useEventsContext();
+    useEventsContext()
 
-  useEffect(() => {
-    fetchRounds("WAITING");
-    fetchRounds("DONE");
-  }, []);
+  // useEffect(() => {
+  //   fetchRounds('WAITING')
+  //   fetchRounds('DONE')
+  // }, [])
 
   useEffect(() => {
     if (refreshRounds) {
-      fetchRounds("WAITING");
-      fetchRounds("DONE");
-      setRefreshRounds(false);
+      refreshData()
     }
-  }, [refreshRounds]);
+  }, [refreshRounds])
 
-  const fetchRounds = async (status: "WAITING" | "DONE") => {
-    setLoading(true);
+  async function refreshData() {
+    setLoading(true)
+    await fetchRounds('WAITING')
+    await fetchRounds('DONE')
+    setRefreshRounds(false)
+    setLoading(false)
+  }
+
+  const fetchRounds = async (status: 'WAITING' | 'DONE') => {
     try {
-      const { fetchRoundsByStatus } = await RoundService();
-      const response = await fetchRoundsByStatus(status);
+      const { fetchRoundsByStatus } = await RoundService()
+      const response = await fetchRoundsByStatus(status)
 
-      console.log(response);
       switch (status) {
-        case "DONE":
-          setRoundsDone([]);
-          setRoundsDone(response);
-          break;
+        case 'DONE':
+          setRoundsDone([])
+          setRoundsDone(response)
+          return response
+
         default:
-          setRoundsWaiting([]);
-          setRoundsWaiting(response);
+          setRoundsWaiting([])
+          setRoundsWaiting(response)
+          return response
       }
     } catch (error) {
-      const customError = handleAxiosError(error);
-      toast.error(customError.message);
-    } finally {
-      setLoading(false);
+      const customError = handleAxiosError(error)
+      toast.error(customError.message)
     }
-  };
-  console.log(roundsDone);
+  }
 
   return (
     <div
@@ -75,13 +82,40 @@ export default function HomeAdmin() {
         Lorem ipsum dolor sit amet consectetur. Laoreet.
       </p>
       <div className="flex flex-col items-center w-[90%]">
-        <Tabs radius="full" variant="solid" color="secondary">
-          <Tab key="waiting" title="Aguardando" className="w-full">
-            <>
-              {roundsWaiting.findIndex((round) => round.matchs.find((match)=> match.id)) !== -1 ? (
+        {loading ? (
+          <div className="h-[200px] w-full flex items-center justify-center">
+            <Spinner />
+          </div>
+        ) : (
+          <Tabs radius="full" variant="solid" color="secondary">
+            <Tab key="waiting" title="Aguardando" className="w-full">
+              <>
+                {roundsWaiting.findIndex((round) =>
+                  round.matchs.find((match) => match.id),
+                ) !== -1 ? (
+                  <>
+                    {roundsWaiting.map((round) => (
+                      <RoundMatchsCardAdmin round={round} key={round.id} />
+                    ))}
+                  </>
+                ) : (
+                  <div className="w-full flex justify-center my-10">
+                    <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
+                  </div>
+                )}
+              </>
+            </Tab>
+            <Tab key="done" title="Finalizadas" className="w-full">
+              {roundsDone.findIndex((round) =>
+                round.matchs.find((match) => match.id),
+              ) !== -1 ? (
                 <>
-                  {roundsWaiting.map((round) => (
-                    <RoundMatchsCardAdmin round={round} key={round.id} />
+                  {roundsDone.map((round) => (
+                    <RoundMatchsCardAdmin
+                      round={round}
+                      key={round.id}
+                      isDone={true}
+                    />
                   ))}
                 </>
               ) : (
@@ -89,26 +123,9 @@ export default function HomeAdmin() {
                   <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
                 </div>
               )}
-            </>
-          </Tab>
-          <Tab key="done" title="Finalizadas" className="w-full">
-            {roundsDone.findIndex((round) => round.matchs.find((match)=> match.id)) !== -1 ? (
-              <>
-                {roundsDone.map((round) => (
-                  <RoundMatchsCardAdmin
-                    round={round}
-                    key={round.id}
-                    isDone={true}
-                  />
-                ))}
-              </>
-            ) : (
-              <div className="w-full flex justify-center my-10">
-                <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
-              </div>
-            )}
-          </Tab>
-        </Tabs>
+            </Tab>
+          </Tabs>
+        )}
       </div>
       <Button
         onClick={() => setCurrentModalIndex(0)}
@@ -129,5 +146,5 @@ export default function HomeAdmin() {
         onClose={onOpenChangeSetResultModal}
       /> */}
     </div>
-  );
+  )
 }

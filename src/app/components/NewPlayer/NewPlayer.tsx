@@ -1,47 +1,39 @@
-import { Button, Input } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
-import { FieldErrors, FieldErrorsImpl, UseFormSetValue, useFieldArray } from "react-hook-form";
-import { Control, UseFormRegister } from "react-hook-form";
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
-import { IFormInput } from "../CreateMatchesModal/CreateMatchesModal";
+import { Button, Input } from '@nextui-org/react'
+import React, { useEffect, useState } from 'react'
+import { FieldErrors, UseFormSetValue, useFieldArray } from 'react-hook-form'
+import { Control, UseFormRegister } from 'react-hook-form'
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
+import { IFormInput } from '../CreateMatchesModal/CreateMatchesModal'
 
 interface NewPlayerProps {
-  matchId: number;
-  register: UseFormRegister<any>;
-  control?: Control<any, any>;
-  errors: FieldErrors<IFormInput>;
+  matchId: number
+  register: UseFormRegister<any>
+  control?: Control<any, any>
+  errors: FieldErrors<IFormInput>
   setValue: UseFormSetValue<IFormInput>
 }
 
-export function NewPlayer({
-  matchId,
-  control,
-  register,
-  errors,
-  setValue
-}: NewPlayerProps) {
-  const [shouldDisableAddNewPlayer, setShouldDisableAddNewPlayer] = useState(true);
+export function NewPlayer({ matchId, control, register }: NewPlayerProps) {
+  const [shouldDisableAddNewPlayer, setShouldDisableAddNewPlayer] =
+    useState(true)
   const { fields, remove, append, update } = useFieldArray({
     control,
     name: `matches[${matchId}].players`,
-  });
+  })
 
   useEffect(() => {
-    console.log(shouldDisableAddNewPlayer)
     if (shouldDisableAddNewPlayer) {
-        update(0, "")
-        remove(0)
-        append({name: ""})
+      update(0, '')
+      remove(0)
+      append({ name: '' })
     }
-  }, [shouldDisableAddNewPlayer]);
-
- 
+  }, [shouldDisableAddNewPlayer])
 
   const addPlayer = () => {
     append({
-      name: "",
-    });
-  };
+      name: '',
+    })
+  }
 
   return (
     <>
@@ -112,5 +104,5 @@ export function NewPlayer({
         </Button>
       )}
     </>
-  );
+  )
 }

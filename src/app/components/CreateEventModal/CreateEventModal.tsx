@@ -1,21 +1,22 @@
-import { Modal, ModalContent } from "@nextui-org/react";
+import React from 'react'
+import { Modal, ModalContent } from '@nextui-org/react'
 
-import CreateChampionshipModal from "../CreateChampionshipModal/CreateChampionshipModal";
-import { useEventsContext } from "@/context/EventsContext";
-import CreateRoundsModal from "../CreateRoundsModal/CreateRoundsModal";
-import CreateTeamsModal from "../CreateTeamsModal/CreateTeamsModal";
-import CreateMatchesModal from "../CreateMatchesModal/CreateMatchesModal";
+import CreateChampionshipModal from '../CreateChampionshipModal/CreateChampionshipModal'
+import { useEventsContext } from '@/context/EventsContext'
+import CreateRoundsModal from '../CreateRoundsModal/CreateRoundsModal'
+import CreateTeamsModal from '../CreateTeamsModal/CreateTeamsModal'
+import CreateMatchesModal from '../CreateMatchesModal/CreateMatchesModal'
 
 interface CustomModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 export default function CreateEventModal({
   isOpen,
   onClose,
 }: CustomModalProps) {
-  const { currentModalIndex } = useEventsContext();
+  const { currentModalIndex } = useEventsContext()
 
   return (
     <Modal
@@ -52,5 +53,5 @@ export default function CreateEventModal({
         )}
       </ModalContent>
     </Modal>
-  );
+  )
 }

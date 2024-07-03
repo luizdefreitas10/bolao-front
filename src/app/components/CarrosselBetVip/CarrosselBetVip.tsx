@@ -1,7 +1,8 @@
-import { Button } from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
+import React from 'react'
+import { Button } from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function CarrosselBetVip() {
   return (
@@ -26,5 +27,5 @@ export default function CarrosselBetVip() {
         <h1>betvip banner</h1>
       </div>
     </div>
-  );
+  )
 }
