@@ -202,7 +202,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     }
 
     setLoading(true);
-    let wasError = false;
+    let hasError = false;
     const { create } = await MatchService();
     const { create: createPlayer } = await PlayerService();
     for (let match of data.matches) {
@@ -248,13 +248,13 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           // }
         }
       } catch (error) {
-        wasError = true;
+        hasError = true;
         const customError = handleAxiosError(error);
         toast.error(customError.message);
       }
     }
     setLoading(false);
-    if (!wasError) {
+    if (!hasError) {
       onClose();
       setCurrentModalIndex(0);
       setRefreshRounds(true)

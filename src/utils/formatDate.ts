@@ -17,3 +17,13 @@ export function formatDateToCustomString(date: Date): string {
 
   return formattedDate
 }
+
+export function formatDateToCustomFullString(date: string){
+  const dateInTimeZone = formatInTimeZone(
+    new Date(date),
+    'America/Sao_Paulo',
+    "yyyy-MM-dd'T'HH:mm:ssXXX",
+  )
+
+  return dateInTimeZone
+}

@@ -51,9 +51,11 @@ declare interface IMatchRound {
   date: string
   teamAway: {
     name: string
+    id: string
   }
   teamHome: {
     name: string
+    id: string
   }
   players: {
     name: string
