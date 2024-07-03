@@ -1,4 +1,4 @@
-import { isAfter, isPast } from "date-fns";
+import { isAfter, isPast, parseISO } from "date-fns";
 import * as yup from "yup";
 
 export const matchesSchema = yup.object().shape({
@@ -10,7 +10,7 @@ export const matchesSchema = yup.object().shape({
         .required("Time visitante é obrigatório")
         .notOneOf(
           [yup.ref("homeTeam"), null],
-          "Times da casa e visitante não podem ser iguais",
+          "Times da casa e visitante não podem ser iguais"
         ),
       round: yup.string().required("Rodada é obrigatória"),
       dateTime: yup
@@ -21,7 +21,7 @@ export const matchesSchema = yup.object().shape({
           "Data e hora não podem estar no passado",
           (value) => {
             return value ? !isPast(new Date(value)) : false;
-          },
+          }
         ),
       // lastPlayerCheckbox: yup.boolean(),
       // lastPlayerTeam: yup
@@ -46,12 +46,12 @@ export const matchesSchema = yup.object().shape({
       //     })
       //   )
       //   .required("É necessário ter pelo menos um nome."),
-    }),
+    })
   ),
 });
 
 export const schemaSetResultMatch = (
-  players: IPlayer[],
+  players: IPlayer[]
 ): yup.ObjectSchema<ISetResultMatch> =>
   yup
     .object({
@@ -71,7 +71,52 @@ export const schemaSetResultMatch = (
               });
             }
             return true;
-          },
+          }
         ),
     })
     .required();
+
+export const editMatchesSchema = yup.object({
+  homeTeam: yup.string().required("Time da casa é obrigatório"),
+  awayTeam: yup
+    .string()
+    .required("Time visitante é obrigatório")
+    .notOneOf(
+      [yup.ref("homeTeam"), null],
+      "Times da casa e visitante não podem ser iguais"
+    ),
+  dateTime: yup
+    .date()
+    .transform((value, originalValue) => {
+      if (originalValue && typeof originalValue === "string") {
+        return parseISO(originalValue);
+      }
+      return value;
+    })
+    .required("Data e hora são obrigatórias")
+    .test(
+      "is-future-date",
+      "Data e hora não podem estar no passado",
+      (value) => {
+        return value ? !isPast(new Date(value)) : false;
+      }
+    ),
+  lastPlayerTeam: yup
+    .string()
+    .optional(),
+    players: yup
+    .array()
+    .of(
+      yup.object().shape({
+        name: yup
+          .string()
+          .test(
+            'is-valid-length',
+            'O nome deve ter no mínimo 3 caracteres.',
+            (value) => !value || value.length >= 3
+          )
+          .optional(),
+      }).optional()
+    )
+    .optional(),
+});

@@ -24,6 +24,10 @@ interface EventsContextType {
   >;
   refreshRounds: boolean;
   setRefreshRounds: React.Dispatch<React.SetStateAction<boolean>>;
+  editSelectedMatch?: IMatchRound;
+  setEditSelectedMatch: React.Dispatch<
+    React.SetStateAction<IMatchRound | undefined>
+  >;
 }
 
 const EventsContext = createContext<EventsContextType | undefined>(undefined);
@@ -42,6 +46,9 @@ export const EventsProvider = ({ children }: ProviderProps) => {
   const [currentModalIndex, setCurrentModalIndex] = useState<number>(0);
   const [selectedRound, setSelectedRound] = useState<string>();
   const [refreshRounds, setRefreshRounds] = useState(true);
+  const [editSelectedMatch, setEditSelectedMatch] = useState<
+    IMatchRound | undefined
+  >();
 
   const [selectedMatchSetResult, setSelectedMatchSetResult] =
     useState<IRoundWithMatchAndChampionship>();
@@ -94,6 +101,8 @@ export const EventsProvider = ({ children }: ProviderProps) => {
         setSelectedMatchSetResult,
         refreshRounds,
         setRefreshRounds,
+        editSelectedMatch,
+        setEditSelectedMatch,
       }}
     >
       {children}
