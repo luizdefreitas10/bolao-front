@@ -1,6 +1,6 @@
 import { Button, Input } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { FieldErrors, FieldErrorsImpl, useFieldArray } from "react-hook-form";
+import { FieldErrors, FieldErrorsImpl, UseFormSetValue, useFieldArray } from "react-hook-form";
 import { Control, UseFormRegister } from "react-hook-form";
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
 import { IFormInput } from "../CreateMatchesModal/CreateMatchesModal";
@@ -10,6 +10,7 @@ interface NewPlayerProps {
   register: UseFormRegister<any>;
   control?: Control<any, any>;
   errors: FieldErrors<IFormInput>;
+  setValue: UseFormSetValue<IFormInput>
 }
 
 export function NewPlayer({
@@ -17,16 +18,24 @@ export function NewPlayer({
   control,
   register,
   errors,
+  setValue
 }: NewPlayerProps) {
-  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true);
+  const [shouldDisableAddNewPlayer, setShouldDisableAddNewPlayer] = useState(true);
   const { fields, remove, append, update } = useFieldArray({
     control,
     name: `matches[${matchId}].players`,
   });
 
   useEffect(() => {
-    if (shouldDisableAddNewTeam) update(0,"");
-  }, [shouldDisableAddNewTeam]);
+    console.log(shouldDisableAddNewPlayer)
+    if (shouldDisableAddNewPlayer) {
+        update(0, "")
+        remove(0)
+        append({name: ""})
+    }
+  }, [shouldDisableAddNewPlayer]);
+
+ 
 
   const addPlayer = () => {
     append({
@@ -38,11 +47,11 @@ export function NewPlayer({
     <>
       {fields.map((player, indexPlayers) => (
         <div key={indexPlayers} className="flex space-x-2 items-center">
-          {shouldDisableAddNewTeam ? (
+          {shouldDisableAddNewPlayer ? (
             <Button
               className={`min-w-[1rem] bg-[#fff]`}
               onClick={() =>
-                setShouldDisableAddNewTeam(!shouldDisableAddNewTeam)
+                setShouldDisableAddNewPlayer(!shouldDisableAddNewPlayer)
               }
             >
               <MdAddCircleOutline className="text-[#1F66CE] text-[16px]" />
@@ -52,7 +61,7 @@ export function NewPlayer({
               className={`min-w-[1rem] bg-[#E40000]`}
               onClick={() =>
                 fields.length === 1
-                  ? setShouldDisableAddNewTeam(true)
+                  ? setShouldDisableAddNewPlayer(true)
                   : remove(indexPlayers)
               }
             >
@@ -61,7 +70,7 @@ export function NewPlayer({
           )}
           <Input
             type="text"
-            isDisabled={indexPlayers === 0 && shouldDisableAddNewTeam}
+            isDisabled={indexPlayers === 0 && shouldDisableAddNewPlayer}
             placeholder={`Nome novo jogador ${indexPlayers + 1}`}
             // isInvalid={
             //   !!(
@@ -92,7 +101,7 @@ export function NewPlayer({
           />
         </div>
       ))}
-      {!shouldDisableAddNewTeam && (
+      {!shouldDisableAddNewPlayer && (
         <Button
           type="button"
           variant="bordered"

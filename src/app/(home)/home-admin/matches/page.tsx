@@ -62,6 +62,7 @@ export default function HomeAdmin() {
       setLoading(false);
     }
   };
+  console.log(roundsDone);
 
   return (
     <div
@@ -76,18 +77,36 @@ export default function HomeAdmin() {
       <div className="flex flex-col items-center w-[90%]">
         <Tabs radius="full" variant="solid" color="secondary">
           <Tab key="waiting" title="Aguardando" className="w-full">
-            {roundsWaiting.map((round) => (
-              <RoundMatchsCardAdmin round={round} key={round.id} />
-            ))}
+            <>
+              {roundsWaiting.findIndex((round) => round.matchs.find((match)=> match.id)) !== -1 ? (
+                <>
+                  {roundsWaiting.map((round) => (
+                    <RoundMatchsCardAdmin round={round} key={round.id} />
+                  ))}
+                </>
+              ) : (
+                <div className="w-full flex justify-center my-10">
+                  <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
+                </div>
+              )}
+            </>
           </Tab>
           <Tab key="done" title="Finalizadas" className="w-full">
-            {roundsDone.map((round) => (
-              <RoundMatchsCardAdmin
-                round={round}
-                key={round.id}
-                isDone={true}
-              />
-            ))}
+            {roundsDone.findIndex((round) => round.matchs.find((match)=> match.id)) !== -1 ? (
+              <>
+                {roundsDone.map((round) => (
+                  <RoundMatchsCardAdmin
+                    round={round}
+                    key={round.id}
+                    isDone={true}
+                  />
+                ))}
+              </>
+            ) : (
+              <div className="w-full flex justify-center my-10">
+                <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
+              </div>
+            )}
           </Tab>
         </Tabs>
       </div>
