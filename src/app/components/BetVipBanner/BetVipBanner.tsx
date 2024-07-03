@@ -5,5 +5,5 @@ export default function BetVipBanner() {
         <h1>betvip banner</h1>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 export const EyeFilledIcon = (
   props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
 ) => (
@@ -21,4 +21,4 @@ export const EyeFilledIcon = (
       fill="currentColor"
     />
   </svg>
-)
+);

@@ -178,7 +178,6 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
               ))}
             </Select>
           )}
-
           <div className="space-y-5">
             {fields.map((field, index) => (
               <div key={field.id} className="flex space-x-2 items-center">

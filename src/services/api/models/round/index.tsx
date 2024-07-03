@@ -1,19 +1,19 @@
-import { get } from '../../methods/get'
-import { post } from '../../methods/post'
+import { get } from "../../methods/get";
+import { post } from "../../methods/post";
 
 export default async function RoundService() {
   async function create(data: INewRound): Promise<{ roundId: string }> {
-    const payload = JSON.stringify(data)
-    const response = await post<{ roundId: string }, string>('/round', payload)
-    return response
+    const payload = JSON.stringify(data);
+    const response = await post<{ roundId: string }, string>("/round", payload);
+    return response;
   }
   async function fetchRoundsByStatus(
     status: string,
   ): Promise<IRoundWithMatchsAndChampionship[]> {
     const response = await get<{ rounds: IRoundWithMatchsAndChampionship[] }>(
       `/rounds/status/${status}`,
-    )
-    return response.rounds
+    );
+    return response.rounds;
   }
   async function fetchRoundsByStatusAndChampionship(
     champId: string,
@@ -21,8 +21,8 @@ export default async function RoundService() {
   ): Promise<IRound[]> {
     const response = await get<{ rounds: IRound[] }>(
       `/rounds/${champId}/status/${status}`,
-    )
-    return response.rounds
+    );
+    return response.rounds;
   }
 
   async function fetchRounds(data: IFetchActiveRounds, token: string) {
@@ -33,9 +33,9 @@ export default async function RoundService() {
           Authorization: `Bearer ${token}`,
         },
       },
-    )
+    );
 
-    return response
+    return response;
   }
 
   return {
@@ -45,5 +45,5 @@ export default async function RoundService() {
 
     fetchRoundsByStatusAndChampionship,
     fetchRoundsByStatus,
-  }
+  };
 }
