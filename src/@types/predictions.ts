@@ -3,6 +3,7 @@ declare interface IPrediction {
   predictionHome: number;
   predictionAway: number;
   playerId?: string | null;
+  disabled?: boolean | null;
 }
 
 declare interface IPredictionResponse {
