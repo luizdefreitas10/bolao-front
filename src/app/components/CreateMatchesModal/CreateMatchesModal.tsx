@@ -1,8 +1,9 @@
-"use client";
+'use client'
 
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { ChangeEvent, useEffect, useState } from "react";
+import React from 'react'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from 'react'
 import {
   ModalHeader,
   ModalBody,
@@ -14,33 +15,31 @@ import {
   DateInput,
   DateValue,
   Checkbox,
-  Input,
-} from "@nextui-org/react";
-import { useEventsContext } from "@/context/EventsContext";
-import toast from "react-hot-toast";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import MatchService from "@/services/api/models/match";
-import { matchesSchema } from "@/schemas/match";
-import PlayerService from "@/services/api/models/players";
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
-import { NewPlayer } from "../NewPlayer/NewPlayer";
+} from '@nextui-org/react'
+import { useEventsContext } from '@/context/EventsContext'
+import toast from 'react-hot-toast'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import MatchService from '@/services/api/models/match'
+import { matchesSchema } from '@/schemas/match'
+import PlayerService from '@/services/api/models/players'
+import { NewPlayer } from '../NewPlayer/NewPlayer'
 
 export interface IFormInput {
   matches: {
-    homeTeam: string;
-    awayTeam: string;
-    round: string;
-    dateTime: DateValue;
-    lastPlayerCheckbox: boolean;
-    lastPlayerTeam: string;
-    players: { name: string }[];
-    selectedPlayers: string;
-  }[];
+    homeTeam: string
+    awayTeam: string
+    round: string
+    dateTime: DateValue
+    lastPlayerCheckbox: boolean
+    lastPlayerTeam: string
+    players: { name: string }[]
+    selectedPlayers: string
+  }[]
 }
 
 interface CloseButtonProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
@@ -52,48 +51,48 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     setCurrentModalIndex,
     selectedRound,
     setRefreshRounds,
-  } = useEventsContext();
+  } = useEventsContext()
 
-  const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({});
+  const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({})
 
-  const [rounds, setRounds] = useState<IRound[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [shouldGetPlayers, setShouldGetPlayers] = useState(false);
+  const [rounds, setRounds] = useState<IRound[]>([])
+  const [loading, setLoading] = useState(false)
+  const [shouldGetPlayers, setShouldGetPlayers] = useState(false)
 
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     getValues,
     setError,
     watch,
     clearErrors,
     setValue,
   } = useForm<IFormInput>({
-    mode: "onChange",
+    mode: 'onChange',
     resolver: yupResolver(matchesSchema) as any,
 
     defaultValues: {
       matches: Array(calculatePairs()).fill({
-        homeTeam: "",
-        awayTeam: "",
+        homeTeam: '',
+        awayTeam: '',
         round: selectedRound,
         dateTime: null,
-        lastPlayerTeam: "",
+        lastPlayerTeam: '',
         lastPlayerCheckbox: false,
         selectedPlayers: [],
-        players: [{ name: "" }],
+        players: [{ name: '' }],
       }),
     },
-  });
+  })
 
   const { fields } = useFieldArray({
     control,
-    name: "matches",
-  });
+    name: 'matches',
+  })
 
-  const watchCheckboxes = watch("matches");
+  const watchCheckboxes = watch('matches')
 
   useEffect(() => {
     watchCheckboxes.forEach((match, index) => {
@@ -102,124 +101,119 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         !getValues(`matches.${index}.lastPlayerTeam`)
       ) {
         setError(`matches.${index}.lastPlayerTeam`, {
-          type: "required",
-          message: "Selecione o time do último marcador",
-        });
+          type: 'required',
+          message: 'Selecione o time do último marcador',
+        })
       } else {
-        clearErrors(`matches.${index}.lastPlayerTeam`);
+        clearErrors(`matches.${index}.lastPlayerTeam`)
       }
-    });
-  }, [watchCheckboxes, setError, clearErrors, getValues]);
+    })
+  }, [watchCheckboxes, setError, clearErrors, getValues])
 
   useEffect(() => {
-    if (currentModalIndex === 3) fetchRounds();
-  }, [currentModalIndex]);
+    if (currentModalIndex === 3) fetchRounds()
+  }, [currentModalIndex])
 
   const fetchRounds = async () => {
     if (selectedChampionship) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { fetchRoundsByStatusAndChampionship } = await RoundService();
+        const { fetchRoundsByStatusAndChampionship } = await RoundService()
         const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
-          "WAITING"
-        );
-        setRounds(response);
+          'WAITING',
+        )
+        setRounds(response)
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      toast.error("Necessário criar um campeonato.");
-      setCurrentModalIndex(0);
+      toast.error('Necessário criar um campeonato.')
+      setCurrentModalIndex(0)
     }
-  };
+  }
 
   const fetchPlayers = async (index: number, teamId: string) => {
     if (teamId) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { fetchPlayersByTeam } = await PlayerService();
-        const response = await fetchPlayersByTeam(teamId);
-        return response;
+        const { fetchPlayersByTeam } = await PlayerService()
+        const response = await fetchPlayersByTeam(teamId)
+        return response
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-  };
+  }
 
   useEffect(() => {
-    // console.log(shouldGetPlayers)
     if (shouldGetPlayers) {
       fields.forEach((field, index) => {
-        const teamId = watch(`matches.${index}.lastPlayerTeam`);
-        console.log(teamId);
+        const teamId = watch(`matches.${index}.lastPlayerTeam`)
         if (teamId) {
-          setLoading(true);
+          setLoading(true)
           fetchPlayers(index, teamId)
             .then((result) => {
-              setPlayers((prev) => ({ ...prev, [index]: result || [] }));
+              setPlayers((prev) => ({ ...prev, [index]: result || [] }))
             })
             .catch((error) => {
-              const customError = handleAxiosError(error);
-              toast.error(customError.message);
+              const customError = handleAxiosError(error)
+              toast.error(customError.message)
             })
-            .finally(() => setLoading(false));
+            .finally(() => setLoading(false))
         }
-      });
+      })
     }
-    setShouldGetPlayers(false);
-  }, [fields, watch, shouldGetPlayers]);
+    setShouldGetPlayers(false)
+  }, [fields, watch, shouldGetPlayers])
 
   function isArrayEmptyOrAllItemsEmpty(array: { name: string }[]) {
     if (array.length === 0) {
-      return true;
+      return true
     }
 
-    return array.every((item) => !item.name);
+    return array.every((item) => !item.name)
   }
 
   const onSubmit = async (data: IFormInput) => {
-  
-    const seenTeams = new Set<string>();
-    let duplicateFound = false;
+    const seenTeams = new Set<string>()
+    let duplicateFound = false
 
     for (const match of data.matches) {
-      const key = `${match.homeTeam}-${match.round}`;
-      const reverseKey = `${match.awayTeam}-${match.round}`;
+      const key = `${match.homeTeam}-${match.round}`
+      const reverseKey = `${match.awayTeam}-${match.round}`
 
       if (seenTeams.has(key) || seenTeams.has(reverseKey)) {
-        duplicateFound = true;
-        break;
+        duplicateFound = true
+        break
       }
 
-      seenTeams.add(key);
-      seenTeams.add(reverseKey);
+      seenTeams.add(key)
+      seenTeams.add(reverseKey)
     }
 
     if (duplicateFound) {
-      toast.error(`Existem times repetidos na mesma rodada.`);
-      return;
+      toast.error(`Existem times repetidos na mesma rodada.`)
+      return
     }
 
-    setLoading(true);
-    let hasError = false;
-    const { create } = await MatchService();
-    const { create: createPlayer } = await PlayerService();
-    for (let match of data.matches) {
+    setLoading(true)
+    let hasError = false
+    const { create } = await MatchService()
+    const { create: createPlayer } = await PlayerService()
+    for (const match of data.matches) {
       const index = data.matches.findIndex(
-        (item) => item.lastPlayerTeam === match.lastPlayerTeam
-      );
+        (item) => item.lastPlayerTeam === match.lastPlayerTeam,
+      )
       const listSelectedPlayers =
         getValues(`matches.${index}.selectedPlayers`) &&
-        getValues(`matches.${index}.selectedPlayers`).split(",");
-      console.log(match.players);
-      console.log(listSelectedPlayers);
+        getValues(`matches.${index}.selectedPlayers`).split(',')
 
       // verifica se existe players selecionados ou adicionados via input
       const lastPlayerTeamId =
@@ -227,7 +221,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         (!isArrayEmptyOrAllItemsEmpty(match.players) ||
           listSelectedPlayers.length > 0)
           ? match.lastPlayerTeam
-          : undefined;
+          : undefined
 
       try {
         const response = await create({
@@ -236,91 +230,73 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           teamIdAway: match.awayTeam,
           teamIdHome: match.homeTeam,
           lastPlayerTeamId: lastPlayerTeamId,
-        });
+        })
         if (match.players.length > 0 && response.matchId) {
-          for (let player of match.players) {
+          for (const player of match.players) {
             if (player.name) {
               await createPlayer({
                 matchId: response.matchId,
                 name: player.name,
                 teamId: match.lastPlayerTeam,
-              });
+              })
             }
           }
 
-          for (let player of listSelectedPlayers) {
-            console.log(players[index]);
-            console.log(player);
+          for (const player of listSelectedPlayers) {
             const playerExist = players[index].find(
-              (item) => item.id === player
-            );
-            console.log(playerExist?.name);
+              (item) => item.id === player,
+            )
             if (playerExist?.name) {
               await createPlayer({
                 matchId: response.matchId,
                 name: playerExist.name,
                 teamId: match.lastPlayerTeam,
-              });
+              })
             }
           }
         }
       } catch (error) {
-        hasError = true;
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        hasError = true
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       }
     }
-    setLoading(false);
+    setLoading(false)
     if (!hasError) {
-      onClose();
-      setCurrentModalIndex(0);
-      setRefreshRounds(true);
+      onClose()
+      setCurrentModalIndex(0)
+      setRefreshRounds(true)
     }
-  };
+  }
 
   function calculatePairs(): number {
-    return Math.floor(selectedTeams.length / 2);
+    return Math.floor(selectedTeams.length / 2)
   }
 
   function nameTeams(id: string) {
-    const team = selectedTeams.find((item) => item.id === id);
+    const team = selectedTeams.find((item) => item.id === id)
 
-    return team?.name || null;
+    return team?.name || null
   }
 
   function isFormValid(index: number) {
-    const homeTeam = watch(`matches.${index}`).homeTeam;
-    const awayTeam = watch(`matches.${index}`).awayTeam;
-    const dateTime = watch(`matches.${index}`).dateTime;
-    const round = watch(`matches.${index}`).round;
+    const homeTeam = watch(`matches.${index}`).homeTeam
+    const awayTeam = watch(`matches.${index}`).awayTeam
+    const dateTime = watch(`matches.${index}`).dateTime
+    const round = watch(`matches.${index}`).round
 
     if (homeTeam && awayTeam && dateTime && round) {
-      return true;
+      return true
     } else {
-      return false;
+      return false
     }
   }
 
   function handleSelectCheckbox(index: number, value: boolean) {
     if (isFormValid(index)) {
-      setValue(`matches.${index}.lastPlayerCheckbox`, value);
+      setValue(`matches.${index}.lastPlayerCheckbox`, value)
     }
   }
-
-  // const handleSelectPlayers = (selectedIds: string[]) => {
-  //   const selectedTeams = selectedIds
-  //     .map((id) => {
-  //       const team = teams.find((team) => team.id === id);
-  //       return team ? { id: team.id, name: team.name, selected: false } : null;
-  //     })
-  //     .filter(Boolean) as ITeam[];
-  //   console.log(selectedTeams);
-  //   handleSetSelectedTeams(selectedTeams);
-  // };
-
-  // const onChange = (values: string[]) => {
-  //   handleSelectPlayers(values);
-  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -335,22 +311,18 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </p>
         <div className="space-y-10">
           {fields.map((field, index) => {
-            const watchCheckbox = watch(`matches.${index}.lastPlayerCheckbox`);
+            const watchCheckbox = watch(`matches.${index}.lastPlayerCheckbox`)
             const teamsLastPlayer = [
               getValues(`matches.${index}.homeTeam`),
               getValues(`matches.${index}.awayTeam`),
-            ];
-            const selectedPlayers = getValues(
-              `matches.${index}.selectedPlayers`
-            );
-
+            ]
             return (
               <div className="space-y-4" key={field.id}>
                 <h1>{`Partida ${index + 1}`}</h1>
                 <Select
                   {...register(`matches.${index}.round`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   isInvalid={
                     !!(
@@ -360,11 +332,11 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.round?.message) ||
-                    ""
+                    ''
                   }
                   color="default"
                   label="Selecione a rodada"
-                  defaultSelectedKeys={[selectedRound || ""]}
+                  defaultSelectedKeys={[selectedRound || '']}
                 >
                   {rounds.map((item) => (
                     <SelectItem
@@ -389,7 +361,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                       {...field}
                       isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
                       errorMessage={
-                        errors?.matches?.[index]?.dateTime?.message || ""
+                        errors?.matches?.[index]?.dateTime?.message || ''
                       }
                     />
                   )}
@@ -397,7 +369,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Select
                   {...register(`matches.${index}.homeTeam`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   color="default"
                   label="Selecione o time da casa"
@@ -410,7 +382,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.homeTeam?.message) ||
-                    ""
+                    ''
                   }
                 >
                   {selectedTeams.map((team) => (
@@ -427,7 +399,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Select
                   {...register(`matches.${index}.awayTeam`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   color="default"
                   label="Selecione o time visitante"
@@ -440,7 +412,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.awayTeam?.message) ||
-                    ""
+                    ''
                   }
                 >
                   {selectedTeams.map((team) => (
@@ -456,19 +428,19 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <div className="flex flex-col gap-4">
                   <Checkbox
                     {...register(
-                      `matches.${index}.lastPlayerCheckbox` as const
+                      `matches.${index}.lastPlayerCheckbox` as const,
                     )}
                     isDisabled={!isFormValid(index)}
                     classNames={{
-                      label: "text-white",
+                      label: 'text-white',
                     }}
                     defaultChecked={watch(
-                      `matches.${index}.lastPlayerCheckbox`
+                      `matches.${index}.lastPlayerCheckbox`,
                     )}
                     onChange={(e) =>
                       handleSelectCheckbox(
                         index,
-                        e.target.checked ? true : false
+                        e.target.checked ? true : false,
                       )
                     }
                   >
@@ -488,7 +460,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                           <Select
                             {...field}
                             classNames={{
-                              selectorIcon: "text-black",
+                              selectorIcon: 'text-black',
                             }}
                             isInvalid={
                               !!(
@@ -500,23 +472,23 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                               (errors?.matches &&
                                 errors?.matches[index]?.lastPlayerTeam
                                   ?.message) ||
-                              ""
+                              ''
                             }
                             defaultSelectedKeys={
                               [getValues(`matches.${index}.lastPlayerTeam`)] ||
-                              ""
+                              ''
                             }
                             color="default"
                             label="Selecione o time do último marcador"
                             onChange={(e) => {
-                              setValue(`matches.${index}.selectedPlayers`, "");
-                              setShouldGetPlayers(true);
-                              onChange(e.target.value);
+                              setValue(`matches.${index}.selectedPlayers`, '')
+                              setShouldGetPlayers(true)
+                              onChange(e.target.value)
                             }}
 
                             // }
                           >
-                            {teamsLastPlayer.map((team, indexTeams) => (
+                            {teamsLastPlayer.map((team) => (
                               <SelectItem
                                 key={team}
                                 value={team}
@@ -533,7 +505,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                         <>
                           {players[index]?.length > 0 && (
                             <Select
-                              classNames={{ selectorIcon: "text-black" }}
+                              classNames={{ selectorIcon: 'text-black' }}
                               color="default"
                               label="Selecione os jogadores"
                               className="w-full"
@@ -545,7 +517,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
                               // }
                               {...register(
-                                `matches.${index}.selectedPlayers` as const
+                                `matches.${index}.selectedPlayers` as const,
                               )}
                             >
                               {players[index]?.map((player) => (
@@ -573,12 +545,13 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   )}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </ModalBody>
       <ModalFooter className="flex flex-col space-y-4">
         <Button
+          isDisabled={!!loading}
           type="submit"
           className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
         >
@@ -593,5 +566,5 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </Button>
       </ModalFooter>
     </form>
-  );
+  )
 }

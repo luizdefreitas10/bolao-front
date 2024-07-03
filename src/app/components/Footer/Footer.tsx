@@ -1,9 +1,10 @@
-import Image from "next/image";
-import qxutelogo from "../../../../public/qxutelogo.png";
-import twittericon from "../../../../public/twittericon.png";
-import youtubeicon from "../../../../public/youtubeicon.png";
-import instagramicon from "../../../../public/instagramicon.png";
-import { Link } from "@nextui-org/react";
+import React from 'react'
+import Image from 'next/image'
+import qxutelogo from '../../../../public/qxutelogo.png'
+import twittericon from '../../../../public/twittericon.png'
+import youtubeicon from '../../../../public/youtubeicon.png'
+import instagramicon from '../../../../public/instagramicon.png'
+import { Link } from '@nextui-org/react'
 
 export default function Footer() {
   return (
@@ -34,5 +35,5 @@ export default function Footer() {
         </Link>
       </div>
     </footer>
-  );
+  )
 }

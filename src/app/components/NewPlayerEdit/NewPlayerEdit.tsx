@@ -1,46 +1,43 @@
-import { Button, Input } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
-import {
-  FieldErrors,
-  FieldErrorsImpl,
-  UseFormSetValue,
-  useFieldArray,
-  useFormContext,
-} from "react-hook-form";
-import { Control, UseFormRegister } from "react-hook-form";
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
-import { IFormInput } from "../EditMatch/EditMatch";
+import { Button, Input } from '@nextui-org/react'
+import React, { useEffect, useState } from 'react'
+import { FieldErrors, UseFormSetValue, useFieldArray } from 'react-hook-form'
+import { Control, UseFormRegister } from 'react-hook-form'
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
+import { IFormInput } from '../EditMatch/EditMatch'
 
 interface NewPlayerProps {
-  register: UseFormRegister<any>;
-  control?: Control<any, any>;
-  errors: FieldErrors<IFormInput>;
+  register: UseFormRegister<any>
+  control?: Control<any, any>
+  errors: FieldErrors<IFormInput>
   setValue: UseFormSetValue<IFormInput>
 }
 
-export function NewPlayerEdit({ control, register, errors, setValue }: NewPlayerProps) {
-  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true);
+export function NewPlayerEdit({
+  control,
+  register,
+  errors,
+  setValue,
+}: NewPlayerProps) {
+  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true)
   const { fields, remove, append, update } = useFieldArray({
     control,
     name: `players`,
-  });
-  const formContext = useFormContext();
+  })
 
   useEffect(() => {
-    console.log(shouldDisableAddNewTeam)
     if (shouldDisableAddNewTeam) {
-        update(0, "")
-        setValue(`players.${0}.name`, "")
-        remove(0)
-        append({name: ""})
+      update(0, '')
+      setValue(`players.${0}.name`, '')
+      remove(0)
+      append({ name: '' })
     }
-  }, [shouldDisableAddNewTeam]);
+  }, [shouldDisableAddNewTeam])
 
   const addPlayer = () => {
     append({
-      name: "",
-    });
-  };
+      name: '',
+    })
+  }
 
   return (
     <>
@@ -75,16 +72,16 @@ export function NewPlayerEdit({ control, register, errors, setValue }: NewPlayer
               !!(errors.players && errors.players[indexPlayers]?.message)
             }
             errorMessage={
-              (errors.players && errors.players[indexPlayers]?.message) || ""
+              (errors.players && errors.players[indexPlayers]?.message) || ''
             }
             color={
               errors.players && errors.players[indexPlayers]?.message
-                ? "danger"
+                ? 'danger'
                 : undefined
             }
             variant={
               errors.players && errors.players[indexPlayers]?.message
-                ? "bordered"
+                ? 'bordered'
                 : undefined
             }
             {...register(`players.${indexPlayers}.name`)}
@@ -102,5 +99,5 @@ export function NewPlayerEdit({ control, register, errors, setValue }: NewPlayer
         </Button>
       )}
     </>
-  );
+  )
 }

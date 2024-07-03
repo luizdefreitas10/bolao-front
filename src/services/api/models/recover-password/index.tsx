@@ -1,12 +1,12 @@
-import { post } from "../../methods/post";
+import { post } from '../../methods/post'
 
 export default async function RecoverPasswordService() {
   async function resetPasswordValidateCode(phone: string) {
-    const payload = JSON.stringify({ phone });
+    const payload = JSON.stringify({ phone })
     return await post<IResponseSendCodeResetPassword, string>(
-      "/send-code-reset-password",
+      '/send-code-reset-password',
       payload,
-    );
+    )
   }
 
   async function resetPassword(
@@ -14,12 +14,12 @@ export default async function RecoverPasswordService() {
     newPassword: string,
     userId: string,
   ) {
-    const payload = JSON.stringify({ code, newPassword, userId });
-    return await post<null, string>("/reset-password", payload);
+    const payload = JSON.stringify({ code, newPassword, userId })
+    return await post<null, string>('/reset-password', payload)
   }
 
   return {
     resetPasswordValidateCode,
     resetPassword,
-  };
+  }
 }

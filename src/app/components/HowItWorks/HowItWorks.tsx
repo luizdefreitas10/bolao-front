@@ -1,8 +1,9 @@
-import { Button } from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import Link from "next/link";
+import React from 'react'
+import { Button } from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import Link from 'next/link'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function HowItWorks() {
   return (
@@ -43,5 +44,5 @@ export default function HowItWorks() {
         Participar
       </Button>
     </div>
-  );
+  )
 }
