@@ -38,6 +38,23 @@ declare interface IChampionshipWithRounds {
       teamHome: {
         name: string
       }
+      predictions: {
+        id: string
+        createdAt: Date
+        updatedAt: Date
+        lastPlayerToScore: {
+          createdAt: Date
+          id: string
+          name: string
+          status: string
+          teamId: string
+          updatedAt: Date | null
+        } | null
+        lastPlayerToScoreId: string | null
+        predictionHome: number
+        predictionAway: number
+        predictionType: 'PLAYER' | 'SCORE'
+      }[]
     }[]
   }[]
 }

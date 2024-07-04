@@ -19,10 +19,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react", "@typescript-eslint"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -32,6 +29,5 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off"
-   
   }
 }
