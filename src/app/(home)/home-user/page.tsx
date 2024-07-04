@@ -73,7 +73,7 @@ export default function HomeUser() {
           predictionAway: 0,
           playerId: null,
           matchId: match.id,
-          disabled: match.predictions.length !== 0,
+          disabled: match?.predictions?.length !== 0,
         })),
       ),
     )
@@ -213,7 +213,7 @@ export default function HomeUser() {
                       className="flex flex-col w-[90%] mx-auto"
                     >
                       <div
-                        className={`flex flex-col bg-[#1F67CE] p-4 rounded-lg ${match.predictions.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
+                        className={`flex flex-col bg-[#1F67CE] p-4 rounded-lg ${match?.predictions?.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
                       >
                         <div className="flex w-full justify-between">
                           <div className="flex space-x-2">
@@ -327,7 +327,7 @@ export default function HomeUser() {
                           Lorem ipsum dolor sit amet consectetur. Laoreet.
                         </p>
                         <div
-                          className={`flex flex-col p-4 bg-[#1F67CE] rounded-lg w-[90%] mx-auto ${match.predictions.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
+                          className={`flex flex-col p-4 bg-[#1F67CE] rounded-lg w-[90%] mx-auto ${match?.predictions?.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                           <div className="flex w-full justify-between">
                             <div className="flex space-x-2">
@@ -354,7 +354,7 @@ export default function HomeUser() {
                           <hr className="w-full h-[1px] bg-white mt-4" />
                           <RadioGroup
                             defaultValue={
-                              match.predictions.find(
+                              match?.predictions?.find(
                                 (prediction) =>
                                   prediction.predictionType === 'PLAYER',
                               )?.lastPlayerToScoreId ||
