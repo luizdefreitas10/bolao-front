@@ -243,7 +243,7 @@ export default function HomeUser() {
                                 >
                                   -
                                 </Button>
-                                <h1 className="mx-3 text-[16px text-white]">
+                                <div className="mx-3 text-[16px text-white]">
                                   {match.predictions.length !== 0
                                     ? match.predictions.map(
                                         (predict, predictIndex) => (
@@ -259,7 +259,7 @@ export default function HomeUser() {
                                         (scorePrediction) =>
                                           scorePrediction.matchId === match.id,
                                       )?.predictionHome}
-                                </h1>
+                                </div>
                                 <Button
                                   size={isMobile ? 'sm' : 'md'}
                                   variant="bordered"
@@ -287,7 +287,7 @@ export default function HomeUser() {
                               >
                                 -
                               </Button>
-                              <h1 className="mx-3 text-[16px text-white]">
+                              <div className="mx-3 text-[16px text-white]">
                                 {match.predictions.length !== 0
                                   ? match.predictions.map(
                                       (predict, predictIndex) => (
@@ -302,7 +302,7 @@ export default function HomeUser() {
                                   : matchPredictionScores.find(
                                       (score) => score.matchId === match.id,
                                     )?.predictionAway}
-                              </h1>
+                              </div>
                               <Button
                                 size={isMobile ? 'sm' : 'md'}
                                 variant="bordered"
