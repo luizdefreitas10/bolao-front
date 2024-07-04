@@ -153,23 +153,31 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
             Lorem ipsum dolor sit amet consectetur. Nulla ac nisl pellentesque
             netus diam. Vel urna mattis.
           </p>
-          <Select
-            classNames={{
-              selectorIcon: 'text-black',
-            }}
-            defaultSelectedKeys={selectedTeams.map((item) => item.id) || ''}
-            color="default"
-            label="Selecione os times"
-            className="w-full"
-            selectionMode="multiple"
-            onSelectionChange={(keys) => onChange(Array.from(keys) as string[])}
-          >
-            {teams.map((team) => (
-              <SelectItem key={team.id} value={team.id} className="text-black">
-                {team.name}
-              </SelectItem>
-            ))}
-          </Select>
+          {teams?.length > 0 && (
+            <Select
+              classNames={{
+                selectorIcon: 'text-black',
+              }}
+              defaultSelectedKeys={selectedTeams.map((item) => item.id) || ''}
+              color="default"
+              label="Selecione os times"
+              className="w-full"
+              selectionMode="multiple"
+              onSelectionChange={(keys) =>
+                onChange(Array.from(keys) as string[])
+              }
+            >
+              {teams.map((team) => (
+                <SelectItem
+                  key={team.id}
+                  value={team.id}
+                  className="text-black"
+                >
+                  {team.name}
+                </SelectItem>
+              ))}
+            </Select>
+          )}
           <div className="space-y-5">
             {fields.map((field, index) => (
               <div key={field.id} className="flex space-x-2 items-center">

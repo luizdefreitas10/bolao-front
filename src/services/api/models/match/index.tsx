@@ -1,3 +1,4 @@
+import { patch } from '../../methods/patch'
 import { post } from '../../methods/post'
 import { put } from '../../methods/put'
 
@@ -13,8 +14,14 @@ export default async function MatchService() {
     await put('/match', payload)
   }
 
+  async function updateDateMatch(matchId: string, date: Date): Promise<void> {
+    const payload = JSON.stringify({ matchId, date })
+    await patch('/match/update-date', payload)
+  }
+
   return {
     create,
     updateScore,
+    updateDateMatch,
   }
 }

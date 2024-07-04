@@ -1,5 +1,6 @@
 import { get } from '../../methods/get'
 import { post } from '../../methods/post'
+import { put } from '../../methods/put'
 
 export default async function PlayerService() {
   async function create(data: INewPlayer): Promise<{ playerId: string }> {
@@ -25,9 +26,19 @@ export default async function PlayerService() {
     return response.players
   }
 
+  async function updatePlayersMatch(
+    matchId: string,
+    lastPlayerTeamId: string,
+    players: string[],
+  ): Promise<void> {
+    const payload = JSON.stringify({ matchId, lastPlayerTeamId, players })
+    const response = await put(`/player`, payload)
+  }
+
   return {
     fetchPlayersByMatchAndTeam,
     create,
     fetchPlayersByTeam,
+    updatePlayersMatch,
   }
 }

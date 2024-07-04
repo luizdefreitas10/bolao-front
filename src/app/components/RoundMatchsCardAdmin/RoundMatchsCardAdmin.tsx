@@ -4,6 +4,7 @@ import { MdEdit, MdPerson } from 'react-icons/md'
 import SetResultModal from '../SetResultModal/SetResultModal'
 import { useEventsContext } from '@/context/EventsContext'
 import { getLogo } from '@/utils/getLogo'
+import EditMatchModal from '../EditMatch/EditMatch'
 
 type RoundMatchsCardAdmin = {
   round: IRoundWithMatchsAndChampionship
@@ -14,11 +15,17 @@ export default function RoundMatchsCardAdmin({
   round,
   isDone,
 }: RoundMatchsCardAdmin) {
-  const { setSelectedMatchSetResult } = useEventsContext()
+  const { setSelectedMatchSetResult, setEditSelectedMatch } = useEventsContext()
   const {
     isOpen: isOpenSetResultModal,
     onOpen: onOpenSetResultModal,
     onOpenChange: onOpenChangeSetResultModal,
+  } = useDisclosure()
+
+  const {
+    isOpen: isOpenEditMatchModal,
+    onOpen: onOpenEditMatchModal,
+    onOpenChange: onOpenChangeEditMatchModal,
   } = useDisclosure()
 
   function handleSetResult(
@@ -46,8 +53,7 @@ export default function RoundMatchsCardAdmin({
                 <div className="flex space-x-2">
                   <Image src="/sportsicon.png" alt="sports icon" />
                   <h1 className="text-white text-[12px] font-normal">
-                    {round.championship.name} - {round.name} -{' '}
-                    {match.teamHome.name} X {match.teamAway.name}
+                    {round.championship.name} - {round.name}{' '}
                   </h1>
                 </div>
                 <h1 className="text-white text-[12px] font-normal">
@@ -111,7 +117,10 @@ export default function RoundMatchsCardAdmin({
                   <Button
                     variant="bordered"
                     className={`text-[14px] text-white font-bold border-white rounded-full`}
-                    //   onPress={onOpenChangeSetResultModal}
+                    onPress={() => {
+                      onOpenEditMatchModal()
+                      setEditSelectedMatch(match)
+                    }}
                   >
                     <p className="flex gap-3 items-center">
                       <MdEdit /> Editar evento
@@ -134,6 +143,11 @@ export default function RoundMatchsCardAdmin({
       <SetResultModal
         isOpen={isOpenSetResultModal}
         onClose={onOpenChangeSetResultModal}
+      />
+
+      <EditMatchModal
+        isOpen={isOpenEditMatchModal}
+        onClose={onOpenChangeEditMatchModal}
       />
     </>
   )
