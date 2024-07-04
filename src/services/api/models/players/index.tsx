@@ -32,7 +32,7 @@ export default async function PlayerService() {
     players: string[],
   ): Promise<void> {
     const payload = JSON.stringify({ matchId, lastPlayerTeamId, players })
-    const response = await put(`/player`, payload)
+    await put(`/player`, payload)
   }
 
   return {

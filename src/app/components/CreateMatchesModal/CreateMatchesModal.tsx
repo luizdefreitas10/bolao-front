@@ -1,8 +1,9 @@
 'use client'
 
+import React from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ModalHeader,
   ModalBody,
@@ -14,7 +15,6 @@ import {
   DateInput,
   DateValue,
   Checkbox,
-  Input,
 } from '@nextui-org/react'
 import { useEventsContext } from '@/context/EventsContext'
 import toast from 'react-hot-toast'
@@ -23,7 +23,6 @@ import RoundService from '@/services/api/models/round'
 import MatchService from '@/services/api/models/match'
 import { matchesSchema } from '@/schemas/match'
 import PlayerService from '@/services/api/models/players'
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
 import { NewPlayer } from '../NewPlayer/NewPlayer'
 
 export interface IFormInput {
@@ -64,7 +63,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     register,
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     getValues,
     setError,
     watch,
@@ -154,11 +153,9 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
   }
 
   useEffect(() => {
-    // console.log(shouldGetPlayers)
     if (shouldGetPlayers) {
       fields.forEach((field, index) => {
         const teamId = watch(`matches.${index}.lastPlayerTeam`)
-        console.log(teamId)
         if (teamId) {
           setLoading(true)
           fetchPlayers(index, teamId)
@@ -176,9 +173,15 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     setShouldGetPlayers(false)
   }, [fields, watch, shouldGetPlayers])
 
-  const onSubmit = async (data: IFormInput) => {
-    console.log(data)
+  function isArrayEmptyOrAllItemsEmpty(array: { name: string }[]) {
+    if (array.length === 0) {
+      return true
+    }
 
+    return array.every((item) => !item.name)
+  }
+
+  const onSubmit = async (data: IFormInput) => {
     const seenTeams = new Set<string>()
     let duplicateFound = false
 
@@ -200,18 +203,35 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
       return
     }
 
-    setLoading(true)
     let hasError = false
     const { create } = await MatchService()
     const { create: createPlayer } = await PlayerService()
     for (const match of data.matches) {
+      const index = data.matches.findIndex(
+        (item) => item.lastPlayerTeam === match.lastPlayerTeam,
+      )
+
+      const selectedPlayers = getValues(`matches.${index}.selectedPlayers`)
+      const listSelectedPlayers =
+        selectedPlayers && typeof selectedPlayers === 'string'
+          ? selectedPlayers.split(',')
+          : []
+
+      // verifica se existe players selecionados ou adicionados via input
+      const lastPlayerTeamId =
+        match.lastPlayerTeam &&
+        (!isArrayEmptyOrAllItemsEmpty(match.players) ||
+          listSelectedPlayers.length > 0)
+          ? match.lastPlayerTeam
+          : undefined
+      setLoading(true)
       try {
         const response = await create({
           date: new Date(match.dateTime.toString()),
           roundId: match.round,
           teamIdAway: match.awayTeam,
           teamIdHome: match.homeTeam,
-          lastPlayerTeamId: match.lastPlayerTeam,
+          lastPlayerTeamId: lastPlayerTeamId,
         })
         if (match.players.length > 0 && response.matchId) {
           for (const player of match.players) {
@@ -223,28 +243,18 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               })
             }
           }
-          // const index = data.matches.findIndex(
-          //   (item) => item.lastPlayerTeam === match.lastPlayerTeam
-          // );
-          // const listSelectedPlayers =
-          //   getValues(`matches.${index}.selectedPlayers`) &&
-          //   getValues(`matches.${index}.selectedPlayers`).split(",");
-          // // console.log(listSelectedPlayers)
-          // for (let player of listSelectedPlayers) {
-          //   console.log(players[index]);
-          //   console.log(player);
-          //   const playerExist = players[index].find(
-          //     (item) => item.id === player
-          //   );
-          //   console.log(playerExist?.name);
-          //   if (playerExist?.name) {
-          //     await createPlayer({
-          //       matchId: response.matchId,
-          //       name: playerExist.name,
-          //       teamId: match.lastPlayerTeam,
-          //     });
-          //   }
-          // }
+          for (const player of listSelectedPlayers) {
+            const playerExist = players[index].find(
+              (item) => item.id === player,
+            )
+            if (playerExist?.name) {
+              await createPlayer({
+                matchId: response.matchId,
+                name: playerExist.name,
+                teamId: match.lastPlayerTeam,
+              })
+            }
+          }
         }
       } catch (error) {
         hasError = true
@@ -289,21 +299,6 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     }
   }
 
-  // const handleSelectPlayers = (selectedIds: string[]) => {
-  //   const selectedTeams = selectedIds
-  //     .map((id) => {
-  //       const team = teams.find((team) => team.id === id);
-  //       return team ? { id: team.id, name: team.name, selected: false } : null;
-  //     })
-  //     .filter(Boolean) as ITeam[];
-  //   console.log(selectedTeams);
-  //   handleSetSelectedTeams(selectedTeams);
-  // };
-
-  // const onChange = (values: string[]) => {
-  //   handleSelectPlayers(values);
-  // };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <ModalHeader className="flex space-x-2 items-center">
@@ -322,10 +317,6 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
               getValues(`matches.${index}.homeTeam`),
               getValues(`matches.${index}.awayTeam`),
             ]
-            const selectedPlayers = getValues(
-              `matches.${index}.selectedPlayers`,
-            )
-
             return (
               <div className="space-y-4" key={field.id}>
                 <h1>{`Partida ${index + 1}`}</h1>
@@ -448,7 +439,10 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                       `matches.${index}.lastPlayerCheckbox`,
                     )}
                     onChange={(e) =>
-                      handleSelectCheckbox(index, !!e.target.checked)
+                      handleSelectCheckbox(
+                        index,
+                        e.target.checked ? true : false,
+                      )
                     }
                   >
                     <p>Adicionar jogadores para palpite de último marcador.</p>
@@ -488,13 +482,14 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                             color="default"
                             label="Selecione o time do último marcador"
                             onChange={(e) => {
+                              setValue(`matches.${index}.selectedPlayers`, '')
                               setShouldGetPlayers(true)
                               onChange(e.target.value)
                             }}
 
                             // }
                           >
-                            {teamsLastPlayer.map((team, indexTeams) => (
+                            {teamsLastPlayer.map((team) => (
                               <SelectItem
                                 key={team}
                                 value={team}
@@ -509,9 +504,9 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
                       {watch(`matches.${index}`).lastPlayerTeam && (
                         <>
-                          {/* {players[index]?.length > 0 && (
+                          {players[index]?.length > 0 && (
                             <Select
-                              classNames={{ selectorIcon: "text-black" }}
+                              classNames={{ selectorIcon: 'text-black' }}
                               color="default"
                               label="Selecione os jogadores"
                               className="w-full"
@@ -523,7 +518,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
                               // }
                               {...register(
-                                `matches.${index}.selectedPlayers` as const
+                                `matches.${index}.selectedPlayers` as const,
                               )}
                             >
                               {players[index]?.map((player) => (
@@ -536,95 +531,15 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                                 </SelectItem>
                               ))}
                             </Select>
-                          )} */}
+                          )}
 
                           <NewPlayer
                             errors={errors}
                             matchId={index}
                             register={register}
                             control={control}
+                            setValue={setValue}
                           />
-                          {/* {field.players.map((player, indexPlayers) => (
-                            <div
-                              key={indexPlayers}
-                              className="flex space-x-2 items-center"
-                            >
-                              {shouldDisableAddNewTeam ? (
-                                <Button
-                                  className={`min-w-[1rem] bg-[#fff]`}
-                                  onClick={() =>
-                                    setShouldDisableAddNewTeam({
-                                      [index]: false,
-                                    })
-                                  }
-                                >
-                                  <MdAddCircleOutline className="text-[#1F66CE] text-[16px]" />
-                                </Button>
-                              ) : (
-                                <Button
-                                  className={`min-w-[1rem] bg-[#E40000]`}
-                                  onClick={() =>
-                                    fields.length === 1
-                                      ? setShouldDisableAddNewTeam({
-                                          [index]: true,
-                                        })
-                                      : remove(indexPlayers)
-                                  }
-                                >
-                                  <MdOutlineRemoveCircle className="text-[#fff]" />
-                                </Button>
-                              )}
-
-                              <Input
-                                type="text"
-                                isDisabled={
-                                  index === 0 &&
-                                  shouldDisableAddNewTeam[indexPlayers]
-                                }
-                                placeholder={`Nome novo time ${index + 1}`}
-                                // isInvalid={
-                                //   !!(
-                                //     errors?.matches &&
-                                //     errors?.matches[index] &&
-                                //     errors?.matches[index].players &&
-                                //     errors?.matches[index].players[
-                                //       indexPlayers
-                                //     ] &&
-                                //     errors?.matches[index].players[
-                                //       indexPlayers
-                                //     ]?.name?.message
-                                //   )
-                                // }
-                                // errorMessage={
-                                //   (errors?.matches &&
-                                //     errors?.matches[index]?.lastPlayerTeam
-                                //       ?.message) ||
-                                //   ""
-                                // }
-                                // color={
-                                //   errors?.names &&
-                                //   errors?.names[index]?.name?.message
-                                //     ? "danger"
-                                //     : undefined
-                                // }
-                                // variant={
-                                //   errors?.names &&
-                                //   errors?.names[index]?.name?.message
-                                //     ? "bordered"
-                                //     : undefined
-                                // }
-                                {...register(
-                                  `matches.${index}.players.${indexPlayers}.name`
-                                )}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => addPlayer(matchIndex)}
-                              >
-                                Adicionar Jogador
-                              </button>
-                            </div>
-                          ))} */}
                         </>
                       )}
                     </>
@@ -637,10 +552,11 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
       </ModalBody>
       <ModalFooter className="flex flex-col space-y-4">
         <Button
+          isDisabled={!!loading}
           type="submit"
           className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
         >
-          Avançar
+          Salvar
         </Button>
         <Button
           onClick={handlePreviousModal}

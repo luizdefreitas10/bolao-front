@@ -1,5 +1,5 @@
 'use client'
-
+import React from 'react'
 import { Button, useDisclosure, Image } from '@nextui-org/react'
 import { Open_Sans as OpenSans } from 'next/font/google'
 import CreateEventModal from '@/app/components/CreateEventModal/CreateEventModal'

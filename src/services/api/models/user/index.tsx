@@ -1,6 +1,4 @@
-import { parseCookies } from 'nookies'
 import { post } from '../../methods/post'
-import { decodeToken } from '@/utils/jwt'
 
 export default async function UserService() {
   async function create(data: IRequestNewUser): Promise<IResponseNewUser> {

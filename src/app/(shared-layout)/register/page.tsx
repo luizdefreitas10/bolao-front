@@ -1,8 +1,7 @@
 'use client'
-
-import { Button, Input, Link, Checkbox, useDisclosure } from '@nextui-org/react'
+import { Button, Input, Checkbox, useDisclosure } from '@nextui-org/react'
 import { Open_Sans as OpenSans } from 'next/font/google'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon/EyeSlashFilledIcon'
 import { EyeFilledIcon } from '../../components/EyeFilledIcon/EyeFilledIcon'
 import ConfirmationCodeModal from '@/app/components/ConfirmationCodeModal/ConfirmationCodeModal'
@@ -13,12 +12,10 @@ import InputMask from 'react-input-mask'
 import { createUser } from './actions'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '@/context/AuthContext'
-import { resendCode } from '../login/actions'
 const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function Register() {
   const [isVisible, setIsVisible] = useState<boolean>(false)
-  const [isChecked, setIsChecked] = useState<boolean>(false)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const { handleSetSendCodeProps } = useAuthContext()
 

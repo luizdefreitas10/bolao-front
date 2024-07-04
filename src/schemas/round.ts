@@ -1,4 +1,3 @@
-import { phoneRegExp } from '@/utils/phoneRegex'
 import * as yup from 'yup'
 
 export const schemaRound = yup

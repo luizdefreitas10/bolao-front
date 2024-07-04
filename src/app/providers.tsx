@@ -1,5 +1,5 @@
 'use client'
-
+import React from 'react'
 import { AuthProvider } from '@/context/AuthContext'
 import { EventsProvider } from '@/context/EventsContext'
 import { NextUIProvider } from '@nextui-org/react'

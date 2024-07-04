@@ -1,3 +1,4 @@
+import React from 'react'
 import { Button } from '@nextui-org/react'
 import { Open_Sans as OpenSans } from 'next/font/google'
 

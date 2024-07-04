@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEventsContext } from '@/context/EventsContext'
 import { editMatchesSchema } from '@/schemas/match'
 import { handleAxiosError } from '@/services/api/error'
@@ -17,18 +18,12 @@ import {
   Select,
   SelectItem,
 } from '@nextui-org/react'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { MdEdit } from 'react-icons/md'
 import { NewPlayerEdit } from '../NewPlayerEdit/NewPlayerEdit'
-import {
-  parseZonedDateTime,
-  getLocalTimeZone,
-  CalendarDateTime,
-  parseDateTime,
-} from '@internationalized/date'
+import { CalendarDateTime, parseDateTime } from '@internationalized/date'
 import { DateTime } from 'luxon'
 import MatchService from '@/services/api/models/match'
 
@@ -62,7 +57,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
     register,
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
     reset,
   } = useForm<IFormInput>({
@@ -285,7 +280,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
       closeButton={<img src="/closeicon.png" alt="close" />}
     >
       <ModalContent className={`bg-[#1F67CE]`}>
-        {(onClose) => (
+        {() => (
           <form onSubmit={handleSubmit(handleEdit)}>
             <ModalHeader className="flex space-x-2 items-center">
               <MdEdit />
@@ -408,6 +403,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
             </ModalBody>
             <ModalFooter className="flex flex-col space-y-4">
               <Button
+                isDisabled={!!loading}
                 type="submit"
                 className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
               >

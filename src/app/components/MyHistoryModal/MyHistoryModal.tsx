@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { getPredictions } from '@/app/(home)/home-user/actions'
 import {
   Button,
@@ -42,8 +44,6 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
       const userPredictions = listOfPredictions?.map((prediction) => {
         const userPlayerPredStatus = prediction.predictionPlayer.status
         const userScorePredStatus = prediction.predictionScore.status
-        // console.log(userPlayerPredStatus);
-        // console.log(userScorePredStatus);
 
         if (userPlayerPredStatus === 'HIT' && userScorePredStatus === 'HIT') {
           correctPredictions += 1

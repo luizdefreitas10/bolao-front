@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 import {
   Modal,
@@ -12,7 +13,6 @@ import {
 } from '@nextui-org/react'
 import { Open_Sans as OpenSans } from 'next/font/google'
 import CountdownComponent from '../Countdown/Countdown'
-import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { schemaSendCode } from '@/schemas/user'

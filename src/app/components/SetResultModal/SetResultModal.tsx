@@ -1,11 +1,10 @@
+import React from 'react'
 import { useEventsContext } from '@/context/EventsContext'
 import { schemaSetResultMatch } from '@/schemas/match'
 import { handleAxiosError } from '@/services/api/error'
 import MatchService from '@/services/api/models/match'
-import PlayerService from '@/services/api/models/players'
 import { formatDateToCustomString } from '@/utils/formatDate'
 import { getLogo } from '@/utils/getLogo'
-import useWindowWidth from '@/utils/window-width-hook'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
   Button,
@@ -17,9 +16,7 @@ import {
   Image,
   RadioGroup,
   Radio,
-  Input,
 } from '@nextui-org/react'
-import { match } from 'assert'
 import { Open_Sans as OpenSans } from 'next/font/google'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -48,7 +45,7 @@ export default function SetResultModal({ isOpen, onClose }: CustomModalProps) {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
     control,
     setValue,
   } = useForm<ISetResultMatch>({
@@ -87,11 +84,9 @@ export default function SetResultModal({ isOpen, onClose }: CustomModalProps) {
   function handleSave(data: ISetResultMatch) {
     setShouldShowConfirmationCard(true)
     setPayload(data)
-    console.log(data)
   }
 
   async function handleConfirm() {
-    console.log(selectedMatchSetResult?.match.id)
     if (selectedMatchSetResult?.match.id && payload) {
       setLoading(true)
       try {
@@ -339,7 +334,7 @@ export default function SetResultModal({ isOpen, onClose }: CustomModalProps) {
                 </ModalBody>
                 <ModalFooter className="flex flex-col space-y-4">
                   <Button
-                    //   disabled={!isValid}
+                    isDisabled={!!loading}
                     type="submit"
                     className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#E40000] rounded-full`}
                   >

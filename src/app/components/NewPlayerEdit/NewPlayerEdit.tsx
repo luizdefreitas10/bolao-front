@@ -1,14 +1,7 @@
 import { Button, Input } from '@nextui-org/react'
 import React, { useEffect, useState } from 'react'
-import {
-  FieldErrors,
-  FieldErrorsImpl,
-  UseFormSetValue,
-  useFieldArray,
-  useFormContext,
-  Control,
-  UseFormRegister,
-} from 'react-hook-form'
+import { FieldErrors, UseFormSetValue, useFieldArray } from 'react-hook-form'
+import { Control, UseFormRegister } from 'react-hook-form'
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
 import { IFormInput } from '../EditMatch/EditMatch'
 
@@ -30,10 +23,8 @@ export function NewPlayerEdit({
     control,
     name: `players`,
   })
-  const formContext = useFormContext()
 
   useEffect(() => {
-    console.log(shouldDisableAddNewTeam)
     if (shouldDisableAddNewTeam) {
       update(0, '')
       setValue(`players.${0}.name`, '')

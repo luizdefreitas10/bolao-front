@@ -1,5 +1,5 @@
 'use client'
-
+import React, { useEffect, useState } from 'react'
 import MyHistoryModal from '@/app/components/MyHistoryModal/MyHistoryModal'
 import useWindowWidth from '@/utils/window-width-hook'
 import {
@@ -11,7 +11,6 @@ import {
   useDisclosure,
 } from '@nextui-org/react'
 import { fetchChampionshipsWithRounds, submitPredictions } from './actions'
-import { useEffect, useState } from 'react'
 import { parseCookies } from 'nookies'
 import toast from 'react-hot-toast'
 
@@ -56,7 +55,6 @@ export default function HomeUser() {
       .then((data) => {
         if (data.championships) {
           const championships = data.championships
-          // console.log(championships);
           setChampionships(championships)
         }
       })
@@ -169,7 +167,7 @@ export default function HomeUser() {
 
       if (enabledPredictions.length === 0) {
         toast.error(`Não há partidas para enviar palpites.`)
-      } else if (!hasError) {
+      } else if (!hasError && resultError === null) {
         toast.success('Palpite enviado com sucesso!')
       }
     } catch (error) {
@@ -247,11 +245,16 @@ export default function HomeUser() {
                                 </Button>
                                 <h1 className="mx-3 text-[16px text-white]">
                                   {match.predictions.length !== 0
-                                    ? match.predictions.map((predict) => (
-                                        <h1 className="mx-3 text-[16px]  text-white">
-                                          {predict.predictionHome}
-                                        </h1>
-                                      ))
+                                    ? match.predictions.map(
+                                        (predict, predictIndex) => (
+                                          <h1
+                                            key={predictIndex}
+                                            className="mx-3 text-[16px]  text-white"
+                                          >
+                                            {predict.predictionHome}
+                                          </h1>
+                                        ),
+                                      )
                                     : matchPredictionScores.find(
                                         (scorePrediction) =>
                                           scorePrediction.matchId === match.id,
@@ -286,11 +289,16 @@ export default function HomeUser() {
                               </Button>
                               <h1 className="mx-3 text-[16px text-white]">
                                 {match.predictions.length !== 0
-                                  ? match.predictions.map((predict) => (
-                                      <h1 className="mx-3 text-[16px]  text-white">
-                                        {predict.predictionAway}
-                                      </h1>
-                                    ))
+                                  ? match.predictions.map(
+                                      (predict, predictIndex) => (
+                                        <h1
+                                          key={predictIndex}
+                                          className="mx-3 text-[16px]  text-white"
+                                        >
+                                          {predict.predictionAway}
+                                        </h1>
+                                      ),
+                                    )
                                   : matchPredictionScores.find(
                                       (score) => score.matchId === match.id,
                                     )?.predictionAway}
@@ -363,7 +371,7 @@ export default function HomeUser() {
                               )
                             }
                           >
-                            {match.players.map((player, index) => (
+                            {match.players.map((player) => (
                               <div
                                 className="bg-[#00409F] flex justify-between items-center p-2 space-x-2 rounded-sm"
                                 key={player.id}

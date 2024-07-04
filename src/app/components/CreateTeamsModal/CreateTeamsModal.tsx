@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { useEventsContext } from '@/context/EventsContext'
 import { schemaTeams } from '@/schemas/team'
 import { handleAxiosError } from '@/services/api/error'
@@ -37,7 +39,6 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // console.log(selectedTeams.length);
     if (
       (selectedTeams.length === 0 || selectedTeams.length === 1) &&
       shouldDisableAddNewTeam
@@ -111,7 +112,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         )
       }
     }
-    selectedTeams.map((item, index) => {
+    selectedTeams.map((item) => {
       newTeams.push({
         id: item.id,
         name: item.name,
@@ -134,7 +135,6 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         return team ? { id: team.id, name: team.name, selected: false } : null
       })
       .filter(Boolean) as ITeam[]
-    console.log(selectedTeams)
     handleSetSelectedTeams(selectedTeams)
   }
   const onChange = (values: string[]) => {
@@ -244,7 +244,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
         <ModalFooter className="flex flex-col space-y-4">
           {selectedTeams.length > 0 && shouldDisableAddNewTeam ? (
             <Button
-              isDisabled={isDisabledButton}
+              isDisabled={isDisabledButton || !!loading}
               onClick={handleNextModal}
               type="button"
               className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}

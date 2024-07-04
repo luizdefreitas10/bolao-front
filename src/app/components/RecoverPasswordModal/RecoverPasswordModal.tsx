@@ -1,3 +1,4 @@
+import React from 'react'
 import { resetPassword } from '@/app/(shared-layout)/recover-password/actions'
 import { useAuthContext } from '@/context/AuthContext'
 import { resetPasswordSchema } from '@/schemas/recover-password'

@@ -1,3 +1,4 @@
+import React from 'react'
 import Image from 'next/image'
 import qxutelogo from '../../../../public/qxutelogo.png'
 import twittericon from '../../../../public/twittericon.png'

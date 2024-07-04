@@ -1,3 +1,4 @@
+import React from 'react'
 import { formatDateToCustomString } from '@/utils/formatDate'
 import { Button, Image, useDisclosure } from '@nextui-org/react'
 import { MdEdit, MdPerson } from 'react-icons/md'
@@ -48,7 +49,10 @@ export default function RoundMatchsCardAdmin({
       {round.matchs.length > 0 && (
         <div className="flex flex-col gap-4 w-full">
           {round.matchs.map((match) => (
-            <div className="flex flex-col gap-4 p-4 my-[16px] bg-[#00409F] rounded-lg w-[90%] mx-auto">
+            <div
+              key={match.id}
+              className="flex flex-col gap-4 p-4 my-[16px] bg-[#00409F] rounded-lg w-[90%] mx-auto"
+            >
               <div className="flex w-full justify-between">
                 <div className="flex space-x-2">
                   <Image src="/sportsicon.png" alt="sports icon" />
@@ -133,7 +137,7 @@ export default function RoundMatchsCardAdmin({
                   type="submit"
                   className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
                 >
-                  Definir resultado
+                  {isDone ? 'Editar Resultado' : 'Definir resultado'}
                 </Button>
               </div>
             </div>

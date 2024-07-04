@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEventsContext } from '@/context/EventsContext'
 import { schemaRound } from '@/schemas/round'
 import { handleAxiosError } from '@/services/api/error'
@@ -20,7 +21,6 @@ interface CloseButtonprops {
 }
 
 export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
   const {
     handleNextModal,
     handlePreviousModal,
@@ -48,7 +48,6 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
           name: data.name,
           championshipId: selectedChampionship,
         })
-        console.log(response)
         handleSetSelectedRound(response.roundId)
         handleNextModal()
       } catch (error) {
@@ -91,8 +90,7 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
         </ModalBody>
         <ModalFooter className="flex flex-col space-y-4">
           <Button
-            isDisabled={isDisabledButton}
-            // onClick={handleNextModal}
+            isDisabled={!!loading}
             type="submit"
             className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
           >

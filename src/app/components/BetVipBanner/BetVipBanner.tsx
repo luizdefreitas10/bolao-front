@@ -1,3 +1,4 @@
+import React from 'react'
 export default function BetVipBanner() {
   return (
     <div className="bg-[#1F67CE] w-full h-[250px] flex justify-center items-center">

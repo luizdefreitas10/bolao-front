@@ -1,7 +1,7 @@
 'use client'
 import { api } from '@/services/api/api'
 import { decodeToken } from '@/utils/jwt'
-import { destroyCookie, parseCookies, setCookie } from 'nookies'
+import { destroyCookie, setCookie } from 'nookies'
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -24,7 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { 'qxute-bolao:x-token': sessionKey } = parseCookies()
+  // const { 'qxute-bolao:x-token': sessionKey } = parseCookies()
   const { push } = useRouter()
   const [sendCodeProps, setSendCodeProps] = useState<SendCodeProps>()
   const [resendCodeAvailable, setResendCodeAvailable] = useState(false)

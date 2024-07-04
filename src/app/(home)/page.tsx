@@ -1,5 +1,5 @@
 'use client'
-
+import React from 'react'
 import Swiper from '../components/Swiper/Swiper'
 import CarrosselBetVip from '../components/CarrosselBetVip/CarrosselBetVip'
 import HowItWorks from '../components/HowItWorks/HowItWorks'

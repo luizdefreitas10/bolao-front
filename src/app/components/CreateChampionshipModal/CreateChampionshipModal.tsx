@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEventsContext } from '@/context/EventsContext'
 import { schemaChampionship } from '@/schemas/championship'
 import { handleAxiosError } from '@/services/api/error'
@@ -45,10 +46,8 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
     setIsDisabledInput,
     isDisabledInput,
     isDisabledCheckbox,
-    setNewChampionshipName,
     handleNextModal,
     selectedChampionship,
-    newChampionshipName,
     currentModalIndex,
   } = useEventsContext()
 
@@ -66,7 +65,6 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
     try {
       const { fetchChampionships } = await ChampionshipService()
       const response = await fetchChampionships()
-      console.log(response)
       setChampionships(response)
     } catch (error) {
       const customError = handleAxiosError(error)
@@ -81,7 +79,6 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
     try {
       const { create } = await ChampionshipService()
       const response = await create({ name: data.name })
-      console.log(response)
       setSelectedChampionship(response.id)
       handleNextModal()
       setIsDisabledInput(true)

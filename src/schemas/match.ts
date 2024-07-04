@@ -1,4 +1,4 @@
-import { isAfter, isPast, parseISO } from 'date-fns'
+import { isPast, parseISO } from 'date-fns'
 import * as yup from 'yup'
 
 export const matchesSchema = yup.object().shape({

@@ -9,7 +9,6 @@ import {
   NavbarContent,
   Link,
   Image,
-  Button,
 } from '@nextui-org/react'
 import { useAuthContext } from '@/context/AuthContext'
 import { parseCookies } from 'nookies'

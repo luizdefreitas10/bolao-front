@@ -1,5 +1,5 @@
 'use client'
-
+import React from 'react'
 import { Button, Input, useDisclosure } from '@nextui-org/react'
 import RecoverPasswordModal from '@/app/components/RecoverPasswordModal/RecoverPasswordModal'
 import InputMask from 'react-input-mask'

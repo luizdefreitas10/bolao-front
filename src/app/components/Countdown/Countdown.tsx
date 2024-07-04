@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuthContext } from '@/context/AuthContext'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import Countdown, { CountdownRenderProps, zeroPad } from 'react-countdown'
 
 export default function CountdownComponent() {
