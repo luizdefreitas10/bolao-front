@@ -1,4 +1,4 @@
-import { getPredictions } from "@/app/(home)/home-user/actions";
+import { getPredictions } from '@/app/(home)/home-user/actions'
 import {
   Button,
   Modal,
@@ -7,66 +7,66 @@ import {
   ModalFooter,
   ModalHeader,
   Image,
-} from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import { parseCookies } from "nookies";
-import { useEffect, useState } from "react";
+} from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import { parseCookies } from 'nookies'
+import { useEffect, useState } from 'react'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 interface CustomModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
   const [userPredictions, setUserPredictions] = useState<
     IPredictionsGetResponse[]
-  >([]);
+  >([])
   const [totalCorrectPredictions, setTotalCorrectPredictions] =
-    useState<number>(0);
+    useState<number>(0)
   const [totalIncorrectPredictions, setTotalIncorrectPredictions] =
-    useState<number>(0);
-  const { "qxute-bolao:x-token": token } = parseCookies();
+    useState<number>(0)
+  const { 'qxute-bolao:x-token': token } = parseCookies()
 
   const getUserPredictions = async (token: string) => {
-    const { predictions } = await getPredictions(token);
-    return predictions;
-  };
+    const { predictions } = await getPredictions(token)
+    return predictions
+  }
 
   useEffect(() => {
     getUserPredictions(token).then((listOfPredictions) => {
-      let correctPredictions = 0;
-      let incorrectPredictions = 0;
+      let correctPredictions = 0
+      let incorrectPredictions = 0
 
       const userPredictions = listOfPredictions?.map((prediction) => {
-        const userPlayerPredStatus = prediction.predictionPlayer.status;
-        const userScorePredStatus = prediction.predictionScore.status;
+        const userPlayerPredStatus = prediction.predictionPlayer.status
+        const userScorePredStatus = prediction.predictionScore.status
         // console.log(userPlayerPredStatus);
         // console.log(userScorePredStatus);
 
-        if (userPlayerPredStatus === "HIT" && userScorePredStatus === "HIT") {
-          correctPredictions += 1;
+        if (userPlayerPredStatus === 'HIT' && userScorePredStatus === 'HIT') {
+          correctPredictions += 1
         } else if (
           Object.keys(prediction.predictionPlayer).length === 0 &&
-          prediction.predictionScore.status === "HIT"
+          prediction.predictionScore.status === 'HIT'
         ) {
-          correctPredictions += 1;
+          correctPredictions += 1
         } else if (
-          userPlayerPredStatus === "MISS" ||
-          userScorePredStatus === "MISS"
+          userPlayerPredStatus === 'MISS' ||
+          userScorePredStatus === 'MISS'
         ) {
-          incorrectPredictions += 1;
+          incorrectPredictions += 1
         }
 
-        return prediction;
-      });
+        return prediction
+      })
 
-      setUserPredictions(userPredictions || []);
-      setTotalCorrectPredictions(correctPredictions);
-      setTotalIncorrectPredictions(incorrectPredictions);
-    });
-  }, []);
+      setUserPredictions(userPredictions || [])
+      setTotalCorrectPredictions(correctPredictions)
+      setTotalIncorrectPredictions(incorrectPredictions)
+    })
+  }, [])
 
   return (
     <Modal
@@ -111,7 +111,7 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
 
               {userPredictions.map(
                 (userPrediction, index) =>
-                  userPrediction.match.status === "DONE" && (
+                  userPrediction.match.status === 'DONE' && (
                     <div
                       key={index}
                       className="flex flex-col p-4 bg-[#00409F] rounded-lg w-[90%] mx-auto justify-center items-center"
@@ -126,7 +126,7 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                         <h1 className="text-white text-[12px] font-normal">
                           {new Date(
                             userPrediction.match.date,
-                          ).toLocaleDateString("pt-BR")}
+                          ).toLocaleDateString('pt-BR')}
                         </h1>
                       </div>
                       <div className="flex justify-between items-center mt-4 w-full">
@@ -156,7 +156,7 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                         <div key={userPrediction.match.id} className="w-full">
                           <hr className="w-full h-[1px] border-t-[1px] border-t-[#1F67CE] mt-4" />
                           <h1 className="text-[12px] font-semibold text-white text-center mt-4">
-                            Marcador do último gol do{" "}
+                            Marcador do último gol do{' '}
                             {userPrediction.match.teamHome}:
                           </h1>
                           <h1 className="flex justify-center items-center gap-2 mt-4">
@@ -168,7 +168,7 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                       <hr className="w-full h-[1px] border-t-[1px] border-t-[#1F67CE] mt-4" />
                       {Object.keys(userPrediction.predictionPlayer).length ===
                       0 ? (
-                        userPrediction.predictionScore.status === "HIT" ? (
+                        userPrediction.predictionScore.status === 'HIT' ? (
                           <h1 className="flex justify-center items-center gap-2 mt-4">
                             <Image src="/checkicon.svg" alt="check" />
                             Você acertou o palpite!
@@ -179,8 +179,8 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                             Você errou o palpite!
                           </h1>
                         )
-                      ) : userPrediction.predictionPlayer.status === "HIT" &&
-                        userPrediction.predictionScore.status === "HIT" ? (
+                      ) : userPrediction.predictionPlayer.status === 'HIT' &&
+                        userPrediction.predictionScore.status === 'HIT' ? (
                         <h1 className="flex justify-center items-center gap-2 mt-4">
                           <Image src="/checkicon.svg" alt="check" />
                           Você acertou o palpite!
@@ -207,5 +207,5 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
         )}
       </ModalContent>
     </Modal>
-  );
+  )
 }

@@ -1,15 +1,20 @@
-import { Button, Input } from "@nextui-org/react";
-import React, { useState } from "react";
-import { FieldErrors, FieldErrorsImpl, useFieldArray } from "react-hook-form";
-import { Control, UseFormRegister } from "react-hook-form";
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
-import { IFormInput } from "../CreateMatchesModal/CreateMatchesModal";
+import { Button, Input } from '@nextui-org/react'
+import React, { useState } from 'react'
+import {
+  FieldErrors,
+  FieldErrorsImpl,
+  useFieldArray,
+  Control,
+  UseFormRegister,
+} from 'react-hook-form'
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
+import { IFormInput } from '../CreateMatchesModal/CreateMatchesModal'
 
 interface NewPlayerProps {
-  matchId: number;
-  register: UseFormRegister<any>;
-  control?: Control<any, any>;
-  errors: FieldErrors<IFormInput>;
+  matchId: number
+  register: UseFormRegister<any>
+  control?: Control<any, any>
+  errors: FieldErrors<IFormInput>
 }
 
 export function NewPlayer({
@@ -18,17 +23,17 @@ export function NewPlayer({
   register,
   errors,
 }: NewPlayerProps) {
-  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true);
+  const [shouldDisableAddNewTeam, setShouldDisableAddNewTeam] = useState(true)
   const { fields, remove, append } = useFieldArray({
     control,
     name: `matches[${matchId}].players`,
-  });
+  })
 
   const addPlayer = () => {
     append({
-      name: "",
-    });
-  };
+      name: '',
+    })
+  }
 
   return (
     <>
@@ -99,5 +104,5 @@ export function NewPlayer({
         </Button>
       )}
     </>
-  );
+  )
 }

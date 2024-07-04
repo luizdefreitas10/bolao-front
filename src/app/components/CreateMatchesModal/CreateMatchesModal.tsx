@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ChangeEvent, useEffect, useState } from 'react'
 import {
   ModalHeader,
   ModalBody,
@@ -15,32 +15,32 @@ import {
   DateValue,
   Checkbox,
   Input,
-} from "@nextui-org/react";
-import { useEventsContext } from "@/context/EventsContext";
-import toast from "react-hot-toast";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import MatchService from "@/services/api/models/match";
-import { matchesSchema } from "@/schemas/match";
-import PlayerService from "@/services/api/models/players";
-import { MdAddCircleOutline, MdOutlineRemoveCircle } from "react-icons/md";
-import { NewPlayer } from "../NewPlayer/NewPlayer";
+} from '@nextui-org/react'
+import { useEventsContext } from '@/context/EventsContext'
+import toast from 'react-hot-toast'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import MatchService from '@/services/api/models/match'
+import { matchesSchema } from '@/schemas/match'
+import PlayerService from '@/services/api/models/players'
+import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
+import { NewPlayer } from '../NewPlayer/NewPlayer'
 
 export interface IFormInput {
   matches: {
-    homeTeam: string;
-    awayTeam: string;
-    round: string;
-    dateTime: DateValue;
-    lastPlayerCheckbox: boolean;
-    lastPlayerTeam: string;
-    players: { name: string }[];
-    selectedPlayers: string;
-  }[];
+    homeTeam: string
+    awayTeam: string
+    round: string
+    dateTime: DateValue
+    lastPlayerCheckbox: boolean
+    lastPlayerTeam: string
+    players: { name: string }[]
+    selectedPlayers: string
+  }[]
 }
 
 interface CloseButtonProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
@@ -52,13 +52,13 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     setCurrentModalIndex,
     selectedRound,
     setRefreshRounds,
-  } = useEventsContext();
+  } = useEventsContext()
 
-  const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({});
+  const [players, setPlayers] = useState<{ [key: number]: IPlayer[] }>({})
 
-  const [rounds, setRounds] = useState<IRound[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [shouldGetPlayers, setShouldGetPlayers] = useState(false);
+  const [rounds, setRounds] = useState<IRound[]>([])
+  const [loading, setLoading] = useState(false)
+  const [shouldGetPlayers, setShouldGetPlayers] = useState(false)
 
   const {
     register,
@@ -71,29 +71,29 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
     clearErrors,
     setValue,
   } = useForm<IFormInput>({
-    mode: "onChange",
+    mode: 'onChange',
     resolver: yupResolver(matchesSchema) as any,
 
     defaultValues: {
       matches: Array(calculatePairs()).fill({
-        homeTeam: "",
-        awayTeam: "",
+        homeTeam: '',
+        awayTeam: '',
         round: selectedRound,
         dateTime: null,
-        lastPlayerTeam: "",
+        lastPlayerTeam: '',
         lastPlayerCheckbox: false,
         selectedPlayers: [],
-        players: [{ name: "" }],
+        players: [{ name: '' }],
       }),
     },
-  });
+  })
 
   const { fields } = useFieldArray({
     control,
-    name: "matches",
-  });
+    name: 'matches',
+  })
 
-  const watchCheckboxes = watch("matches");
+  const watchCheckboxes = watch('matches')
 
   useEffect(() => {
     watchCheckboxes.forEach((match, index) => {
@@ -102,109 +102,109 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         !getValues(`matches.${index}.lastPlayerTeam`)
       ) {
         setError(`matches.${index}.lastPlayerTeam`, {
-          type: "required",
-          message: "Selecione o time do último marcador",
-        });
+          type: 'required',
+          message: 'Selecione o time do último marcador',
+        })
       } else {
-        clearErrors(`matches.${index}.lastPlayerTeam`);
+        clearErrors(`matches.${index}.lastPlayerTeam`)
       }
-    });
-  }, [watchCheckboxes, setError, clearErrors, getValues]);
+    })
+  }, [watchCheckboxes, setError, clearErrors, getValues])
 
   useEffect(() => {
-    if (currentModalIndex === 3) fetchRounds();
-  }, [currentModalIndex]);
+    if (currentModalIndex === 3) fetchRounds()
+  }, [currentModalIndex])
 
   const fetchRounds = async () => {
     if (selectedChampionship) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { fetchRoundsByStatusAndChampionship } = await RoundService();
+        const { fetchRoundsByStatusAndChampionship } = await RoundService()
         const response = await fetchRoundsByStatusAndChampionship(
           selectedChampionship,
-          "WAITING",
-        );
-        setRounds(response);
+          'WAITING',
+        )
+        setRounds(response)
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      toast.error("Necessário criar um campeonato.");
-      setCurrentModalIndex(0);
+      toast.error('Necessário criar um campeonato.')
+      setCurrentModalIndex(0)
     }
-  };
+  }
 
   const fetchPlayers = async (index: number, teamId: string) => {
     if (teamId) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { fetchPlayersByTeam } = await PlayerService();
-        const response = await fetchPlayersByTeam(teamId);
-        return response;
+        const { fetchPlayersByTeam } = await PlayerService()
+        const response = await fetchPlayersByTeam(teamId)
+        return response
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-  };
+  }
 
   useEffect(() => {
     // console.log(shouldGetPlayers)
     if (shouldGetPlayers) {
       fields.forEach((field, index) => {
-        const teamId = watch(`matches.${index}.lastPlayerTeam`);
-        console.log(teamId);
+        const teamId = watch(`matches.${index}.lastPlayerTeam`)
+        console.log(teamId)
         if (teamId) {
-          setLoading(true);
+          setLoading(true)
           fetchPlayers(index, teamId)
             .then((result) => {
-              setPlayers((prev) => ({ ...prev, [index]: result || [] }));
+              setPlayers((prev) => ({ ...prev, [index]: result || [] }))
             })
             .catch((error) => {
-              const customError = handleAxiosError(error);
-              toast.error(customError.message);
+              const customError = handleAxiosError(error)
+              toast.error(customError.message)
             })
-            .finally(() => setLoading(false));
+            .finally(() => setLoading(false))
         }
-      });
+      })
     }
-    setShouldGetPlayers(false);
-  }, [fields, watch, shouldGetPlayers]);
+    setShouldGetPlayers(false)
+  }, [fields, watch, shouldGetPlayers])
 
   const onSubmit = async (data: IFormInput) => {
-    console.log(data);
+    console.log(data)
 
-    const seenTeams = new Set<string>();
-    let duplicateFound = false;
+    const seenTeams = new Set<string>()
+    let duplicateFound = false
 
     for (const match of data.matches) {
-      const key = `${match.homeTeam}-${match.round}`;
-      const reverseKey = `${match.awayTeam}-${match.round}`;
+      const key = `${match.homeTeam}-${match.round}`
+      const reverseKey = `${match.awayTeam}-${match.round}`
 
       if (seenTeams.has(key) || seenTeams.has(reverseKey)) {
-        duplicateFound = true;
-        break;
+        duplicateFound = true
+        break
       }
 
-      seenTeams.add(key);
-      seenTeams.add(reverseKey);
+      seenTeams.add(key)
+      seenTeams.add(reverseKey)
     }
 
     if (duplicateFound) {
-      toast.error(`Existem times repetidos na mesma rodada.`);
-      return;
+      toast.error(`Existem times repetidos na mesma rodada.`)
+      return
     }
 
-    setLoading(true);
-    let wasError = false;
-    const { create } = await MatchService();
-    const { create: createPlayer } = await PlayerService();
-    for (let match of data.matches) {
+    setLoading(true)
+    let wasError = false
+    const { create } = await MatchService()
+    const { create: createPlayer } = await PlayerService()
+    for (const match of data.matches) {
       try {
         const response = await create({
           date: new Date(match.dateTime.toString()),
@@ -212,15 +212,15 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           teamIdAway: match.awayTeam,
           teamIdHome: match.homeTeam,
           lastPlayerTeamId: match.lastPlayerTeam,
-        });
+        })
         if (match.players.length > 0 && response.matchId) {
-          for (let player of match.players) {
+          for (const player of match.players) {
             if (player.name) {
               await createPlayer({
                 matchId: response.matchId,
                 name: player.name,
                 teamId: match.lastPlayerTeam,
-              });
+              })
             }
           }
           // const index = data.matches.findIndex(
@@ -247,45 +247,45 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
           // }
         }
       } catch (error) {
-        wasError = true;
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        wasError = true
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       }
     }
-    setLoading(false);
+    setLoading(false)
     if (!wasError) {
-      onClose();
-      setCurrentModalIndex(0);
-      setRefreshRounds(true);
+      onClose()
+      setCurrentModalIndex(0)
+      setRefreshRounds(true)
     }
-  };
+  }
 
   function calculatePairs(): number {
-    return Math.floor(selectedTeams.length / 2);
+    return Math.floor(selectedTeams.length / 2)
   }
 
   function nameTeams(id: string) {
-    const team = selectedTeams.find((item) => item.id === id);
+    const team = selectedTeams.find((item) => item.id === id)
 
-    return team?.name || null;
+    return team?.name || null
   }
 
   function isFormValid(index: number) {
-    const homeTeam = watch(`matches.${index}`).homeTeam;
-    const awayTeam = watch(`matches.${index}`).awayTeam;
-    const dateTime = watch(`matches.${index}`).dateTime;
-    const round = watch(`matches.${index}`).round;
+    const homeTeam = watch(`matches.${index}`).homeTeam
+    const awayTeam = watch(`matches.${index}`).awayTeam
+    const dateTime = watch(`matches.${index}`).dateTime
+    const round = watch(`matches.${index}`).round
 
     if (homeTeam && awayTeam && dateTime && round) {
-      return true;
+      return true
     } else {
-      return false;
+      return false
     }
   }
 
   function handleSelectCheckbox(index: number, value: boolean) {
     if (isFormValid(index)) {
-      setValue(`matches.${index}.lastPlayerCheckbox`, value);
+      setValue(`matches.${index}.lastPlayerCheckbox`, value)
     }
   }
 
@@ -317,14 +317,14 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </p>
         <div className="space-y-10">
           {fields.map((field, index) => {
-            const watchCheckbox = watch(`matches.${index}.lastPlayerCheckbox`);
+            const watchCheckbox = watch(`matches.${index}.lastPlayerCheckbox`)
             const teamsLastPlayer = [
               getValues(`matches.${index}.homeTeam`),
               getValues(`matches.${index}.awayTeam`),
-            ];
+            ]
             const selectedPlayers = getValues(
               `matches.${index}.selectedPlayers`,
-            );
+            )
 
             return (
               <div className="space-y-4" key={field.id}>
@@ -332,7 +332,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Select
                   {...register(`matches.${index}.round`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   isInvalid={
                     !!(
@@ -342,11 +342,11 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.round?.message) ||
-                    ""
+                    ''
                   }
                   color="default"
                   label="Selecione a rodada"
-                  defaultSelectedKeys={[selectedRound || ""]}
+                  defaultSelectedKeys={[selectedRound || '']}
                 >
                   {rounds.map((item) => (
                     <SelectItem
@@ -371,7 +371,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                       {...field}
                       isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
                       errorMessage={
-                        errors?.matches?.[index]?.dateTime?.message || ""
+                        errors?.matches?.[index]?.dateTime?.message || ''
                       }
                     />
                   )}
@@ -379,7 +379,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Select
                   {...register(`matches.${index}.homeTeam`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   color="default"
                   label="Selecione o time da casa"
@@ -392,7 +392,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.homeTeam?.message) ||
-                    ""
+                    ''
                   }
                 >
                   {selectedTeams.map((team) => (
@@ -409,7 +409,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Select
                   {...register(`matches.${index}.awayTeam`)}
                   classNames={{
-                    selectorIcon: "text-black",
+                    selectorIcon: 'text-black',
                   }}
                   color="default"
                   label="Selecione o time visitante"
@@ -422,7 +422,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   errorMessage={
                     (errors?.matches &&
                       errors?.matches[index]?.awayTeam?.message) ||
-                    ""
+                    ''
                   }
                 >
                   {selectedTeams.map((team) => (
@@ -442,16 +442,13 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                     )}
                     isDisabled={!isFormValid(index)}
                     classNames={{
-                      label: "text-white",
+                      label: 'text-white',
                     }}
                     defaultChecked={watch(
                       `matches.${index}.lastPlayerCheckbox`,
                     )}
                     onChange={(e) =>
-                      handleSelectCheckbox(
-                        index,
-                        e.target.checked ? true : false,
-                      )
+                      handleSelectCheckbox(index, !!e.target.checked)
                     }
                   >
                     <p>Adicionar jogadores para palpite de último marcador.</p>
@@ -470,7 +467,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                           <Select
                             {...field}
                             classNames={{
-                              selectorIcon: "text-black",
+                              selectorIcon: 'text-black',
                             }}
                             isInvalid={
                               !!(
@@ -482,17 +479,17 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                               (errors?.matches &&
                                 errors?.matches[index]?.lastPlayerTeam
                                   ?.message) ||
-                              ""
+                              ''
                             }
                             defaultSelectedKeys={
                               [getValues(`matches.${index}.lastPlayerTeam`)] ||
-                              ""
+                              ''
                             }
                             color="default"
                             label="Selecione o time do último marcador"
                             onChange={(e) => {
-                              setShouldGetPlayers(true);
-                              onChange(e.target.value);
+                              setShouldGetPlayers(true)
+                              onChange(e.target.value)
                             }}
 
                             // }
@@ -634,7 +631,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                   )}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </ModalBody>
@@ -654,5 +651,5 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         </Button>
       </ModalFooter>
     </form>
-  );
+  )
 }

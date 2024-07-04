@@ -1,8 +1,8 @@
-import { resetPassword } from "@/app/(shared-layout)/recover-password/actions";
-import { useAuthContext } from "@/context/AuthContext";
-import { resetPasswordSchema } from "@/schemas/recover-password";
-import { decodeToken } from "@/utils/jwt";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { resetPassword } from '@/app/(shared-layout)/recover-password/actions'
+import { useAuthContext } from '@/context/AuthContext'
+import { resetPasswordSchema } from '@/schemas/recover-password'
+import { decodeToken } from '@/utils/jwt'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   Modal,
   ModalBody,
@@ -13,23 +13,23 @@ import {
   Input,
   Button,
   Link,
-} from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import { parseCookies } from "nookies";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { EyeSlashFilledIcon } from "../EyeSlashFilledIcon/EyeSlashFilledIcon";
-import { EyeFilledIcon } from "../EyeFilledIcon/EyeFilledIcon";
-import { useRouter } from "next/navigation";
+} from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import { parseCookies } from 'nookies'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { EyeSlashFilledIcon } from '../EyeSlashFilledIcon/EyeSlashFilledIcon'
+import { EyeFilledIcon } from '../EyeFilledIcon/EyeFilledIcon'
+import { useRouter } from 'next/navigation'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 interface CustomModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  phone: string;
-  userId: string;
+  isOpen: boolean
+  onClose: () => void
+  phone: string
+  userId: string
 }
 
 export default function RecoverPasswordModal({
@@ -38,12 +38,12 @@ export default function RecoverPasswordModal({
   phone,
   userId,
 }: CustomModalProps) {
-  const { push } = useRouter();
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const [currentModalIndex, setCurrentModalIndex] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-  useAuthContext();
+  const { push } = useRouter()
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const toggleVisibility = () => setIsVisible(!isVisible)
+  const [currentModalIndex, setCurrentModalIndex] = useState<number>(0)
+  const [loading, setLoading] = useState(false)
+  useAuthContext()
 
   const {
     register,
@@ -51,40 +51,40 @@ export default function RecoverPasswordModal({
     formState: { errors },
   } = useForm<IResetPassword>({
     resolver: yupResolver(resetPasswordSchema),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
-  });
+  })
 
-  const modalStepsResetPassword = ["code", "newPassword"];
+  const modalStepsResetPassword = ['code', 'newPassword']
 
   async function handleSendCode(data: IResetPassword) {
-    setLoading(true);
-    const { "qxute-bolao:x-token": token } = parseCookies();
-    const decode = decodeToken(token);
+    setLoading(true)
+    const { 'qxute-bolao:x-token': token } = parseCookies()
+    const decode = decodeToken(token)
 
-    const { error } = await resetPassword(data.code, data.newPassword, userId);
-    setLoading(false);
+    const { error } = await resetPassword(data.code, data.newPassword, userId)
+    setLoading(false)
 
     if (error) {
-      toast.error(error);
+      toast.error(error)
     } else if (userId) {
-      toast.success("Senha alterada com sucesso!");
-      onClose();
+      toast.success('Senha alterada com sucesso!')
+      onClose()
       if (decode?.role) {
-        push(decode.role === "ADMIN" ? "/home-admin" : "/home-user");
+        push(decode.role === 'ADMIN' ? '/home-admin' : '/home-user')
       }
     }
   }
 
   const handleNextModal = () => {
     if (currentModalIndex < modalStepsResetPassword.length - 1) {
-      setCurrentModalIndex(currentModalIndex + 1);
+      setCurrentModalIndex(currentModalIndex + 1)
     }
 
     if (currentModalIndex === modalStepsResetPassword.length - 1) {
-      handleSubmit(handleSendCode)();
+      handleSubmit(handleSendCode)()
     }
-  };
+  }
 
   return (
     <Modal
@@ -109,7 +109,7 @@ export default function RecoverPasswordModal({
                   labelPlacement="inside"
                   placeholder="0000"
                   className="mt-4"
-                  {...register("code")}
+                  {...register('code')}
                   errorMessage={errors.code?.message}
                   isInvalid={!!errors.code?.message}
                 />
@@ -117,7 +117,7 @@ export default function RecoverPasswordModal({
                   className={`${fontOpenSans.className} text-[12px] text-white font-normal`}
                 >
                   Insira o código SMS enviado para o telefone {phone} informado
-                  no cadastro. Não recebeu o código?{" "}
+                  no cadastro. Não recebeu o código?{' '}
                   <Link
                     href="/recover-password"
                     className="text-white text-[12px] underline"
@@ -131,15 +131,15 @@ export default function RecoverPasswordModal({
                     <p>Insira sua nova senha</p>
                     <Input
                       size="md"
-                      type={!isVisible ? "password" : "text"}
-                      {...register("newPassword")}
+                      type={!isVisible ? 'password' : 'text'}
+                      {...register('newPassword')}
                       labelPlacement="inside"
                       errorMessage={errors.newPassword?.message}
                       isInvalid={!!errors.newPassword?.message}
-                      placeholder={"Senha"}
-                      color={errors.newPassword?.message ? "danger" : undefined}
+                      placeholder={'Senha'}
+                      color={errors.newPassword?.message ? 'danger' : undefined}
                       variant={
-                        errors.newPassword?.message ? "bordered" : undefined
+                        errors.newPassword?.message ? 'bordered' : undefined
                       }
                       endContent={
                         <button
@@ -179,5 +179,5 @@ export default function RecoverPasswordModal({
         )}
       </ModalContent>
     </Modal>
-  );
+  )
 }

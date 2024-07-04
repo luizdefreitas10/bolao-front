@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import MyHistoryModal from "@/app/components/MyHistoryModal/MyHistoryModal";
-import useWindowWidth from "@/utils/window-width-hook";
+import MyHistoryModal from '@/app/components/MyHistoryModal/MyHistoryModal'
+import useWindowWidth from '@/utils/window-width-hook'
 import {
   Button,
   Image,
@@ -9,63 +9,63 @@ import {
   RadioGroup,
   Spinner,
   useDisclosure,
-} from "@nextui-org/react";
-import { fetchChampionshipsWithRounds, submitPredictions } from "./actions";
-import { useEffect, useState } from "react";
-import { parseCookies } from "nookies";
-import toast from "react-hot-toast";
-import { BoolEnum } from "sharp";
+} from '@nextui-org/react'
+import { fetchChampionshipsWithRounds, submitPredictions } from './actions'
+import { useEffect, useState } from 'react'
+import { parseCookies } from 'nookies'
+import toast from 'react-hot-toast'
 
 export default function HomeUser() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [loading, setLoading] = useState<boolean>(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [buttonIsLoading, setButtonIsLoading] = useState<boolean>(false)
   const [championships, setChampionships] = useState<IChampionshipWithRounds[]>(
     [],
-  );
+  )
   const [matchPredictionScores, setMatchPredictionScores] = useState<
     IPrediction[]
-  >([]);
-  const [fetchCompleted, setFetchCompleted] = useState<boolean>(false);
-  const [existMatches, setExistMatches] = useState<boolean>(false);
+  >([])
+  const [fetchCompleted, setFetchCompleted] = useState<boolean>(false)
+  const [existMatches, setExistMatches] = useState<boolean>(false)
 
   const [disabledMatches, setDisabledMatches] = useState<{
-    [key: string]: boolean;
-  }>({});
+    [key: string]: boolean
+  }>({})
 
-  const windowWidth = useWindowWidth();
-  const isMobile = windowWidth && windowWidth < 640;
+  const windowWidth = useWindowWidth()
+  const isMobile = windowWidth && windowWidth < 640
 
-  const { "qxute-bolao:x-token": token } = parseCookies();
+  const { 'qxute-bolao:x-token': token } = parseCookies()
 
   const getChampionships = async (token: string) => {
-    const result = await fetchChampionshipsWithRounds(token);
-    return result;
-  };
+    const result = await fetchChampionshipsWithRounds(token)
+    return result
+  }
 
   const sendPredictions = async (data: IPrediction, token: string) => {
-    const result = await submitPredictions(data, token);
+    const result = await submitPredictions(data, token)
     if (result.isError === true && result.error !== undefined) {
-      toast.error(result.error);
+      toast.error(result.error)
     }
-    return result;
-  };
+    return result
+  }
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     getChampionships(token)
       .then((data) => {
         if (data.championships) {
-          const championships = data.championships;
+          const championships = data.championships
           // console.log(championships);
-          setChampionships(championships);
+          setChampionships(championships)
         }
       })
       .catch((e) => toast.error(e))
       .finally(() => {
-        setLoading(false);
-        setFetchCompleted(true);
-      });
-  }, [token]);
+        setLoading(false)
+        setFetchCompleted(true)
+      })
+  }, [token])
 
   useEffect(() => {
     const initialScores = championships.flatMap((championship) =>
@@ -78,68 +78,69 @@ export default function HomeUser() {
           disabled: match.predictions.length !== 0,
         })),
       ),
-    );
+    )
 
-    setMatchPredictionScores(initialScores);
+    setMatchPredictionScores(initialScores)
 
     const matchs = championships.flatMap((championship) =>
       championship.rounds.flatMap((round) => round.matchs),
-    );
+    )
 
     if (matchs.length > 0) {
-      setExistMatches(true);
+      setExistMatches(true)
     }
-  }, [championships]);
+  }, [championships])
 
-  const increaseScore = (matchId: string, type: "home" | "away") => {
+  const increaseScore = (matchId: string, type: 'home' | 'away') => {
     setMatchPredictionScores((prevScores) =>
       prevScores.map((score) =>
         score.matchId === matchId
           ? {
               ...score,
               predictionHome:
-                type === "home"
+                type === 'home'
                   ? score.predictionHome + 1
                   : score.predictionHome,
               predictionAway:
-                type === "away"
+                type === 'away'
                   ? score.predictionAway + 1
                   : score.predictionAway,
             }
           : score,
       ),
-    );
-  };
+    )
+  }
 
-  const decreaseScore = (matchId: string, type: "home" | "away") => {
+  const decreaseScore = (matchId: string, type: 'home' | 'away') => {
     setMatchPredictionScores((prevScores) =>
       prevScores.map((score) =>
         score.matchId === matchId
           ? {
               ...score,
               predictionHome:
-                type === "home" && score.predictionHome > 0
+                type === 'home' && score.predictionHome > 0
                   ? score.predictionHome - 1
                   : score.predictionHome,
               predictionAway:
-                type === "away" && score.predictionAway > 0
+                type === 'away' && score.predictionAway > 0
                   ? score.predictionAway - 1
                   : score.predictionAway,
             }
           : score,
       ),
-    );
-  };
+    )
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
-    setLoading(true);
-    event.preventDefault();
-    let hasError = false;
-    let resultError = null;
+    setButtonIsLoading(true)
+    event.preventDefault()
+
+    let hasError = false
+    let resultError = null
 
     const enabledPredictions = matchPredictionScores.filter(
       (score) => !score.disabled,
-    );
+    )
 
     try {
       for (const matchPrediction of enabledPredictions) {
@@ -151,38 +152,39 @@ export default function HomeUser() {
             playerId: matchPrediction.playerId,
           },
           token,
-        );
+        )
 
         if (result.isError === true) {
-          hasError = true;
-          resultError = result.error;
+          hasError = true
+          resultError = result.error
         } else {
-          setDisabledMatches((prev) => ({
-            ...prev,
+          setDisabledMatches((prevState) => ({
+            ...prevState,
             [matchPrediction.matchId]: true,
-          }));
+          }))
         }
       }
 
-      setLoading(false);
+      setButtonIsLoading(false)
+
       if (enabledPredictions.length === 0) {
-        toast.error(`Não há partidas para enviar palpites`);
+        toast.error(`Não há partidas para enviar palpites.`)
       } else if (!hasError) {
-        toast.success("Palpite enviado com sucesso!");
+        toast.success('Palpite enviado com sucesso!')
       }
     } catch (error) {
-      setLoading(false);
-      toast.error(`Erro ao enviar palpite: ${error}`);
+      setLoading(false)
+      toast.error(`Erro ao enviar palpite: ${error}`)
     }
-  };
+  }
 
   const handlePlayerSelection = (matchId: string, playerId: string) => {
     setMatchPredictionScores((prevScores) =>
       prevScores.map((score) =>
-        score.matchId === matchId ? { ...score, playerId: playerId } : score,
+        score.matchId === matchId ? { ...score, playerId } : score,
       ),
-    );
-  };
+    )
+  }
 
   return (
     <form
@@ -213,7 +215,7 @@ export default function HomeUser() {
                       className="flex flex-col w-[90%] mx-auto"
                     >
                       <div
-                        className={`flex flex-col bg-[#1F67CE] p-4 rounded-lg ${match.predictions.length !== 0 || disabledMatches[match.id] ? "opacity-50 pointer-events-none" : ""}`}
+                        className={`flex flex-col bg-[#1F67CE] p-4 rounded-lg ${match.predictions.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
                       >
                         <div className="flex w-full justify-between">
                           <div className="flex space-x-2">
@@ -223,7 +225,7 @@ export default function HomeUser() {
                             </h1>
                           </div>
                           <h1 className="text-white text-[12px] font-normal">
-                            {new Date(match.date).toLocaleDateString("pt-BR")}
+                            {new Date(match.date).toLocaleDateString('pt-BR')}
                           </h1>
                         </div>
                         <div className="flex justify-center items-center mt-4">
@@ -234,11 +236,11 @@ export default function HomeUser() {
                             <div className="flex justify-center items-center">
                               <div className="flex justify-center items-center">
                                 <Button
-                                  size={isMobile ? "sm" : "md"}
+                                  size={isMobile ? 'sm' : 'md'}
                                   variant="bordered"
                                   className="text-white border-solid border-[1px] border-white bg-[#00409F]"
                                   onClick={() =>
-                                    decreaseScore(match.id, "home")
+                                    decreaseScore(match.id, 'home')
                                   }
                                 >
                                   -
@@ -256,11 +258,11 @@ export default function HomeUser() {
                                       )?.predictionHome}
                                 </h1>
                                 <Button
-                                  size={isMobile ? "sm" : "md"}
+                                  size={isMobile ? 'sm' : 'md'}
                                   variant="bordered"
                                   className="text-white border-solid border-[1px] border-white bg-[#00409F]"
                                   onClick={() =>
-                                    increaseScore(match.id, "home")
+                                    increaseScore(match.id, 'home')
                                   }
                                 >
                                   +
@@ -275,10 +277,10 @@ export default function HomeUser() {
                             </h1>
                             <div className="flex justify-center items-center">
                               <Button
-                                size={isMobile ? "sm" : "md"}
+                                size={isMobile ? 'sm' : 'md'}
                                 variant="bordered"
                                 className="text-white border-solid border-[1px] border-white bg-[#00409F]"
-                                onClick={() => decreaseScore(match.id, "away")}
+                                onClick={() => decreaseScore(match.id, 'away')}
                               >
                                 -
                               </Button>
@@ -294,10 +296,10 @@ export default function HomeUser() {
                                     )?.predictionAway}
                               </h1>
                               <Button
-                                size={isMobile ? "sm" : "md"}
+                                size={isMobile ? 'sm' : 'md'}
                                 variant="bordered"
                                 className="text-white border-solid border-[1px] border-white bg-[#00409F]"
-                                onClick={() => increaseScore(match.id, "away")}
+                                onClick={() => increaseScore(match.id, 'away')}
                               >
                                 +
                               </Button>
@@ -317,18 +319,18 @@ export default function HomeUser() {
                           Lorem ipsum dolor sit amet consectetur. Laoreet.
                         </p>
                         <div
-                          className={`flex flex-col p-4 bg-[#1F67CE] rounded-lg w-[90%] mx-auto ${match.predictions.length !== 0 || disabledMatches[match.id] ? "opacity-50 pointer-events-none" : ""}`}
+                          className={`flex flex-col p-4 bg-[#1F67CE] rounded-lg w-[90%] mx-auto ${match.predictions.length !== 0 || disabledMatches[match.id] ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                           <div className="flex w-full justify-between">
                             <div className="flex space-x-2">
                               <Image src="/sportsicon.png" alt="sports icon" />
                               <h1 className="text-white text-[12px] font-normal">
-                                {round.name} - {match.teamHome.name} X{" "}
+                                {round.name} - {match.teamHome.name} X{' '}
                                 {match.teamAway.name}
                               </h1>
                             </div>
                             <h1 className="text-white text-[12px] font-normal">
-                              {new Date(match.date).toLocaleDateString("pt-BR")}
+                              {new Date(match.date).toLocaleDateString('pt-BR')}
                             </h1>
                           </div>
                           <div className="flex space-x-2 items-center mt-4">
@@ -346,8 +348,12 @@ export default function HomeUser() {
                             defaultValue={
                               match.predictions.find(
                                 (prediction) =>
-                                  prediction.predictionType === "PLAYER",
-                              )?.lastPlayerToScoreId || undefined
+                                  prediction.predictionType === 'PLAYER',
+                              )?.lastPlayerToScoreId ||
+                              matchPredictionScores.find(
+                                (score) => score.matchId === match.id,
+                              )?.playerId ||
+                              undefined
                             }
                             className="mt-4 flex"
                             onChange={(event) =>
@@ -374,7 +380,7 @@ export default function HomeUser() {
                                   className="custom-radio-order justify-between"
                                   value={`${player.id}`}
                                   classNames={{
-                                    label: "hidden",
+                                    label: 'hidden',
                                   }}
                                 >
                                   {player.name}
@@ -397,7 +403,7 @@ export default function HomeUser() {
         type="submit"
         className={` rounded-full bg-[#00764B] text-white text-[14px] font-bold flex justify-center items-center px-4 py-3 my-2 mt-8 w-[90%] mx-auto`}
       >
-        {loading ? <Spinner /> : "Aposte Já!"}
+        {buttonIsLoading ? <Spinner /> : 'Aposte Já!'}
       </Button>
       <Button
         variant="bordered"
@@ -414,5 +420,5 @@ export default function HomeUser() {
       </div>
       <MyHistoryModal isOpen={isOpen} onClose={onOpenChange} />
     </form>
-  );
+  )
 }

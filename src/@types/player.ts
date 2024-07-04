@@ -1,10 +1,10 @@
 declare interface IPlayer {
-  name: string;
-  id: string;
+  name: string
+  id: string
 }
 
 declare interface INewPlayer {
-  name: string;
-  teamId: string;
-  matchId: string;
+  name: string
+  teamId: string
+  matchId: string
 }

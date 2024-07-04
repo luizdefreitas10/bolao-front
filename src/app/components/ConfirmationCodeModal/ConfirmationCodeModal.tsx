@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from '@/context/AuthContext'
 import {
   Modal,
   ModalBody,
@@ -9,21 +9,21 @@ import {
   Input,
   Button,
   Link,
-} from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import CountdownComponent from "../Countdown/Countdown";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import { schemaSendCode } from "@/schemas/user";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { resendCode, validateCode } from "@/app/(shared-layout)/login/actions";
+} from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import CountdownComponent from '../Countdown/Countdown'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useForm } from 'react-hook-form'
+import { schemaSendCode } from '@/schemas/user'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { resendCode, validateCode } from '@/app/(shared-layout)/login/actions'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 interface CustomModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
 export default function ConfirmationCodeModal({
@@ -36,42 +36,42 @@ export default function ConfirmationCodeModal({
     formState: { errors },
   } = useForm<ISendCodeProps>({
     resolver: yupResolver(schemaSendCode),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
-  });
-  const [loading, setLoading] = useState(false);
+  })
+  const [loading, setLoading] = useState(false)
   const {
     sendCodeProps,
     handleResendCodeAvailable,
     resendCodeAvailable,
     handleAuthWithToken,
-  } = useAuthContext();
+  } = useAuthContext()
 
   async function handleResendCode() {
-    setLoading(true);
+    setLoading(true)
     if (sendCodeProps?.userId) {
-      const { error } = await resendCode(sendCodeProps?.userId);
-      setLoading(false);
-      handleResendCodeAvailable(false);
+      const { error } = await resendCode(sendCodeProps?.userId)
+      setLoading(false)
+      handleResendCodeAvailable(false)
       if (error) {
-        toast.error(error);
+        toast.error(error)
       }
     }
   }
 
   async function handleSendCode(data: ISendCodeProps) {
-    setLoading(true);
+    setLoading(true)
     if (sendCodeProps?.userId) {
       const { error, access_token } = await validateCode(
         sendCodeProps?.userId,
         data.code,
-      );
-      setLoading(false);
-      handleResendCodeAvailable(false);
+      )
+      setLoading(false)
+      handleResendCodeAvailable(false)
       if (error) {
-        toast.error(error);
+        toast.error(error)
       } else if (access_token) {
-        handleAuthWithToken(access_token);
+        handleAuthWithToken(access_token)
       }
     }
   }
@@ -99,7 +99,7 @@ export default function ConfirmationCodeModal({
                   labelPlacement="inside"
                   placeholder="0000"
                   className="mt-4"
-                  {...register("code")}
+                  {...register('code')}
                   errorMessage={errors.code?.message}
                   isInvalid={!!errors.code?.message}
                 />
@@ -108,7 +108,7 @@ export default function ConfirmationCodeModal({
                 >
                   Insira o código SMS enviado para o telefone (XX) XXXXXX-
                   {sendCodeProps?.phone.substring(9, 13)} informado no cadastro.
-                  Não recebeu o código?{" "}
+                  Não recebeu o código?{' '}
                   {resendCodeAvailable ? (
                     <Link
                       onPress={() => handleResendCode()}
@@ -141,5 +141,5 @@ export default function ConfirmationCodeModal({
         )}
       </ModalContent>
     </Modal>
-  );
+  )
 }

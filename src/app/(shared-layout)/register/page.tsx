@@ -1,34 +1,28 @@
-"use client";
+'use client'
 
-import {
-  Button,
-  Input,
-  Link,
-  Checkbox,
-  useDisclosure,
-} from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import { useState } from "react";
-import { EyeSlashFilledIcon } from "../../components/EyeSlashFilledIcon/EyeSlashFilledIcon";
-import { EyeFilledIcon } from "../../components/EyeFilledIcon/EyeFilledIcon";
-import ConfirmationCodeModal from "@/app/components/ConfirmationCodeModal/ConfirmationCodeModal";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { schemaRegisterUser } from "@/schemas/user";
-import InputMask from "react-input-mask";
-import { createUser } from "./actions";
-import toast from "react-hot-toast";
-import { useAuthContext } from "@/context/AuthContext";
-import { resendCode } from "../login/actions";
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+import { Button, Input, Link, Checkbox, useDisclosure } from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import { useState } from 'react'
+import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon/EyeSlashFilledIcon'
+import { EyeFilledIcon } from '../../components/EyeFilledIcon/EyeFilledIcon'
+import ConfirmationCodeModal from '@/app/components/ConfirmationCodeModal/ConfirmationCodeModal'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { schemaRegisterUser } from '@/schemas/user'
+import InputMask from 'react-input-mask'
+import { createUser } from './actions'
+import toast from 'react-hot-toast'
+import { useAuthContext } from '@/context/AuthContext'
+import { resendCode } from '../login/actions'
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function Register() {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { handleSetSendCodeProps } = useAuthContext();
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [isChecked, setIsChecked] = useState<boolean>(false)
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { handleSetSendCodeProps } = useAuthContext()
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -37,27 +31,27 @@ export default function Register() {
     formState: { errors },
   } = useForm<INewUser>({
     resolver: yupResolver(schemaRegisterUser),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
-  });
+  })
 
   async function handleRegister(data: INewUser) {
-    setLoading(true);
+    setLoading(true)
     data.phone =
-      "55" + data.phone.replace("(", "").replace(")", "").replace("-", "");
+      '55' + data.phone.replace('(', '').replace(')', '').replace('-', '')
 
-    const { userId, error } = await createUser(data);
-    setLoading(false);
+    const { userId, error } = await createUser(data)
+    setLoading(false)
     if (error) {
-      toast.error(error);
+      toast.error(error)
     } else if (userId) {
-      reset();
-      handleSetSendCodeProps({ userId, phone: data.phone });
-      onOpen();
+      reset()
+      handleSetSendCodeProps({ userId, phone: data.phone })
+      onOpen()
     }
   }
 
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const toggleVisibility = () => setIsVisible(!isVisible)
 
   return (
     <div className="h-screen -mb-[148px] w-screen bg-[#1F67CE] flex flex-col">
@@ -84,9 +78,9 @@ export default function Register() {
           className="mt-4"
           errorMessage={errors.fullName?.message}
           isInvalid={!!errors.fullName?.message}
-          color={errors.fullName?.message ? "danger" : undefined}
-          variant={errors.fullName?.message ? "bordered" : undefined}
-          {...register("fullName")}
+          color={errors.fullName?.message ? 'danger' : undefined}
+          variant={errors.fullName?.message ? 'bordered' : undefined}
+          {...register('fullName')}
         />
         <Input
           size="md"
@@ -97,17 +91,17 @@ export default function Register() {
           className="mt-4 text-[#000]"
           errorMessage={errors.birthdate?.message}
           isInvalid={!!errors.birthdate?.message}
-          color={errors.birthdate?.message ? "danger" : undefined}
-          variant={errors.birthdate?.message ? "bordered" : undefined}
-          {...register("birthdate")}
+          color={errors.birthdate?.message ? 'danger' : undefined}
+          variant={errors.birthdate?.message ? 'bordered' : undefined}
+          {...register('birthdate')}
         />
         <Controller
           control={control}
-          name={"phone"}
+          name={'phone'}
           render={({ field }) => (
-            <InputMask mask={"(99)99999-9999"} {...field} type="text">
+            <InputMask mask={'(99)99999-9999'} {...field} type="text">
               <Input
-                placeholder={"(99)99999-9999"}
+                placeholder={'(99)99999-9999'}
                 className="mt-4"
                 size="md"
                 type="tel"
@@ -115,8 +109,8 @@ export default function Register() {
                 labelPlacement="inside"
                 errorMessage={errors.phone?.message}
                 isInvalid={!!errors.phone?.message}
-                color={errors.phone?.message ? "danger" : undefined}
-                variant={errors.phone?.message ? "bordered" : undefined}
+                color={errors.phone?.message ? 'danger' : undefined}
+                variant={errors.phone?.message ? 'bordered' : undefined}
               />
             </InputMask>
           )}
@@ -124,11 +118,11 @@ export default function Register() {
 
         <Input
           size="md"
-          {...register("password")}
+          {...register('password')}
           errorMessage={errors.password?.message}
           isInvalid={!!errors.password?.message}
-          color={errors.password?.message ? "danger" : undefined}
-          variant={errors.password?.message ? "bordered" : undefined}
+          color={errors.password?.message ? 'danger' : undefined}
+          variant={errors.password?.message ? 'bordered' : undefined}
           endContent={
             <button
               className="focus:outline-none"
@@ -142,7 +136,7 @@ export default function Register() {
               )}
             </button>
           }
-          type={isVisible ? "text" : "password"}
+          type={isVisible ? 'text' : 'password'}
           label="Senha"
           labelPlacement="inside"
           placeholder="Digite sua senha"
@@ -150,11 +144,11 @@ export default function Register() {
         />
         <Input
           size="md"
-          {...register("confirmPassword")}
+          {...register('confirmPassword')}
           errorMessage={errors.confirmPassword?.message}
           isInvalid={!!errors.confirmPassword?.message}
-          color={errors.confirmPassword?.message ? "danger" : undefined}
-          variant={errors.confirmPassword?.message ? "bordered" : undefined}
+          color={errors.confirmPassword?.message ? 'danger' : undefined}
+          variant={errors.confirmPassword?.message ? 'bordered' : undefined}
           endContent={
             <button
               className="focus:outline-none"
@@ -168,23 +162,23 @@ export default function Register() {
               )}
             </button>
           }
-          type={isVisible ? "text" : "password"}
+          type={isVisible ? 'text' : 'password'}
           label="Confirmar senha"
           labelPlacement="inside"
           placeholder="Digite sua senha novamente"
           className="mt-4"
         />
         <Checkbox
-          {...register("askTerms")}
+          {...register('askTerms')}
           isInvalid={!!errors.askTerms?.message}
           className="my-6"
           classNames={{
-            label: "text-white",
+            label: 'text-white',
           }}
         >
           <div>
-            Eu aceito os{" "}
-            <span className="font-bold text-white">Termos de Use</span> e{" "}
+            Eu aceito os{' '}
+            <span className="font-bold text-white">Termos de Use</span> e{' '}
             <span className="font-bold text-white">
               Políticas de Privacidade
             </span>
@@ -204,5 +198,5 @@ export default function Register() {
       </form>
       <ConfirmationCodeModal isOpen={isOpen} onClose={onOpenChange} />
     </div>
-  );
+  )
 }

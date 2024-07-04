@@ -1,67 +1,67 @@
-"use client";
+'use client'
 
-import { Button, useDisclosure, Image, Tabs, Tab } from "@nextui-org/react";
-import { Open_Sans as OpenSans } from "next/font/google";
-import CreateEventModal from "@/app/components/CreateEventModal/CreateEventModal";
-import { useEventsContext } from "@/context/EventsContext";
-import { MdPerson, MdEdit } from "react-icons/md";
-import SetResultModal from "@/app/components/SetResultModal/SetResultModal";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import RoundMatchsCardAdmin from "@/app/components/RoundMatchsCardAdmin/RoundMatchsCardAdmin";
+import { Button, useDisclosure, Image, Tabs, Tab } from '@nextui-org/react'
+import { Open_Sans as OpenSans } from 'next/font/google'
+import CreateEventModal from '@/app/components/CreateEventModal/CreateEventModal'
+import { useEventsContext } from '@/context/EventsContext'
+import { MdPerson, MdEdit } from 'react-icons/md'
+import SetResultModal from '@/app/components/SetResultModal/SetResultModal'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import RoundMatchsCardAdmin from '@/app/components/RoundMatchsCardAdmin/RoundMatchsCardAdmin'
 
-const fontOpenSans = OpenSans({ subsets: ["latin"] });
+const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function HomeAdmin() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [loading, setLoading] = useState(false)
   const [roundsWaiting, setRoundsWaiting] = useState<
     IRoundWithMatchsAndChampionship[]
-  >([]);
+  >([])
   const [roundsDone, setRoundsDone] = useState<
     IRoundWithMatchsAndChampionship[]
-  >([]);
+  >([])
   const { setCurrentModalIndex, refreshRounds, setRefreshRounds } =
-    useEventsContext();
+    useEventsContext()
 
   useEffect(() => {
-    fetchRounds("WAITING");
-    fetchRounds("DONE");
-  }, []);
+    fetchRounds('WAITING')
+    fetchRounds('DONE')
+  }, [])
 
   useEffect(() => {
     if (refreshRounds) {
-      fetchRounds("WAITING");
-      fetchRounds("DONE");
-      setRefreshRounds(false);
+      fetchRounds('WAITING')
+      fetchRounds('DONE')
+      setRefreshRounds(false)
     }
-  }, [refreshRounds]);
+  }, [refreshRounds])
 
-  const fetchRounds = async (status: "WAITING" | "DONE") => {
-    setLoading(true);
+  const fetchRounds = async (status: 'WAITING' | 'DONE') => {
+    setLoading(true)
     try {
-      const { fetchRoundsByStatus } = await RoundService();
-      const response = await fetchRoundsByStatus(status);
+      const { fetchRoundsByStatus } = await RoundService()
+      const response = await fetchRoundsByStatus(status)
 
-      console.log(response);
+      console.log(response)
       switch (status) {
-        case "DONE":
-          setRoundsDone([]);
-          setRoundsDone(response);
-          break;
+        case 'DONE':
+          setRoundsDone([])
+          setRoundsDone(response)
+          break
         default:
-          setRoundsWaiting([]);
-          setRoundsWaiting(response);
+          setRoundsWaiting([])
+          setRoundsWaiting(response)
       }
     } catch (error) {
-      const customError = handleAxiosError(error);
-      toast.error(customError.message);
+      const customError = handleAxiosError(error)
+      toast.error(customError.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div
@@ -110,5 +110,5 @@ export default function HomeAdmin() {
         onClose={onOpenChangeSetResultModal}
       /> */}
     </div>
-  );
+  )
 }

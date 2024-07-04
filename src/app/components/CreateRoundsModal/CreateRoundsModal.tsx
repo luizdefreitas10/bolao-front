@@ -1,8 +1,8 @@
-import { useEventsContext } from "@/context/EventsContext";
-import { schemaRound } from "@/schemas/round";
-import { handleAxiosError } from "@/services/api/error";
-import RoundService from "@/services/api/models/round";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useEventsContext } from '@/context/EventsContext'
+import { schemaRound } from '@/schemas/round'
+import { handleAxiosError } from '@/services/api/error'
+import RoundService from '@/services/api/models/round'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   ModalHeader,
   ModalBody,
@@ -10,24 +10,24 @@ import {
   Button,
   Input,
   Image,
-} from "@nextui-org/react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+} from '@nextui-org/react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 interface CloseButtonprops {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
-  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false)
   const {
     handleNextModal,
     handlePreviousModal,
     selectedChampionship,
     handleSetSelectedRound,
-  } = useEventsContext();
-  const [loading, setLoading] = useState(false);
+  } = useEventsContext()
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -35,33 +35,33 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
     formState: { errors },
   } = useForm<INewRoundForm>({
     resolver: yupResolver(schemaRound),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     shouldFocusError: false,
-  });
+  })
 
   const handleCreateRound = async (data: INewRoundForm) => {
     if (selectedChampionship) {
-      setLoading(true);
+      setLoading(true)
       try {
-        const { create } = await RoundService();
+        const { create } = await RoundService()
         const response = await create({
           name: data.name,
           championshipId: selectedChampionship,
-        });
-        console.log(response);
-        handleSetSelectedRound(response.roundId);
-        handleNextModal();
+        })
+        console.log(response)
+        handleSetSelectedRound(response.roundId)
+        handleNextModal()
       } catch (error) {
-        const customError = handleAxiosError(error);
-        toast.error(customError.message);
+        const customError = handleAxiosError(error)
+        toast.error(customError.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     } else {
-      toast.error("Necessário criar um campeonato para essa rodada.");
-      handlePreviousModal();
+      toast.error('Necessário criar um campeonato para essa rodada.')
+      handlePreviousModal()
     }
-  };
+  }
 
   return (
     <>
@@ -83,10 +83,10 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
             placeholder="Ex: 11ª Rodada"
             errorMessage={errors.name?.message}
             isInvalid={!!errors.name?.message}
-            color={errors.name?.message ? "danger" : undefined}
-            variant={errors.name?.message ? "bordered" : undefined}
+            color={errors.name?.message ? 'danger' : undefined}
+            variant={errors.name?.message ? 'bordered' : undefined}
             // onChange={(e) => handleInputChange(e)}
-            {...register("name")}
+            {...register('name')}
           />
         </ModalBody>
         <ModalFooter className="flex flex-col space-y-4">
@@ -114,5 +114,5 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
         </ModalFooter>
       </form>
     </>
-  );
+  )
 }
