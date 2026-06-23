@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import MyHistoryModal from '@/app/components/MyHistoryModal/MyHistoryModal'
 import useWindowWidth from '@/utils/window-width-hook'
 import {
@@ -13,6 +13,9 @@ import {
 import { fetchChampionshipsWithRounds, submitPredictions } from './actions'
 import { parseCookies } from 'nookies'
 import toast from 'react-hot-toast'
+import { getLogo, isDefaultLogo } from '@/utils/getLogo'
+import { getPlayerPhoto } from '@/utils/getPlayerPhoto'
+import { formatMatchDateTime } from '@/utils/formatDate'
 
 export default function HomeUser() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -184,6 +187,19 @@ export default function HomeUser() {
     )
   }
 
+  const sortedMatches = useMemo(() => {
+    return championships
+      .flatMap((championship) =>
+        championship.rounds.flatMap((round) =>
+          round.matchs.map((match) => ({ championship, round, match })),
+        ),
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.match.date).getTime() - new Date(b.match.date).getTime(),
+      )
+  }, [championships])
+
   return (
     <form
       className={`flex flex-col mx-auto w-[100%] h-full bg-white-texture `}
@@ -204,10 +220,8 @@ export default function HomeUser() {
               Nenhuma partida encontrada!
             </h1>
           ) : (
-            championships.flatMap((championship) =>
-              championship.rounds.flatMap((round) =>
-                round.matchs.map((match, matchIndex) => (
-                  <div key={`match-${match.id}`}>
+            sortedMatches.map(({ championship, round, match }, matchIndex) => (
+              <div key={`match-${match.id}`}>
                     <div
                       key={`match-container-${matchIndex}`}
                       className="flex flex-col w-[90%] mx-auto"
@@ -223,11 +237,19 @@ export default function HomeUser() {
                             </h1>
                           </div>
                           <h1 className="text-white text-[12px] font-normal">
-                            {new Date(match.date).toLocaleDateString('pt-BR')}
+                            {formatMatchDateTime(match.date)}
                           </h1>
                         </div>
                         <div className="flex justify-center items-center mt-4">
                           <div className="flex flex-col justify-center items-center">
+                            <Image
+                              src={getLogo(
+                                match.teamHome.name,
+                                match.teamHome.logoUrl,
+                              )}
+                              alt={match.teamHome.name}
+                              className={`w-[40px] h-[40px] rounded-full mb-2 object-cover ${isDefaultLogo(getLogo(match.teamHome.name, match.teamHome.logoUrl)) ? 'bg-white p-1' : ''}`}
+                            />
                             <h1 className="text-center text-white mb-4">
                               {match.teamHome.name}
                             </h1>
@@ -275,6 +297,14 @@ export default function HomeUser() {
                           </div>
                           <h1 className="mx-4">X</h1>
                           <div className="flex flex-col justify-center items-center">
+                            <Image
+                              src={getLogo(
+                                match.teamAway.name,
+                                match.teamAway.logoUrl,
+                              )}
+                              alt={match.teamAway.name}
+                              className={`w-[40px] h-[40px] rounded-full mb-2 object-cover ${isDefaultLogo(getLogo(match.teamAway.name, match.teamAway.logoUrl)) ? 'bg-white p-1' : ''}`}
+                            />
                             <h1 className="text-center text-white mb-4">
                               {match.teamAway.name}
                             </h1>
@@ -338,14 +368,17 @@ export default function HomeUser() {
                               </h1>
                             </div>
                             <h1 className="text-white text-[12px] font-normal">
-                              {new Date(match.date).toLocaleDateString('pt-BR')}
+                              {formatMatchDateTime(match.date)}
                             </h1>
                           </div>
                           <div className="flex space-x-2 items-center mt-4">
                             <Image
-                              src="/sportlogo.svg"
-                              alt="sport logo"
-                              className="w-[28px] h-[28px]"
+                              src={getLogo(
+                                match.lastPlayerTeam.name,
+                                match.lastPlayerTeam.logoUrl,
+                              )}
+                              alt={match.lastPlayerTeam.name}
+                              className={`w-[28px] h-[28px] rounded-full object-cover ${isDefaultLogo(getLogo(match.lastPlayerTeam.name, match.lastPlayerTeam.logoUrl)) ? 'bg-white p-0.5' : ''}`}
                             />
                             <h1 className="text-white text-[12px] font-normal">
                               Jogadores - {match.lastPlayerTeam.name}
@@ -378,8 +411,12 @@ export default function HomeUser() {
                               >
                                 <div className="flex justify-center items-center space-x-2">
                                   <Image
-                                    src="/sportlogo.svg"
+                                    src={getPlayerPhoto(
+                                      player.photoUrl,
+                                      player.name,
+                                    )}
                                     alt={player.name}
+                                    className="w-[28px] h-[28px] rounded-full object-cover"
                                   />
                                   <h1 className="">{player.name}</h1>
                                 </div>
@@ -400,9 +437,7 @@ export default function HomeUser() {
                       </div>
                     )}
                   </div>
-                )),
-              ),
-            )
+            ))
           )}
         </div>
       )}
