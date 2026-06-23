@@ -18,6 +18,20 @@ export function formatDateToCustomString(date: Date): string {
   return formattedDate
 }
 
+export function formatMatchDateTime(date: Date | string): string {
+  const parsed = typeof date === 'string' ? new Date(date) : date
+
+  const datePart = formatInTimeZone(parsed, 'America/Sao_Paulo', 'dd/MM/yyyy', {
+    locale: ptBR,
+  })
+
+  const timePart = formatInTimeZone(parsed, 'America/Sao_Paulo', 'HH:mm', {
+    locale: ptBR,
+  })
+
+  return `${datePart} · ${timePart}`
+}
+
 export function formatDateToCustomFullString(date: string) {
   const dateInTimeZone = formatInTimeZone(
     new Date(date),

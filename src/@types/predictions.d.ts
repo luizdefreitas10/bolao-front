@@ -16,15 +16,15 @@ declare interface IPredictionResponse {
 declare interface IPredictionsGetResponse {
   match: {
     date: Date
-    id: string
-    lastPlayer: string
-    roundId: string
-    roundName: string
-    scoreAway: number
-    scoreHome: number
+    id?: string
+    lastPlayer?: string
+    roundId?: string
+    roundName?: string
+    scoreAway?: number
+    scoreHome?: number
     status: string
-    teamAway: string
-    teamHome: string
+    teamAway: string | { name: string; logoUrl?: string | null }
+    teamHome: string | { name: string; logoUrl?: string | null }
   }
   predictionScore: {
     predictionHome: number
@@ -34,6 +34,7 @@ declare interface IPredictionsGetResponse {
   predictionPlayer: {
     player: string | null
     team: string | null
+    photoUrl?: string | null
     status: 'HIT' | 'MISS'
   }
 }

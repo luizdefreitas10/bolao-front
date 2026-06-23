@@ -27,16 +27,20 @@ declare interface IChampionshipWithRounds {
       players: {
         name: string
         id: string
+        photoUrl?: string | null
       }[]
       lastPlayerTeam: {
         id: string
         name: string
+        logoUrl?: string | null
       }
       teamAway: {
         name: string
+        logoUrl?: string | null
       }
       teamHome: {
         name: string
+        logoUrl?: string | null
       }
       predictions: {
         id: string
