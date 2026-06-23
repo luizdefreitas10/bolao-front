@@ -55,10 +55,25 @@ export const schemaSetResultMatch = (
 ): yup.ObjectSchema<ISetResultMatch> =>
   yup
     .object({
-      scoreAway: yup.number().required('Campo Placa Fora Obrigatório.'),
-      scoreHome: yup.number().required('Campo Placar Casa Obrigatório.'),
+      scoreAway: yup
+        .number()
+        .transform((value, originalValue) =>
+          originalValue === '' || originalValue === null
+            ? undefined
+            : Number(originalValue),
+        )
+        .required('Campo Placa Fora Obrigatório.'),
+      scoreHome: yup
+        .number()
+        .transform((value, originalValue) =>
+          originalValue === '' || originalValue === null
+            ? undefined
+            : Number(originalValue),
+        )
+        .required('Campo Placar Casa Obrigatório.'),
       lastPlayerId: yup
         .string()
+        .optional()
         .test(
           'required-if-players',
           'Campo Último Jogador Obrigatório.',
@@ -93,14 +108,7 @@ export const editMatchesSchema = yup.object({
       }
       return value
     })
-    .required('Data e hora são obrigatórias')
-    .test(
-      'is-future-date',
-      'Data e hora não podem estar no passado',
-      (value) => {
-        return value ? !isPast(new Date(value)) : false
-      },
-    ),
+    .required('Data e hora são obrigatórias'),
   lastPlayerTeam: yup.string().optional(),
   players: yup
     .array()

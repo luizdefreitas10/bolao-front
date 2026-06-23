@@ -32,24 +32,29 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
   const { 'qxute-bolao:x-token': token } = parseCookies()
 
   const getUserPredictions = async (token: string) => {
-    const { predictions } = await getPredictions(token)
-    return predictions
+    return getPredictions(token)
   }
 
   useEffect(() => {
-    getUserPredictions(token).then((listOfPredictions) => {
+    if (!isOpen) return
+
+    getUserPredictions(token).then((result) => {
+      if (result.isError || !result.predictions) {
+        return
+      }
+
       let correctPredictions = 0
       let incorrectPredictions = 0
 
-      const userPredictions = listOfPredictions?.map((prediction) => {
-        const userPlayerPredStatus = prediction.predictionPlayer.status
-        const userScorePredStatus = prediction.predictionScore.status
+      const predictions = result.predictions.map((prediction) => {
+        const userPlayerPredStatus = prediction.predictionPlayer?.status
+        const userScorePredStatus = prediction.predictionScore?.status
 
         if (userPlayerPredStatus === 'HIT' && userScorePredStatus === 'HIT') {
           correctPredictions += 1
         } else if (
-          Object.keys(prediction.predictionPlayer).length === 0 &&
-          prediction.predictionScore.status === 'HIT'
+          Object.keys(prediction.predictionPlayer || {}).length === 0 &&
+          prediction.predictionScore?.status === 'HIT'
         ) {
           correctPredictions += 1
         } else if (
@@ -62,11 +67,11 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
         return prediction
       })
 
-      setUserPredictions(userPredictions || [])
+      setUserPredictions(predictions)
       setTotalCorrectPredictions(correctPredictions)
       setTotalIncorrectPredictions(incorrectPredictions)
     })
-  }, [])
+  }, [isOpen, token])
 
   return (
     <Modal
