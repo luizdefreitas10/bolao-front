@@ -5,44 +5,54 @@ import Link from 'next/link'
 
 const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
+const steps = [
+  {
+    title: 'Passo 1',
+    description: 'Faça login ou crie sua conta no bolão.',
+  },
+  {
+    title: 'Passo 2',
+    description: 'Escolha os jogos e informe seu palpite de placar.',
+  },
+  {
+    title: 'Passo 3',
+    description: 'Indique quem fará o último gol e acompanhe seu histórico.',
+  },
+]
+
 export default function HowItWorks() {
   return (
-    <div className="bg-white-texture flex flex-col">
-      <h1
-        className={`${fontOpenSans.className} my-6 text-center text-[#00409F] text-[18px] font-extrabold`}
+    <section className="flex flex-col bg-rs-surface px-6 py-12">
+      <h2
+        className={`${fontOpenSans.className} mb-8 text-center text-lg font-extrabold text-rs-heading md:text-xl`}
       >
-        COMO FUNCIONA?
-      </h1>
-      <div className="mx-auto w-[85%] flex flex-col justify-center items-center space-y-4">
-        <Button
-          className={`bg-[#1F67CE] text-[12px] font-bold text-white py-3 px-6 ${fontOpenSans.className}`}
-        >
-          PASSO 1
-        </Button>
-        <h1 className="text-[#1F67CE]">Faca o login</h1>
-        <Button className="bg-[#1F67CE] text-[12px] font-bold text-white py-3 px-6">
-          PASSO 2
-        </Button>
-        <h1 className="text-[#1F67CE]">
-          Lorem ipsum dolor sit amet consectetur. Porttitor condimentum commodo
-          ut proin.
-        </h1>
-        <Button className="bg-[#1F67CE] text-[12px] font-bold text-white py-3 px-6">
-          PASSO 3
-        </Button>
-        <h1 className="text-[#1F67CE]">
-          Lorem ipsum dolor sit amet consectetur. Porttitor condimentum commodo
-          ut proin.
-        </h1>
+        Como funciona?
+      </h2>
+      <div className="mx-auto flex w-full max-w-lg flex-col items-center space-y-6">
+        {steps.map((step) => (
+          <div
+            key={step.title}
+            className="flex w-full flex-col items-center gap-3 rounded-2xl border border-rs-border bg-rs-card p-5"
+          >
+            <Button
+              className={`${fontOpenSans.className} bg-rs-gold px-6 py-3 text-xs font-bold text-rs-ink`}
+            >
+              {step.title.toUpperCase()}
+            </Button>
+            <p className="text-center text-sm text-rs-muted md:text-base">
+              {step.description}
+            </p>
+          </div>
+        ))}
       </div>
 
       <Button
         as={Link}
         href="/login"
-        className={`w-[85%] mx-auto rounded-full bg-[#00764B] text-white text-[14px] font-bold my-8 ${fontOpenSans.className}`}
+        className={`${fontOpenSans.className} mx-auto mt-10 w-[85%] max-w-md rounded-full bg-rs-gold text-sm font-bold text-rs-ink`}
       >
         Participar
       </Button>
-    </div>
+    </section>
   )
 }

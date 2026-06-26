@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon/EyeSlashFilledIcon'
 import { EyeFilledIcon } from '../../components/EyeFilledIcon/EyeFilledIcon'
 import ConfirmationCodeModal from '@/app/components/ConfirmationCodeModal/ConfirmationCodeModal'
+import AuthShell from '@/app/components/AuthShell/AuthShell'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schemaRegisterUser } from '@/schemas/user'
@@ -51,20 +52,13 @@ export default function Register() {
   const toggleVisibility = () => setIsVisible(!isVisible)
 
   return (
-    <div className="h-screen -mb-[148px] w-screen bg-[#1F67CE] flex flex-col">
-      <h1
-        className={`${fontOpenSans.className} mt-10 text-center text-[18px] font-bold text-white`}
-      >
-        Registrar
-      </h1>
-      <p
-        className={`${fontOpenSans.className} text-center text-[12px] font-normal text-white my-2`}
-      >
-        Registre-se agora e participe!
-      </p>
+    <AuthShell
+      title="Criar conta"
+      subtitle="Cadastre-se e participe do bolão da Resenha da Sorte."
+    >
       <form
         onSubmit={handleSubmit(handleRegister)}
-        className="flex flex-col w-[90%] mx-auto"
+        className="mx-auto flex w-full flex-col"
       >
         <Input
           size="md"
@@ -170,13 +164,13 @@ export default function Register() {
           isInvalid={!!errors.askTerms?.message}
           className="my-6"
           classNames={{
-            label: 'text-white',
+            label: 'text-rs-muted',
           }}
         >
           <div>
             Eu aceito os{' '}
-            <span className="font-bold text-white">Termos de Use</span> e{' '}
-            <span className="font-bold text-white">
+            <span className="font-bold text-rs-heading">Termos de Use</span> e{' '}
+            <span className="font-bold text-rs-heading">
               Políticas de Privacidade
             </span>
           </div>
@@ -188,12 +182,12 @@ export default function Register() {
         <Button
           isLoading={loading}
           type="submit"
-          className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] ${fontOpenSans.className}`}
+          className={`mt-6 rounded-full bg-rs-gold text-sm text-rs-ink ${fontOpenSans.className}`}
         >
           Criar conta
         </Button>
       </form>
       <ConfirmationCodeModal isOpen={isOpen} onClose={onOpenChange} />
-    </div>
+    </AuthShell>
   )
 }

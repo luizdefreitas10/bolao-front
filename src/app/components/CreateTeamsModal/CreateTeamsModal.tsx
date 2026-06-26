@@ -19,6 +19,13 @@ import {
 import { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import {
+  eventModalBodyClassName,
+  eventModalHeaderClassName,
+  inputClassNames,
+  selectClassNames,
+  selectItemClassName,
+} from '@/app/components/form/formClassNames'
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
 
 interface CloseButtonprops {
@@ -143,21 +150,19 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
 
   return (
     <>
-      <ModalHeader className="flex space-x-2 items-center">
+      <ModalHeader className={eventModalHeaderClassName}>
         <Image src="/sportsicon.png" alt="stadium icon" />
         <h1>3. Times </h1>
       </ModalHeader>
       <form onSubmit={handleSubmit(handleCreateTeams)}>
-        <ModalBody className="space-y-2">
+        <ModalBody className={eventModalBodyClassName}>
           <p>
             Lorem ipsum dolor sit amet consectetur. Nulla ac nisl pellentesque
             netus diam. Vel urna mattis.
           </p>
           {teams?.length > 0 && (
             <Select
-              classNames={{
-                selectorIcon: 'text-black',
-              }}
+              classNames={selectClassNames}
               defaultSelectedKeys={selectedTeams.map((item) => item.id) || ''}
               color="default"
               label="Selecione os times"
@@ -171,7 +176,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
                 <SelectItem
                   key={team.id}
                   value={team.id}
-                  className="text-black"
+                  className={selectItemClassName}
                 >
                   {team.name}
                 </SelectItem>
@@ -207,6 +212,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
                   type="text"
                   isDisabled={index === 0 && shouldDisableAddNewTeam}
                   placeholder={`Nome novo time ${index + 1}`}
+                  classNames={inputClassNames}
                   errorMessage={
                     errors?.names && errors?.names[index]?.name?.message
                   }
@@ -247,7 +253,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
               isDisabled={isDisabledButton || !!loading}
               onClick={handleNextModal}
               type="button"
-              className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+              className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
             >
               Avançar
             </Button>
@@ -256,7 +262,7 @@ export default function CreateTeamsModal({ onClose }: CloseButtonprops) {
               isDisabled={isDisabledButton}
               // onClick={handleNextModal}
               type="submit"
-              className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+              className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
             >
               Avançar
             </Button>

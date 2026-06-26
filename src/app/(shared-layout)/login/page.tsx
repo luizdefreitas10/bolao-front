@@ -12,6 +12,7 @@ import { EyeSlashFilledIcon } from '@/app/components/EyeSlashFilledIcon/EyeSlash
 import { EyeFilledIcon } from '@/app/components/EyeFilledIcon/EyeFilledIcon'
 import InputMask from 'react-input-mask'
 import ConfirmationCodeModal from '@/app/components/ConfirmationCodeModal/ConfirmationCodeModal'
+import AuthShell from '@/app/components/AuthShell/AuthShell'
 
 const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
@@ -56,23 +57,16 @@ export default function Login() {
   }
 
   return (
-    <div className="h-full w-screen bg-[#1F67CE] flex flex-col">
-      <h1
-        className={`${fontOpenSans.className} mt-10 text-center text-[18px] font-bold text-white`}
-      >
-        Bem-vindo de volta!
-      </h1>
-      <p
-        className={`${fontOpenSans.className} text-center text-[12px] font-normal text-white my-2`}
-      >
-        Estamos felizes em te ver novamente! Conecte-se e aproveite!
-      </p>
+    <AuthShell
+      title="Bem-vindo de volta!"
+      subtitle="Entre na sua conta e continue palpitando no bolão da Resenha da Sorte."
+    >
       <form
-        className="flex flex-col w-[90%] mx-auto"
+        className="mx-auto flex w-full flex-col"
         onSubmit={handleSubmit(handleLogin)}
       >
-        <label htmlFor={'phone'} className="text-[#CCFFFFFF] text-sm mb-1 mt-2">
-          Celular <span className="text-[#DA1414]">*</span>
+        <label htmlFor={'phone'} className="mb-1 mt-2 text-sm text-rs-muted">
+          Celular <span className="text-danger">*</span>
         </label>
         <Controller
           control={control}
@@ -93,11 +87,8 @@ export default function Login() {
             </InputMask>
           )}
         />
-        <label
-          htmlFor={'password'}
-          className="text-[#CCFFFFFF] text-sm mb-1 mt-2"
-        >
-          Senha <span className="text-[#DA1414]">*</span>
+        <label htmlFor={'password'} className="mb-1 mt-2 text-sm text-rs-muted">
+          Senha <span className="text-danger">*</span>
         </label>
         <Input
           size="md"
@@ -127,7 +118,7 @@ export default function Login() {
         <div className="w-full flex justify-end">
           <Link href={'/recover-password'}>
             <p
-              className={`text-white text-[12px] my-2 ${fontOpenSans.className}`}
+              className={`my-2 text-xs text-rs-gold ${fontOpenSans.className}`}
             >
               Esqueci minha senha
             </p>
@@ -137,7 +128,7 @@ export default function Login() {
         <Button
           type="submit"
           isLoading={loading}
-          className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] ${fontOpenSans.className}`}
+          className={`mt-6 rounded-full bg-rs-gold text-sm text-rs-ink ${fontOpenSans.className}`}
         >
           Entrar
         </Button>
@@ -145,12 +136,12 @@ export default function Login() {
           as={Link}
           href="/register"
           variant="bordered"
-          className={`mt-4 rounded-3xl bg-[#1F67CE] text-white text-[14px] ${fontOpenSans.className} border-solid border-white`}
+          className={`mt-4 rounded-full border-rs-gold text-sm text-rs-gold ${fontOpenSans.className}`}
         >
           Criar conta
         </Button>
       </form>
       <ConfirmationCodeModal isOpen={isOpen} onClose={onOpenChange} />
-    </div>
+    </AuthShell>
   )
 }

@@ -3,32 +3,88 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --rs-gold: #f9cf1d;
+  --rs-gold-dark: #d4ad0f;
+  --rs-ink: #0a0a0a;
+  --rs-background: #f7f7f5;
+  --rs-surface: #ffffff;
+  --rs-card: #ffffff;
+  --rs-card-elevated: #efefeb;
+  --rs-heading: #0a0a0a;
+  --rs-muted: #5c5c5c;
+  --rs-border: #e0e0da;
+  --rs-hero: linear-gradient(165deg, #fafaf8 0%, #f2f0e8 55%, #ebe8dc 100%);
+  --rs-modal: #ffffff;
+  --rs-navbar: #ffffff;
+  --rs-footer: #0a0a0a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.dark {
+  --rs-background: #0a0a0a;
+  --rs-surface: #111111;
+  --rs-card: #1a1a1a;
+  --rs-card-elevated: #242424;
+  --rs-heading: #fafafa;
+  --rs-muted: #a3a3a3;
+  --rs-border: #2e2e2e;
+  --rs-hero: linear-gradient(165deg, #0a0a0a 0%, #141414 55%, #1a1a1a 100%);
+  --rs-modal: #1a1a1a;
+  --rs-navbar: #0a0a0a;
+  --rs-footer: #0a0a0a;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-rs-background text-rs-heading antialiased;
+  background-image: none;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .bg-rs-hero {
+    background: var(--rs-hero);
+  }
+
+  .bg-rs-background {
+    background-color: var(--rs-background);
+  }
+
+  .bg-rs-surface {
+    background-color: var(--rs-surface);
+  }
+
+  .bg-rs-card {
+    background-color: var(--rs-card);
+  }
+
+  .bg-rs-card-elevated {
+    background-color: var(--rs-card-elevated);
+  }
+
+  .bg-rs-modal {
+    background-color: var(--rs-modal);
+  }
+
+  .bg-rs-navbar {
+    background-color: var(--rs-navbar);
+  }
+
+  .bg-rs-footer {
+    background-color: var(--rs-footer);
+  }
+
+  .text-rs-heading {
+    color: var(--rs-heading);
+  }
+
+  .text-rs-muted {
+    color: var(--rs-muted);
+  }
+
+  .border-rs-border {
+    border-color: var(--rs-border);
   }
 }
 
@@ -38,20 +94,12 @@ body {
   align-items: center;
 }
 
-.bg-white-texture {
-  background-image: url("/whitetexture.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
 }

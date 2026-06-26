@@ -44,6 +44,7 @@ declare interface IMatchRound {
   lastPlayerTeam: {
     id: string
     name: string
+    logoUrl?: string | null
   } | null
   scoreAway: number
   scoreHome: number
@@ -52,18 +53,22 @@ declare interface IMatchRound {
   teamAway: {
     name: string
     id: string
+    logoUrl?: string | null
   }
   teamHome: {
     name: string
     id: string
+    logoUrl?: string | null
   }
   players: {
     name: string
     id: string
+    photoUrl?: string | null
   }[]
   lastPlayerToScore?: {
     id: string
     name: string
+    photoUrl?: string | null
   }
 }
 

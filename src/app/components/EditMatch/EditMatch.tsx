@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import {
   Button,
   Checkbox,
-  DateInput,
   DateValue,
   Input,
   Modal,
@@ -18,6 +17,13 @@ import {
   Select,
   SelectItem,
 } from '@nextui-org/react'
+import DateTimePickerField from '@/app/components/DateTimePickerField/DateTimePickerField'
+import {
+  checkboxClassNames,
+  inputClassNames,
+  selectClassNames,
+  selectItemClassName,
+} from '@/app/components/form/formClassNames'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -279,7 +285,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
       size="4xl"
       closeButton={<img src="/closeicon.png" alt="close" />}
     >
-      <ModalContent className={`bg-[#1F67CE]`}>
+      <ModalContent className="bg-rs-modal text-rs-heading">
         {() => (
           <form onSubmit={handleSubmit(handleEdit)}>
             <ModalHeader className="flex space-x-2 items-center">
@@ -290,53 +296,47 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
               <Controller
                 control={control}
                 name={'dateTime'}
-                render={({ field }) => (
-                  <DateInput
-                    label="Data e Hora"
-                    hideTimeZone
-                    hourCycle={24}
-                    granularity="minute"
-                    {...field}
+                render={({ field: { value, onChange, onBlur, name } }) => (
+                  <DateTimePickerField
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
                     isInvalid={!!errors?.dateTime?.message}
                     errorMessage={errors?.dateTime?.message || ''}
-                    // defaultValue={parseZonedDateTime(`${editSelectedMatch?.date.substring(0,16)}[America/Sao_Paulo]`)}
-                    // defaultValue={getDefaultValue()}
                   />
                 )}
               />
               <Input
                 {...register('homeTeam')}
-                color="default"
+                classNames={inputClassNames}
                 label="Time casa"
                 isDisabled
                 defaultValue={editSelectedMatch?.teamHome.name}
               />
               <Input
                 {...register('awayTeam')}
-                color="default"
+                classNames={inputClassNames}
                 label="Time fora"
                 isDisabled
                 defaultValue={editSelectedMatch?.teamAway.name}
               />
               {!shouldSelectTeamLastPlayer && (
                 <Checkbox
-                  classNames={{
-                    label: 'text-white',
-                  }}
+                  classNames={checkboxClassNames}
                   defaultChecked={false}
                   defaultSelected={false}
                   onChange={(e) => {
                     handleSelectCheckbox(e.target.checked)
                   }}
                 >
-                  <p>Adicionar jogadores para palpite de último marcador.</p>
+                  Adicionar jogadores para palpite de último marcador
                 </Checkbox>
               )}
               {shouldSelectTeamLastPlayer && (
                 <>
                   <Select
-                    classNames={{ selectorIcon: 'text-black' }}
-                    color="default"
+                    classNames={selectClassNames}
                     label="Selecione o time do último marcador"
                     className="w-full"
                     defaultSelectedKeys={[selectedTeam]}
@@ -357,7 +357,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
                       <SelectItem
                         key={team.id}
                         value={team.id}
-                        className="text-black"
+                        className={selectItemClassName}
                       >
                         {team.name}
                       </SelectItem>
@@ -365,8 +365,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
                   </Select>
                   {players.length > 0 && (
                     <Select
-                      classNames={{ selectorIcon: 'text-black' }}
-                      color="default"
+                      classNames={selectClassNames}
                       label="Selecione os jogadores"
                       className="w-full"
                       selectionMode="multiple"
@@ -384,7 +383,7 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
                         <SelectItem
                           key={player.name}
                           value={player.name}
-                          className="text-black"
+                          className={selectItemClassName}
                         >
                           {player.name}
                         </SelectItem>
@@ -405,14 +404,14 @@ export default function EditMatchModal({ isOpen, onClose }: ModalProps) {
               <Button
                 isDisabled={!!loading}
                 type="submit"
-                className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+                className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
               >
                 Salvar
               </Button>
               <Button
                 onClick={handleOnClose}
                 variant="bordered"
-                className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+                className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
               >
                 Fechar
               </Button>

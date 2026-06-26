@@ -19,6 +19,14 @@ import { Open_Sans as OpenSans } from 'next/font/google'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import {
+  checkboxClassNames,
+  inputClassNames,
+  selectClassNames,
+  selectItemClassName,
+  eventModalBodyClassName,
+  eventModalHeaderClassName,
+} from '@/app/components/form/formClassNames'
 
 const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
@@ -92,12 +100,12 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
 
   return (
     <>
-      <ModalHeader className="flex space-x-2 items-center">
+      <ModalHeader className={eventModalHeaderClassName}>
         <Image src="/trophyicon.svg" alt="trophy icon" />
         <h1>1. Campeonato </h1>
       </ModalHeader>
       <form onSubmit={handleSubmit(handleCreateChampionship)}>
-        <ModalBody className="space-y-2">
+        <ModalBody className={eventModalBodyClassName}>
           <p>
             Lorem ipsum dolor sit amet consectetur. Nulla ac nisl pellentesque
             netus diam. Vel urna mattis.
@@ -106,9 +114,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
             <Select
               defaultSelectedKeys={[selectedChampionship || '']}
               onChange={(e) => setSelectedChampionship(e.target.value)}
-              classNames={{
-                selectorIcon: 'text-black',
-              }}
+              classNames={selectClassNames}
               color="default"
               label="Selecione o campeonato"
               className="w-full"
@@ -117,7 +123,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
                 <SelectItem
                   key={championship.id}
                   value={championship.id}
-                  className="text-black"
+                  className={selectItemClassName}
                 >
                   {championship.name}
                 </SelectItem>
@@ -130,9 +136,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
             isDisabled={isDisabledCheckbox}
             size="lg"
             className="text-[12px]"
-            classNames={{
-              label: 'text-white',
-            }}
+            classNames={checkboxClassNames}
           >
             Novo campeonato
           </Checkbox>
@@ -143,6 +147,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
               size="md"
               label="Nome do campeonato"
               placeholder="Digite o nome do campeonato"
+              classNames={inputClassNames}
               errorMessage={errors.name?.message}
               isInvalid={!!errors.name?.message}
               color={errors.name?.message ? 'danger' : undefined}
@@ -159,7 +164,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
               isLoading={loading}
               onClick={() => handleNextModal()}
               isDisabled={isDisabledButton}
-              className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+              className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-rs-gold rounded-full`}
             >
               Avançar
             </Button>
@@ -167,7 +172,7 @@ export default function CreateChampionshipModal({ onClose }: CloseButtonprops) {
             <Button
               type="submit"
               isDisabled={isDisabledButton}
-              className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+              className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-rs-gold rounded-full`}
             >
               Avançar
             </Button>

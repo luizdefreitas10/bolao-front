@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   Button,
   useDisclosure,
@@ -10,6 +10,7 @@ import {
 } from '@nextui-org/react'
 import { Open_Sans as OpenSans } from 'next/font/google'
 import CreateEventModal from '@/app/components/CreateEventModal/CreateEventModal'
+import PromoBanner from '@/app/components/PromoBanner/PromoBanner'
 import { useEventsContext } from '@/context/EventsContext'
 import toast from 'react-hot-toast'
 import { handleAxiosError } from '@/services/api/error'
@@ -17,6 +18,10 @@ import RoundService from '@/services/api/models/round'
 import RoundMatchsCardAdmin from '@/app/components/RoundMatchsCardAdmin/RoundMatchsCardAdmin'
 
 const fontOpenSans = OpenSans({ subsets: ['latin'] })
+
+function hasMatches(rounds: IRoundWithMatchsAndChampionship[]) {
+  return rounds.some((round) => round.matchs.some((match) => match.id))
+}
 
 export default function HomeAdmin() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -29,11 +34,6 @@ export default function HomeAdmin() {
   >([])
   const { setCurrentModalIndex, refreshRounds, setRefreshRounds } =
     useEventsContext()
-
-  // useEffect(() => {
-  //   fetchRounds('WAITING')
-  //   fetchRounds('DONE')
-  // }, [])
 
   useEffect(() => {
     if (refreshRounds) {
@@ -71,56 +71,44 @@ export default function HomeAdmin() {
     }
   }
 
+  const waitingHasMatches = useMemo(
+    () => hasMatches(roundsWaiting),
+    [roundsWaiting],
+  )
+  const doneHasMatches = useMemo(() => hasMatches(roundsDone), [roundsDone])
+
   return (
     <div
-      className={`w-full h-full flex flex-col items-center ${fontOpenSans.className}`}
+      className={`flex h-full w-full flex-col items-center ${fontOpenSans.className}`}
     >
-      <h1 className={`text-center text-[#00409F] text-[18px] font-bold mt-10`}>
-        Lorem Ipsum
+      <h1 className="mt-10 text-center text-[18px] font-bold text-rs-heading">
+        Partidas
       </h1>
-      <p className="text-[#00409F] mt-2 mb-4 text-center">
-        Lorem ipsum dolor sit amet consectetur. Laoreet.
+      <p className="mb-4 mt-2 text-center text-sm text-rs-muted">
+        Gerencie os eventos, edite partidas e defina resultados.
       </p>
-      <div className="flex flex-col items-center w-[90%]">
+      <div className="flex w-[90%] flex-col items-center">
         {loading ? (
-          <div className="h-[200px] w-full flex items-center justify-center">
+          <div className="flex h-[200px] w-full items-center justify-center">
             <Spinner />
           </div>
         ) : (
           <Tabs radius="full" variant="solid" color="secondary">
             <Tab key="waiting" title="Aguardando" className="w-full">
-              <>
-                {roundsWaiting.findIndex((round) =>
-                  round.matchs.find((match) => match.id),
-                ) !== -1 ? (
-                  <>
-                    {roundsWaiting.map((round) => (
-                      <RoundMatchsCardAdmin round={round} key={round.id} />
-                    ))}
-                  </>
-                ) : (
-                  <div className="w-full flex justify-center my-10">
-                    <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
-                  </div>
-                )}
-              </>
+              {waitingHasMatches ? (
+                <RoundMatchsCardAdmin rounds={roundsWaiting} />
+              ) : (
+                <div className="my-10 flex w-full justify-center">
+                  <p className="text-[16px] text-rs-heading">Sem partidas.</p>
+                </div>
+              )}
             </Tab>
             <Tab key="done" title="Finalizadas" className="w-full">
-              {roundsDone.findIndex((round) =>
-                round.matchs.find((match) => match.id),
-              ) !== -1 ? (
-                <>
-                  {roundsDone.map((round) => (
-                    <RoundMatchsCardAdmin
-                      round={round}
-                      key={round.id}
-                      isDone={true}
-                    />
-                  ))}
-                </>
+              {doneHasMatches ? (
+                <RoundMatchsCardAdmin rounds={roundsDone} isDone />
               ) : (
-                <div className="w-full flex justify-center my-10">
-                  <p className="text-[16px] text-[#00409F]">Sem partidas.</p>
+                <div className="my-10 flex w-full justify-center">
+                  <p className="text-[16px] text-rs-heading">Sem partidas.</p>
                 </div>
               )}
             </Tab>
@@ -131,20 +119,12 @@ export default function HomeAdmin() {
         onClick={() => setCurrentModalIndex(0)}
         onPress={onOpen}
         startContent={<Image src="/addcircle.svg" alt="add circle" />}
-        className="w-[90%] mx-auto mt-4 mb-6 bg-[#00409F] text-white font-bold text-[14px] py-[10px] px-[14px]"
+        className="mx-auto mb-6 mt-4 w-[90%] bg-rs-gold px-[14px] py-[10px] text-[14px] font-bold text-rs-ink"
       >
         Criar evento
       </Button>
-      <div className="bg-[#00409F] w-full h-[250px] flex justify-center items-center">
-        <div className="w-[90%] bg-black h-[160px] rounded-xl flex justify-center items-center">
-          <h1>betvip banner</h1>
-        </div>
-      </div>
+      <PromoBanner />
       <CreateEventModal isOpen={isOpen} onClose={onOpenChange} />
-      {/* <SetResultModal
-        isOpen={isOpenSetResultModal}
-        onClose={onOpenChangeSetResultModal}
-      /> */}
     </div>
   )
 }

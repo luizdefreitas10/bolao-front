@@ -107,7 +107,10 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
   }, [isOpen, token])
 
   const finishedPredictions = useMemo(
-    () => userPredictions.filter((prediction) => prediction.match.status === 'DONE'),
+    () =>
+      userPredictions.filter(
+        (prediction) => prediction.match.status === 'DONE',
+      ),
     [userPredictions],
   )
 
@@ -137,21 +140,23 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
       size="4xl"
       closeButton={<img src="/closeicon.png" alt="close" />}
     >
-      <ModalContent className={`${fontOpenSans.className} bg-[#1F67CE]`}>
+      <ModalContent
+        className={`${fontOpenSans.className} border border-rs-border bg-rs-modal text-rs-heading`}
+      >
         {(onClose) => (
           <>
-            <ModalHeader className="flex space-x-2 items-center">
-              <Image src="/whitehistoryicon.svg" alt="mail icon" />
+            <ModalHeader className="flex items-center space-x-2 text-rs-heading">
+              <Image src="/historyicon.svg" alt="histórico" />
               <h1>Meu histórico</h1>
             </ModalHeader>
-            <ModalBody className="space-y-2">
-              <p>
+            <ModalBody className="space-y-2 text-rs-muted">
+              <p className="text-rs-muted">
                 Confira abaixo o histórico dos resultados dos seus palpites!
               </p>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <Image src="/filtericon.svg" alt="filter" />
-                  <span className="font-bold text-white text-[14px]">
+                  <span className="text-[14px] font-bold text-rs-heading">
                     Filtrar por
                   </span>
                 </div>
@@ -160,15 +165,17 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                     <Button
                       key={option.value}
                       size="sm"
-                      variant={historyFilter === option.value ? 'solid' : 'bordered'}
-                      className={`rounded-full font-bold text-[14px] ${
+                      variant={
+                        historyFilter === option.value ? 'solid' : 'bordered'
+                      }
+                      className={`rounded-full text-[14px] font-bold ${
                         historyFilter === option.value
                           ? option.value === 'HIT'
-                            ? 'bg-[#00764B] text-white'
+                            ? 'bg-rs-gold text-rs-ink'
                             : option.value === 'MISS'
                               ? 'bg-[#E40000] text-white'
-                              : 'bg-white text-[#1F67CE]'
-                          : 'border-white text-white bg-transparent'
+                              : 'bg-rs-gold text-rs-ink'
+                          : 'border-rs-border bg-transparent text-rs-muted'
                       }`}
                       onPress={() => setHistoryFilter(option.value)}
                     >
@@ -177,31 +184,31 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                   ))}
                 </div>
               </div>
-              <div className="flex justify-around mt-4">
+              <div className="mt-4 flex justify-around">
                 <button
                   type="button"
                   onClick={() => setHistoryFilter('HIT')}
-                  className="flex flex-col justify-center items-center space-y-2"
+                  className="flex flex-col items-center justify-center space-y-2 text-rs-heading"
                 >
                   <h1>Total de acertos</h1>
-                  <span className="bg-[#00764B] w-[50px] flex justify-center items-center py-2 rounded-[4px] border-white border-[1px] border-solid">
+                  <span className="flex w-[50px] items-center justify-center rounded border border-rs-gold/40 bg-rs-gold py-2 text-rs-ink">
                     {totalCorrectPredictions}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setHistoryFilter('MISS')}
-                  className="flex flex-col justify-center items-center space-y-2"
+                  className="flex flex-col items-center justify-center space-y-2 text-rs-heading"
                 >
                   <h1>Total de erros</h1>
-                  <span className="bg-[#E40000] w-[50px] flex justify-center items-center py-2 rounded-[4px] border-white border-[1px] border-solid">
+                  <span className="flex w-[50px] items-center justify-center rounded border border-[#E40000]/40 bg-[#E40000] py-2 text-white">
                     {totalIncorrectPredictions}
                   </span>
                 </button>
               </div>
 
               {filteredPredictions.length === 0 ? (
-                <p className="text-center text-white text-[14px] mt-6">
+                <p className="mt-6 text-center text-[14px] text-rs-muted">
                   {historyFilter === 'HIT'
                     ? 'Nenhum palpite acertado encontrado.'
                     : historyFilter === 'MISS'
@@ -212,100 +219,99 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                 filteredPredictions.map((userPrediction, index) => (
                   <div
                     key={`${userPrediction.match.roundName}-${getTeamName(userPrediction.match.teamHome)}-${getTeamName(userPrediction.match.teamAway)}-${index}`}
-                    className="flex flex-col p-4 bg-[#00409F] rounded-lg w-[90%] mx-auto justify-center items-center"
+                    className="mx-auto flex w-[90%] flex-col items-center justify-center rounded-xl border border-rs-gold/20 bg-rs-ink p-4 text-white"
                   >
-                      <div className="flex w-full justify-between">
-                        <div className="flex space-x-2">
-                          <Image src="/sportsicon.png" alt="sports icon" />
-                          <h1 className="text-white text-[12px] font-normal">
-                            {userPrediction.match.roundName}
-                          </h1>
-                        </div>
+                    <div className="flex w-full justify-between">
+                      <div className="flex space-x-2">
+                        <Image src="/sportsicon.png" alt="sports icon" />
                         <h1 className="text-white text-[12px] font-normal">
-                          {formatMatchDateTime(userPrediction.match.date)}
+                          {userPrediction.match.roundName}
                         </h1>
                       </div>
-                      <div className="flex justify-between items-center mt-4 w-full">
-                        <div className="flex flex-col items-center space-y-2">
-                          <Image
-                            src={getLogo(
-                              getTeamName(userPrediction.match.teamHome),
-                              getTeamLogoUrl(userPrediction.match.teamHome),
-                            )}
-                            alt={getTeamName(userPrediction.match.teamHome)}
-                            className={`w-[36px] h-[36px] rounded-full object-cover ${isDefaultLogo(getLogo(getTeamName(userPrediction.match.teamHome), getTeamLogoUrl(userPrediction.match.teamHome))) ? 'bg-white p-1' : ''}`}
-                          />
-                          <h1 className="text-center">
-                            {getTeamName(userPrediction.match.teamHome)}
-                          </h1>
-                          <div className="flex justify-center items-center">
-                            <h1 className="mx-3 text-[16px text-white] font-semibold">
-                              {userPrediction.predictionScore.predictionHome}
-                            </h1>
-                          </div>
-                        </div>
-                        <h1 className="mx-4">X</h1>
-                        <div className="flex flex-col items-center space-y-2">
-                          <Image
-                            src={getLogo(
-                              getTeamName(userPrediction.match.teamAway),
-                              getTeamLogoUrl(userPrediction.match.teamAway),
-                            )}
-                            alt={getTeamName(userPrediction.match.teamAway)}
-                            className={`w-[36px] h-[36px] rounded-full object-cover ${isDefaultLogo(getLogo(getTeamName(userPrediction.match.teamAway), getTeamLogoUrl(userPrediction.match.teamAway))) ? 'bg-white p-1' : ''}`}
-                          />
-                          <h1 className="text-center">
-                            {getTeamName(userPrediction.match.teamAway)}
-                          </h1>
-                          <div className="flex justify-center items-center">
-                            <h1 className="mx-3 text-[16px text-white] font-semibold">
-                              {userPrediction.predictionScore.predictionAway}
-                            </h1>
-                          </div>
-                        </div>
-                      </div>
-                      {userPrediction.predictionPlayer.player && (
-                        <div key={userPrediction.match.id} className="w-full">
-                          <hr className="w-full h-[1px] border-t-[1px] border-t-[#1F67CE] mt-4" />
-                          <h1 className="text-[12px] font-semibold text-white text-center mt-4">
-                            Marcador do último gol do{' '}
-                            {userPrediction.predictionPlayer.team ||
-                              getTeamName(userPrediction.match.teamHome)}
-                            :
-                          </h1>
-                          <h1 className="flex justify-center items-center gap-2 mt-4">
-                            <Image
-                              src={getPlayerPhoto(
-                                userPrediction.predictionPlayer.photoUrl,
-                                userPrediction.predictionPlayer.player,
-                              )}
-                              alt={userPrediction.predictionPlayer.player}
-                              className="w-[28px] h-[28px] rounded-full object-cover"
-                            />
-                            {userPrediction.predictionPlayer.player}
-                          </h1>
-                        </div>
-                      )}
-                      <hr className="w-full h-[1px] border-t-[1px] border-t-[#1F67CE] mt-4" />
-                      {isPredictionHit(userPrediction) ? (
-                        <h1 className="flex justify-center items-center gap-2 mt-4">
-                          <Image src="/checkicon.svg" alt="check" />
-                          Você acertou o palpite!
-                        </h1>
-                      ) : (
-                        <h1 className="flex justify-center items-center gap-2 mt-4">
-                          <Image src="/wrongicon.svg" alt="check" />
-                          Você errou o palpite!
-                        </h1>
-                      )}
+                      <h1 className="text-white text-[12px] font-normal">
+                        {formatMatchDateTime(userPrediction.match.date)}
+                      </h1>
                     </div>
+                    <div className="flex justify-between items-center mt-4 w-full">
+                      <div className="flex flex-col items-center space-y-2">
+                        <Image
+                          src={getLogo(
+                            getTeamName(userPrediction.match.teamHome),
+                            getTeamLogoUrl(userPrediction.match.teamHome),
+                          )}
+                          alt={getTeamName(userPrediction.match.teamHome)}
+                          className={`w-[36px] h-[36px] rounded-full object-cover ${isDefaultLogo(getLogo(getTeamName(userPrediction.match.teamHome), getTeamLogoUrl(userPrediction.match.teamHome))) ? 'bg-white p-1' : ''}`}
+                        />
+                        <h1 className="text-center">
+                          {getTeamName(userPrediction.match.teamHome)}
+                        </h1>
+                        <div className="flex justify-center items-center">
+                          <h1 className="mx-3 text-[16px text-white] font-semibold">
+                            {userPrediction.predictionScore.predictionHome}
+                          </h1>
+                        </div>
+                      </div>
+                      <h1 className="mx-4 text-rs-gold">X</h1>
+                      <div className="flex flex-col items-center space-y-2">
+                        <Image
+                          src={getLogo(
+                            getTeamName(userPrediction.match.teamAway),
+                            getTeamLogoUrl(userPrediction.match.teamAway),
+                          )}
+                          alt={getTeamName(userPrediction.match.teamAway)}
+                          className={`w-[36px] h-[36px] rounded-full object-cover ${isDefaultLogo(getLogo(getTeamName(userPrediction.match.teamAway), getTeamLogoUrl(userPrediction.match.teamAway))) ? 'bg-white p-1' : ''}`}
+                        />
+                        <h1 className="text-center">
+                          {getTeamName(userPrediction.match.teamAway)}
+                        </h1>
+                        <div className="flex justify-center items-center">
+                          <h1 className="mx-3 text-[16px text-white] font-semibold">
+                            {userPrediction.predictionScore.predictionAway}
+                          </h1>
+                        </div>
+                      </div>
+                    </div>
+                    {userPrediction.predictionPlayer.player && (
+                      <div key={userPrediction.match.id} className="w-full">
+                        <hr className="w-full h-[1px] border-t-[1px] border-t-rs-gold mt-4" />
+                        <h1 className="mt-4 text-center text-[12px] font-semibold text-rs-gold">
+                          Marcador do último gol do{' '}
+                          {userPrediction.predictionPlayer.team ||
+                            getTeamName(userPrediction.match.teamHome)}
+                          :
+                        </h1>
+                        <h1 className="flex justify-center items-center gap-2 mt-4">
+                          <Image
+                            src={getPlayerPhoto(
+                              userPrediction.predictionPlayer.photoUrl,
+                            )}
+                            alt={userPrediction.predictionPlayer.player}
+                            className="w-[28px] h-[28px] rounded-full object-cover"
+                          />
+                          {userPrediction.predictionPlayer.player}
+                        </h1>
+                      </div>
+                    )}
+                    <hr className="w-full h-[1px] border-t-[1px] border-t-rs-gold mt-4" />
+                    {isPredictionHit(userPrediction) ? (
+                      <h1 className="flex justify-center items-center gap-2 mt-4">
+                        <Image src="/checkicon.svg" alt="check" />
+                        Você acertou o palpite!
+                      </h1>
+                    ) : (
+                      <h1 className="flex justify-center items-center gap-2 mt-4">
+                        <Image src="/wrongicon.svg" alt="check" />
+                        Você errou o palpite!
+                      </h1>
+                    )}
+                  </div>
                 ))
               )}
             </ModalBody>
             <ModalFooter className="flex flex-col space-y-4">
               <Button
                 onPress={onClose}
-                className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#E40000] rounded-full`}
+                className={`${fontOpenSans.className} rounded-full bg-rs-gold text-[14px] font-bold text-rs-ink`}
               >
                 Fechar
               </Button>

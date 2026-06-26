@@ -15,6 +15,11 @@ import {
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import {
+  eventModalBodyClassName,
+  eventModalHeaderClassName,
+  inputClassNames,
+} from '@/app/components/form/formClassNames'
 
 interface CloseButtonprops {
   onClose: () => void
@@ -64,12 +69,12 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
 
   return (
     <>
-      <ModalHeader className="flex space-x-2 items-center">
+      <ModalHeader className={eventModalHeaderClassName}>
         <Image src="/stadiumicon.svg" alt="stadium icon" />
         <h1>2. Rodadas </h1>
       </ModalHeader>
       <form onSubmit={handleSubmit(handleCreateRound)}>
-        <ModalBody className="space-y-2">
+        <ModalBody className={eventModalBodyClassName}>
           <p>
             Lorem ipsum dolor sit amet consectetur. Nulla ac nisl pellentesque
             netus diam. Vel urna mattis.
@@ -80,6 +85,7 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
             size="md"
             label="Nome da rodada"
             placeholder="Ex: 11ª Rodada"
+            classNames={inputClassNames}
             errorMessage={errors.name?.message}
             isInvalid={!!errors.name?.message}
             color={errors.name?.message ? 'danger' : undefined}
@@ -92,7 +98,7 @@ export default function CreateRoundsModal({ onClose }: CloseButtonprops) {
           <Button
             isDisabled={!!loading}
             type="submit"
-            className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+            className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
           >
             Avançar
           </Button>

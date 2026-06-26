@@ -4,6 +4,7 @@ import { FieldErrors, UseFormSetValue, useFieldArray } from 'react-hook-form'
 import { Control, UseFormRegister } from 'react-hook-form'
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
 import { IFormInput } from '../CreateMatchesModal/CreateMatchesModal'
+import { inputClassNames } from '@/app/components/form/formClassNames'
 
 interface NewPlayerProps {
   matchId: number
@@ -64,6 +65,7 @@ export function NewPlayer({ matchId, control, register }: NewPlayerProps) {
             type="text"
             isDisabled={indexPlayers === 0 && shouldDisableAddNewPlayer}
             placeholder={`Nome novo jogador ${indexPlayers + 1}`}
+            classNames={inputClassNames}
             // isInvalid={
             //   !!(
             //     errors?.matches &&
