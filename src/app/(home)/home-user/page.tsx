@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useMemo, useState } from 'react'
 import MyHistoryModal from '@/app/components/MyHistoryModal/MyHistoryModal'
+import BetConfirmationModal from '@/app/components/BetConfirmationModal/BetConfirmationModal'
 import useWindowWidth from '@/utils/window-width-hook'
 import {
   Button,
@@ -20,6 +21,11 @@ import PromoBanner from '@/app/components/PromoBanner/PromoBanner'
 
 export default function HomeUser() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const {
+    isOpen: isConfirmOpen,
+    onOpen: onConfirmOpen,
+    onOpenChange: onConfirmOpenChange,
+  } = useDisclosure()
   const [loading, setLoading] = useState<boolean>(false)
   const [buttonIsLoading, setButtonIsLoading] = useState<boolean>(false)
   const [championships, setChampionships] = useState<IChampionshipWithRounds[]>(
@@ -133,16 +139,23 @@ export default function HomeUser() {
     )
   }
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    setButtonIsLoading(true)
+  const handleOpenConfirmModal = (event: React.FormEvent) => {
     event.preventDefault()
+    const hasPending = matchPredictionScores.some((s) => !s.disabled)
+    if (!hasPending) {
+      toast.error('Não há partidas disponíveis para palpite.')
+      return
+    }
+    onConfirmOpen()
+  }
+
+  const handleConfirmSubmit = async (finalPredictions: IPrediction[]) => {
+    setButtonIsLoading(true)
 
     let hasError = false
     let resultError = null
 
-    const enabledPredictions = matchPredictionScores.filter(
-      (score) => !score.disabled,
-    )
+    const enabledPredictions = finalPredictions.filter((s) => !s.disabled)
 
     try {
       for (const matchPrediction of enabledPredictions) {
@@ -164,18 +177,24 @@ export default function HomeUser() {
             ...prevState,
             [matchPrediction.matchId]: true,
           }))
+          setMatchPredictionScores((prev) =>
+            prev.map((p) =>
+              p.matchId === matchPrediction.matchId
+                ? { ...matchPrediction }
+                : p,
+            ),
+          )
         }
       }
 
       setButtonIsLoading(false)
 
-      if (enabledPredictions.length === 0) {
-        toast.error(`Não há partidas para enviar palpites.`)
-      } else if (!hasError && resultError === null) {
+      if (!hasError && resultError === null) {
         toast.success('Palpite enviado com sucesso!')
+        onConfirmOpenChange()
       }
     } catch (error) {
-      setLoading(false)
+      setButtonIsLoading(false)
       toast.error(`Erro ao enviar palpite: ${error}`)
     }
   }
@@ -204,7 +223,7 @@ export default function HomeUser() {
   return (
     <form
       className="mx-auto flex h-full w-full flex-col bg-rs-background px-2 pb-8"
-      onSubmit={handleSubmit}
+      onSubmit={handleOpenConfirmModal}
     >
       <h1 className="mt-10 text-center text-lg font-bold text-rs-heading">
         Resultado correto
@@ -450,6 +469,14 @@ export default function HomeUser() {
       </Button>
       <PromoBanner />
       <MyHistoryModal isOpen={isOpen} onClose={onOpenChange} />
+      <BetConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={onConfirmOpenChange}
+        sortedMatches={sortedMatches}
+        initialPredictions={matchPredictionScores}
+        onConfirm={handleConfirmSubmit}
+        isSubmitting={buttonIsLoading}
+      />
     </form>
   )
 }
