@@ -45,7 +45,14 @@ export default function HomeAdmin() {
         <Button
           onClick={() => setCurrentModalIndex(0)}
           onPress={onOpen}
-          startContent={<Image src="/addcircle.svg" alt="add circle" width={20} height={20} />}
+          startContent={
+            <Image
+              src="/addcircle.svg"
+              alt="add circle"
+              width={20}
+              height={20}
+            />
+          }
           className="w-full bg-rs-gold px-[14px] py-[10px] text-[13px] sm:text-[14px] font-bold text-rs-ink"
         >
           Criar evento

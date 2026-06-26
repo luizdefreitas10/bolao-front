@@ -11,9 +11,7 @@ export const metadata: Metadata = {
   title: 'Bolão Resenha da Sorte',
   description: 'Palpite nos jogos com o bolão oficial da Resenha da Sorte.',
   icons: {
-    icon: [
-      { url: '/brand/logo-icon-gold.svg', type: 'image/svg+xml' },
-    ],
+    icon: [{ url: '/brand/logo-icon-gold.svg', type: 'image/svg+xml' }],
     apple: '/brand/logo-icon-gold.svg',
     shortcut: '/brand/logo-icon-gold.svg',
   },

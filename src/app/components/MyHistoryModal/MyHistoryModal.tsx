@@ -75,22 +75,19 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>('all')
   const { 'qxute-bolao:x-token': token } = parseCookies()
 
-  const loadPredictions = useCallback(
-    async (t: string) => {
-      setLoading(true)
-      try {
-        const result = await getPredictions(t)
-        if (result.isError || !result.predictions) {
-          toast.error('Não foi possível carregar o histórico. Tente novamente.')
-          return
-        }
-        setUserPredictions(result.predictions)
-      } finally {
-        setLoading(false)
+  const loadPredictions = useCallback(async (t: string) => {
+    setLoading(true)
+    try {
+      const result = await getPredictions(t)
+      if (result.isError || !result.predictions) {
+        toast.error('Não foi possível carregar o histórico. Tente novamente.')
+        return
       }
-    },
-    [],
-  )
+      setUserPredictions(result.predictions)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (!isOpen) {
@@ -130,13 +127,16 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
   const visiblePredictions = filteredPredictions.slice(0, visibleCount)
   const hasMore = visibleCount < filteredPredictions.length
 
-  const filterOptions: { value: HistoryFilter; label: string; count: number }[] =
-    [
-      { value: 'all', label: 'Todos', count: userPredictions.length },
-      { value: 'HIT', label: 'Acertos', count: totalCorrect },
-      { value: 'MISS', label: 'Erros', count: totalIncorrect },
-      { value: 'PENDING', label: 'Pendentes', count: totalPending },
-    ]
+  const filterOptions: {
+    value: HistoryFilter
+    label: string
+    count: number
+  }[] = [
+    { value: 'all', label: 'Todos', count: userPredictions.length },
+    { value: 'HIT', label: 'Acertos', count: totalCorrect },
+    { value: 'MISS', label: 'Erros', count: totalIncorrect },
+    { value: 'PENDING', label: 'Pendentes', count: totalPending },
+  ]
 
   return (
     <Modal

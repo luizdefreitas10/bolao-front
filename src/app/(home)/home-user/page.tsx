@@ -364,9 +364,7 @@ export default function HomeUser() {
                 </div>
                 {match.lastPlayerTeam && (
                   <div key={matchIndex} className="my-8">
-                    <h1
-                      className="text-center text-rs-heading text-[14px] sm:text-[18px] font-bold mt-8 px-2"
-                    >
+                    <h1 className="text-center text-rs-heading text-[14px] sm:text-[18px] font-bold mt-8 px-2">
                       Quem fará o último gol do {match.lastPlayerTeam.name}?
                     </h1>
                     <p className="mb-4 mt-2 text-center text-sm text-rs-muted">
@@ -380,7 +378,8 @@ export default function HomeUser() {
                         <div className="flex items-center space-x-1.5 min-w-0">
                           <Image src="/sportsicon.png" alt="sports icon" />
                           <h1 className="text-white text-[11px] font-normal truncate max-w-[140px] sm:max-w-none">
-                            {round.name} · {match.teamHome.name} × {match.teamAway.name}
+                            {round.name} · {match.teamHome.name} ×{' '}
+                            {match.teamAway.name}
                           </h1>
                         </div>
                         <h1 className="text-white text-[11px] font-normal whitespace-nowrap">

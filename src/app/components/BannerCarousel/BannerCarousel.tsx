@@ -18,7 +18,11 @@ const variants = {
   }),
 }
 
-const transition = { type: 'tween', ease: 'easeInOut', duration: 0.45 } as const
+const transition = {
+  type: 'tween',
+  ease: 'easeInOut',
+  duration: 0.45,
+} as const
 
 /* ─── Slide definitions ────────────────────────────────────────────────────── */
 
@@ -74,8 +78,8 @@ function SlideSync() {
         Resultados em Tempo Real
       </h2>
       <p className="z-10 max-w-[260px] text-center text-[10px] text-[#a3a3a3] sm:text-xs">
-        Sincronize os resultados da Copa do Mundo 2026 direto da API oficial
-        com um clique.
+        Sincronize os resultados da Copa do Mundo 2026 direto da API oficial com
+        um clique.
       </p>
       <div className="z-10 flex items-center gap-1.5 rounded-full border border-[#22c55e55] bg-[#22c55e18] px-3 py-1">
         <div className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
