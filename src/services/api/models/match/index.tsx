@@ -4,19 +4,15 @@ import { put } from '../../methods/put'
 
 export default async function MatchService() {
   async function create(data: INewMatch): Promise<{ matchId: string }> {
-    const payload = JSON.stringify(data)
-    const response = await post<{ matchId: string }, string>('/match', payload)
-    return response
+    return await post<{ matchId: string }, INewMatch>('/match', data)
   }
 
   async function updateScore(data: IPayloadSetResutMatch): Promise<void> {
-    const payload = JSON.stringify(data)
-    await put('/match', payload)
+    await put('/match', data)
   }
 
   async function updateDateMatch(matchId: string, date: Date): Promise<void> {
-    const payload = JSON.stringify({ matchId, date })
-    await patch('/match/update-date', payload)
+    await patch('/match/update-date', { matchId, date })
   }
 
   return {

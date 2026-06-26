@@ -5,12 +5,10 @@ export default async function TeamService() {
   async function create(
     data: INewTeam,
   ): Promise<{ teamId: string; teamName: string }> {
-    const payload = JSON.stringify(data)
-    const response = await post<{ teamId: string; teamName: string }, string>(
+    return await post<{ teamId: string; teamName: string }, INewTeam>(
       '/team',
-      payload,
+      data,
     )
-    return response
   }
 
   async function fetchTeams(): Promise<ITeam[]> {

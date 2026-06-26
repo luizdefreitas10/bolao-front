@@ -8,8 +8,13 @@ interface CustomError {
 
 export const handleAxiosError = (error: AxiosError | unknown): CustomError => {
   if (axios.isAxiosError(error)) {
+    const responseMessage = error.response?.data?.message
+    const message = Array.isArray(responseMessage)
+      ? responseMessage.join(', ')
+      : responseMessage || error.message || 'An error occurred'
+
     return {
-      message: error.response?.data?.message || 'An error occurred',
+      message,
       statusCode: error.response?.status,
       details: error.response?.data,
     }

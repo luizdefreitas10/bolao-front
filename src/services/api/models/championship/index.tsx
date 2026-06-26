@@ -3,11 +3,10 @@ import { post } from '../../methods/post'
 
 export default async function ChampionshipService() {
   async function create(data: INewChampionship): Promise<IChampionship> {
-    const payload = JSON.stringify(data)
-    const response = await post<{ championship: IChampionship }, string>(
-      '/championship',
-      payload,
-    )
+    const response = await post<
+      { championship: IChampionship },
+      INewChampionship
+    >('/championship', data)
     return response.championship
   }
 
