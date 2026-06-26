@@ -5,7 +5,8 @@ export async function syncWc2026Results(): Promise<{
   skipped: number
   total: number
 }> {
-  const apiUrl = process.env.NEXT_PUBLIC_DOMAIN ?? 'https://bolao-back-api.onrender.com/v1'
+  const apiUrl =
+    process.env.NEXT_PUBLIC_DOMAIN ?? 'https://bolao-back-api.onrender.com/v1'
   const syncSecret = process.env.SYNC_SECRET ?? ''
 
   const res = await fetch(`${apiUrl}/sync-results`, {

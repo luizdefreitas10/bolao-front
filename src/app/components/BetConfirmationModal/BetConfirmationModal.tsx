@@ -97,9 +97,7 @@ export default function BetConfirmationModal({
 
   const selectPlayer = (matchId: string, playerId: string) => {
     setLocalPredictions((prev) =>
-      prev.map((p) =>
-        p.matchId === matchId ? { ...p, playerId } : p,
-      ),
+      prev.map((p) => (p.matchId === matchId ? { ...p, playerId } : p)),
     )
   }
 
