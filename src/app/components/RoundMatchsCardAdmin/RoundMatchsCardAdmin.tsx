@@ -139,33 +139,33 @@ export default function RoundMatchsCardAdmin({
                   <p>{match.teamAway.name}</p>
                   <p className="text-base font-semibold">{match.scoreAway}</p>
                 </div>
-                </div>
-                {isDone && match.lastPlayerToScore && (
-                  <>
-                    <hr className="h-px w-full border-0 bg-rs-border" />
-                    <div className="flex flex-col gap-2">
-                      <p className="text-[12px] font-semibold text-rs-muted">
-                        {match.lastPlayerTeam
-                          ? `Marcador do último gol do ${match.lastPlayerTeam.name}`
-                          : 'Último marcador'}
+              </div>
+              {isDone && match.lastPlayerToScore && (
+                <>
+                  <hr className="h-px w-full border-0 bg-rs-border" />
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[12px] font-semibold text-rs-muted">
+                      {match.lastPlayerTeam
+                        ? `Marcador do último gol do ${match.lastPlayerTeam.name}`
+                        : 'Último marcador'}
+                    </p>
+                    <div className="flex items-center gap-2 rounded-lg border border-rs-border bg-rs-modal p-2">
+                      <Image
+                        src={getPlayerPhoto(
+                          getLastScorerPhotoUrl(match),
+                          match.lastPlayerToScore.name,
+                        )}
+                        alt={match.lastPlayerToScore.name}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <p className="text-[14px] font-medium">
+                        {match.lastPlayerToScore.name}
                       </p>
-                      <div className="flex items-center gap-2 rounded-lg border border-rs-border bg-rs-modal p-2">
-                        <Image
-                          src={getPlayerPhoto(
-                            getLastScorerPhotoUrl(match),
-                            match.lastPlayerToScore.name,
-                          )}
-                          alt={match.lastPlayerToScore.name}
-                          className="h-8 w-8 rounded-full object-cover"
-                        />
-                        <p className="text-[14px] font-medium">
-                          {match.lastPlayerToScore.name}
-                        </p>
-                      </div>
                     </div>
-                  </>
-                )}
-                <div className="flex flex-col gap-4">
+                  </div>
+                </>
+              )}
+              <div className="flex flex-col gap-4">
                 {!isDone && (
                   <Button
                     variant="bordered"

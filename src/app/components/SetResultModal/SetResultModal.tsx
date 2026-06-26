@@ -232,9 +232,7 @@ export default function SetResultModal({ isOpen, onClose }: CustomModalProps) {
                             match?.teamHome.logoUrl,
                           )}
                         />
-                        <h1 className="text-center">
-                          {match?.teamHome.name}
-                        </h1>
+                        <h1 className="text-center">{match?.teamHome.name}</h1>
                         <div className="flex items-center justify-center">
                           <input
                             defaultValue="0"
@@ -258,9 +256,7 @@ export default function SetResultModal({ isOpen, onClose }: CustomModalProps) {
                             match?.teamAway.logoUrl,
                           )}
                         />
-                        <h1 className="text-center">
-                          {match?.teamAway.name}
-                        </h1>
+                        <h1 className="text-center">{match?.teamAway.name}</h1>
                         <div className="flex items-center justify-center">
                           <input
                             defaultValue="0"

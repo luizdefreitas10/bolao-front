@@ -1,3 +1,4 @@
+import React from 'react'
 import { Image } from '@nextui-org/react'
 
 type SportsIconProps = {
