@@ -26,7 +26,7 @@ export default function CreateEventModal({
       size="4xl"
       closeButton={<img src="/closeicon.png" alt="close" />}
     >
-      <ModalContent className={`bg-[#1F67CE]`}>
+      <ModalContent className="bg-rs-modal text-rs-heading">
         {(onClose) => (
           <>
             {currentModalIndex === 0 && (

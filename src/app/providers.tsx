@@ -1,18 +1,21 @@
 'use client'
-import React from 'react'
+
+import React, { ReactNode } from 'react'
 import { AuthProvider } from '@/context/AuthContext'
 import { EventsProvider } from '@/context/EventsContext'
+import { ThemeProvider } from '@/context/ThemeContext'
 import { NextUIProvider } from '@nextui-org/react'
-import { ReactNode } from 'react'
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-      <EventsProvider>
-        <NextUIProvider locale="pt-BR">
-          <main>{children}</main>
-        </NextUIProvider>
-      </EventsProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <EventsProvider>
+          <NextUIProvider locale="pt-BR">
+            <main className="min-h-screen bg-rs-background">{children}</main>
+          </NextUIProvider>
+        </EventsProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

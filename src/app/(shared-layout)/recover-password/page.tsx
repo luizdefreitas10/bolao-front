@@ -2,6 +2,7 @@
 import React from 'react'
 import { Button, Input, useDisclosure } from '@nextui-org/react'
 import RecoverPasswordModal from '@/app/components/RecoverPasswordModal/RecoverPasswordModal'
+import AuthShell from '@/app/components/AuthShell/AuthShell'
 import InputMask from 'react-input-mask'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
@@ -53,20 +54,16 @@ export default function RecoverPassword() {
   }
 
   return (
-    <div className="h-screen -mb-[148px] w-screen bg-[#1F67CE] flex flex-col">
-      <h1 className={` mt-10 text-center text-[18px] font-bold text-white`}>
-        Esqueceu a senha?
-      </h1>
-      <p className={` text-center text-[12px] font-normal text-white my-2`}>
-        Insira o número do celular cadastrado na sua conta, que te enviaremos um
-        código SMS para redefinição da senha.
-      </p>
+    <AuthShell
+      title="Esqueceu a senha?"
+      subtitle="Informe o celular cadastrado. Enviaremos um código SMS para redefinir sua senha."
+    >
       <form
-        className="flex flex-col w-[90%] mx-auto"
+        className="mx-auto flex w-full flex-col"
         onSubmit={handleSubmit(handleRecoverPassword)}
       >
-        <label htmlFor={'phone'} className="text-[#CCFFFFFF] text-sm mb-1 mt-2">
-          Celular <span className="text-[#DA1414]">*</span>
+        <label htmlFor={'phone'} className="mb-1 mt-2 text-sm text-rs-muted">
+          Celular <span className="text-danger">*</span>
         </label>
         <Controller
           control={control}
@@ -91,7 +88,7 @@ export default function RecoverPassword() {
         <Button
           type="submit"
           isLoading={loading}
-          className={`mt-6 rounded-3xl bg-[#00409F] text-white text-[14px] `}
+          className="mt-6 rounded-full bg-rs-gold text-sm text-rs-ink"
         >
           Enviar SMS de redefinição
         </Button>
@@ -102,6 +99,6 @@ export default function RecoverPassword() {
         phone={phone}
         userId={userIdForgotPassword}
       />
-    </div>
+    </AuthShell>
   )
 }

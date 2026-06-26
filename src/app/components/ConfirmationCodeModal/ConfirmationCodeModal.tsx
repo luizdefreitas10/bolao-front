@@ -83,7 +83,7 @@ export default function ConfirmationCodeModal({
       size="4xl"
       closeButton={<img src="/closeicon.png" alt="close" />}
     >
-      <ModalContent className={`${fontOpenSans.className} bg-[#1F67CE]`}>
+      <ModalContent className={`${fontOpenSans.className} bg-rs-modal`}>
         {(onClose) => (
           <>
             <ModalHeader className="flex space-x-2 items-center">
@@ -125,7 +125,7 @@ export default function ConfirmationCodeModal({
                 <Button
                   isLoading={loading}
                   type="submit"
-                  className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+                  className={`${fontOpenSans.className} text-[14px] text-white font-bold bg-rs-gold rounded-full`}
                 >
                   Confirmar código
                 </Button>

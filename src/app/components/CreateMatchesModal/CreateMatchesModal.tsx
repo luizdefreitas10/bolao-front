@@ -12,10 +12,17 @@ import {
   Select,
   SelectItem,
   Image,
-  DateInput,
   DateValue,
   Checkbox,
 } from '@nextui-org/react'
+import DateTimePickerField from '@/app/components/DateTimePickerField/DateTimePickerField'
+import {
+  checkboxClassNames,
+  eventModalBodyClassName,
+  eventModalHeaderClassName,
+  selectClassNames,
+  selectItemClassName,
+} from '@/app/components/form/formClassNames'
 import { useEventsContext } from '@/context/EventsContext'
 import toast from 'react-hot-toast'
 import { handleAxiosError } from '@/services/api/error'
@@ -301,11 +308,11 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <ModalHeader className="flex space-x-2 items-center">
+      <ModalHeader className={eventModalHeaderClassName}>
         <Image src="/sportsicon.png" alt="stadium icon" />
         <h1>4. Partidas </h1>
       </ModalHeader>
-      <ModalBody className="space-y-2">
+      <ModalBody className={eventModalBodyClassName}>
         <p>
           Lorem ipsum dolor sit amet consectetur. Nulla ac nisl pellentesque
           netus diam. Vel urna mattis.
@@ -319,12 +326,10 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
             ]
             return (
               <div className="space-y-4" key={field.id}>
-                <h1>{`Partida ${index + 1}`}</h1>
+                <h1 className="text-rs-heading">{`Partida ${index + 1}`}</h1>
                 <Select
                   {...register(`matches.${index}.round`)}
-                  classNames={{
-                    selectorIcon: 'text-black',
-                  }}
+                  classNames={selectClassNames}
                   isInvalid={
                     !!(
                       errors?.matches && errors?.matches[index]?.round?.message
@@ -343,7 +348,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                     <SelectItem
                       key={item.id}
                       value={item.id}
-                      className="text-black"
+                      className={selectItemClassName}
                     >
                       {item.name}
                     </SelectItem>
@@ -353,13 +358,12 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 <Controller
                   control={control}
                   name={`matches.${index}.dateTime`}
-                  render={({ field }) => (
-                    <DateInput
-                      label="Data e Hora"
-                      hideTimeZone
-                      hourCycle={24}
-                      granularity="minute"
-                      {...field}
+                  render={({ field: { value, onChange, onBlur, name } }) => (
+                    <DateTimePickerField
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      onBlur={onBlur}
                       isInvalid={!!errors?.matches?.[index]?.dateTime?.message}
                       errorMessage={
                         errors?.matches?.[index]?.dateTime?.message || ''
@@ -369,9 +373,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                 />
                 <Select
                   {...register(`matches.${index}.homeTeam`)}
-                  classNames={{
-                    selectorIcon: 'text-black',
-                  }}
+                  classNames={selectClassNames}
                   color="default"
                   label="Selecione o time da casa"
                   isInvalid={
@@ -390,7 +392,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                     <SelectItem
                       key={team.id}
                       value={team.id}
-                      className="text-black"
+                      className={selectItemClassName}
                     >
                       {team.name}
                     </SelectItem>
@@ -399,9 +401,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
 
                 <Select
                   {...register(`matches.${index}.awayTeam`)}
-                  classNames={{
-                    selectorIcon: 'text-black',
-                  }}
+                  classNames={selectClassNames}
                   color="default"
                   label="Selecione o time visitante"
                   isInvalid={
@@ -420,7 +420,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                     <SelectItem
                       key={team.id}
                       value={team.id}
-                      className="text-black"
+                      className={selectItemClassName}
                     >
                       {team.name}
                     </SelectItem>
@@ -432,9 +432,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                       `matches.${index}.lastPlayerCheckbox` as const,
                     )}
                     isDisabled={!isFormValid(index)}
-                    classNames={{
-                      label: 'text-white',
-                    }}
+                    classNames={checkboxClassNames}
                     defaultChecked={watch(
                       `matches.${index}.lastPlayerCheckbox`,
                     )}
@@ -445,7 +443,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                       )
                     }
                   >
-                    <p>Adicionar jogadores para palpite de último marcador.</p>
+                    Adicionar jogadores para palpite de último marcador
                   </Checkbox>
                   {watchCheckbox && (
                     <>
@@ -460,9 +458,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                         render={({ field: { onChange } }) => (
                           <Select
                             {...field}
-                            classNames={{
-                              selectorIcon: 'text-black',
-                            }}
+                            classNames={selectClassNames}
                             isInvalid={
                               !!(
                                 errors?.matches &&
@@ -493,7 +489,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                               <SelectItem
                                 key={team}
                                 value={team}
-                                className="text-black"
+                                className={selectItemClassName}
                               >
                                 {nameTeams(team)}
                               </SelectItem>
@@ -506,7 +502,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                         <>
                           {players[index]?.length > 0 && (
                             <Select
-                              classNames={{ selectorIcon: 'text-black' }}
+                              classNames={selectClassNames}
                               color="default"
                               label="Selecione os jogadores"
                               className="w-full"
@@ -525,7 +521,7 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
                                 <SelectItem
                                   key={player.id}
                                   value={player.id}
-                                  className="text-black"
+                                  className={selectItemClassName}
                                 >
                                   {player.name}
                                 </SelectItem>
@@ -554,14 +550,14 @@ export default function CreateMatchesModal({ onClose }: CloseButtonProps) {
         <Button
           isDisabled={!!loading}
           type="submit"
-          className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+          className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
         >
           Salvar
         </Button>
         <Button
           onClick={handlePreviousModal}
           variant="bordered"
-          className={`text-[14px] text-white font-bold bg-[#00764B] rounded-full`}
+          className={`text-[14px] text-white font-bold bg-rs-gold rounded-full`}
         >
           Voltar
         </Button>

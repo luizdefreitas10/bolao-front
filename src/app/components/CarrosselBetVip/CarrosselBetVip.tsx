@@ -6,7 +6,7 @@ const fontOpenSans = OpenSans({ subsets: ['latin'] })
 
 export default function CarrosselBetVip() {
   return (
-    <div className="flex flex-col bg-[#1F67CE] p-10">
+    <div className="flex flex-col bg-rs-modal p-10">
       <h1
         className={`text-center ${fontOpenSans.className} text-[18px] font-extrabold mb-6`}
       >

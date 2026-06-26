@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState } from 'react'
 import {
   Navbar,
@@ -8,14 +9,15 @@ import {
   NavbarMenuItem,
   NavbarContent,
   Link,
-  Image,
 } from '@nextui-org/react'
 import { useAuthContext } from '@/context/AuthContext'
 import { parseCookies } from 'nookies'
 import { decodeToken } from '@/utils/jwt'
 import { useRouter } from 'next/navigation'
+import BrandLogo from '@/app/components/BrandLogo/BrandLogo'
+import ThemeToggle from '@/app/components/ThemeToggle/ThemeToggle'
 
-export default function App() {
+export default function Header() {
   const { handleSignOut } = useAuthContext()
   const { 'qxute-bolao:x-token': sessionKey } = parseCookies()
   const decoded = decodeToken(sessionKey)
@@ -23,22 +25,10 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const menuItemsDefault = [
-    {
-      menuItem: 'Home',
-      route: '/',
-    },
-    {
-      menuItem: 'Registro',
-      route: '/register',
-    },
-    {
-      menuItem: 'Login',
-      route: '/login',
-    },
-    {
-      menuItem: 'Redefinir senha',
-      route: '/recover-password',
-    },
+    { menuItem: 'Home', route: '/' },
+    { menuItem: 'Registro', route: '/register' },
+    { menuItem: 'Login', route: '/login' },
+    { menuItem: 'Redefinir senha', route: '/recover-password' },
   ]
 
   const menuItemsAuth = [
@@ -64,7 +54,6 @@ export default function App() {
         setIsMenuOpen(false)
       },
     },
-
     {
       menuItem: 'Sair',
       function: () => {
@@ -80,62 +69,49 @@ export default function App() {
       onMenuOpenChange={setIsMenuOpen}
       isBordered
       maxWidth="full"
-      className="bg-[#184076]"
+      className="border-rs-border bg-rs-navbar"
     >
-      <NavbarContent className="">
-        <NavbarMenuToggle />
+      <NavbarContent>
+        <NavbarMenuToggle className="text-rs-heading" />
+        <ThemeToggle />
       </NavbarContent>
 
-      <NavbarContent className="pr-16">
+      <NavbarContent className="pr-4 md:pr-16" justify="center">
         <NavbarBrand>
           <Link className="cursor-pointer" href="/">
-            <Image src="/qxutelogo.png" alt="qxute logo" />
+            <BrandLogo variant="horizontal" height={28} priority />
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarMenu>
-        {!sessionKey ? (
-          <>
-            {menuItemsDefault.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
+      <NavbarMenu className="bg-rs-surface pt-6">
+        {!sessionKey
+          ? menuItemsDefault.map((item, index) => (
+              <NavbarMenuItem key={`${item.menuItem}-${index}`}>
                 <Link
-                  className="w-full"
-                  color={
-                    index === 2
-                      ? 'warning'
-                      : index === menuItemsDefault.length - 1
-                        ? 'danger'
-                        : 'foreground'
-                  }
+                  className="w-full text-rs-heading"
+                  color={index === 2 ? 'primary' : 'foreground'}
                   href={item.route.toLowerCase()}
                   size="lg"
                 >
                   {item.menuItem}
                 </Link>
               </NavbarMenuItem>
-            ))}
-          </>
-        ) : (
-          <>
-            {menuItemsAuth.map((item, index) => (
-              <div key={index}>
-                {!(item.onlyAdmin && decoded?.role !== 'ADMIN') && (
-                  <NavbarMenuItem key={`${item}-${index}`}>
-                    <Link
-                      className="w-full cursor-pointer"
-                      onPress={item.function}
-                      size="lg"
-                      color={'warning'}
-                    >
-                      {item.menuItem}
-                    </Link>
-                  </NavbarMenuItem>
-                )}
-              </div>
-            ))}
-          </>
-        )}
+            ))
+          : menuItemsAuth.map((item, index) =>
+              !(item.onlyAdmin && decoded?.role !== 'ADMIN') ? (
+                <NavbarMenuItem key={`${item.menuItem}-${index}`}>
+                  <Link
+                    className="w-full cursor-pointer text-rs-heading"
+                    onPress={item.function}
+                    size="lg"
+                    color="primary"
+                  >
+                    {item.menuItem}
+                  </Link>
+                </NavbarMenuItem>
+              ) : null,
+            )}
       </NavbarMenu>
     </Navbar>
   )

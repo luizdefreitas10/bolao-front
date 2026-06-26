@@ -4,6 +4,7 @@ import { FieldErrors, UseFormSetValue, useFieldArray } from 'react-hook-form'
 import { Control, UseFormRegister } from 'react-hook-form'
 import { MdAddCircleOutline, MdOutlineRemoveCircle } from 'react-icons/md'
 import { IFormInput } from '../EditMatch/EditMatch'
+import { inputClassNames } from '@/app/components/form/formClassNames'
 
 interface NewPlayerProps {
   register: UseFormRegister<any>
@@ -68,6 +69,7 @@ export function NewPlayerEdit({
             type="text"
             isDisabled={indexPlayers === 0 && shouldDisableAddNewTeam}
             placeholder={`Nome novo jogador ${indexPlayers + 1}`}
+            classNames={inputClassNames}
             isInvalid={
               !!(errors.players && errors.players[indexPlayers]?.message)
             }

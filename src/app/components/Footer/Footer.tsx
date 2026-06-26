@@ -1,37 +1,43 @@
+'use client'
+
 import React from 'react'
+import { Link } from '@nextui-org/react'
+import BrandLogo from '@/app/components/BrandLogo/BrandLogo'
 import Image from 'next/image'
-import qxutelogo from '../../../../public/qxutelogo.png'
 import twittericon from '../../../../public/twittericon.png'
 import youtubeicon from '../../../../public/youtubeicon.png'
 import instagramicon from '../../../../public/instagramicon.png'
-import { Link } from '@nextui-org/react'
 
 export default function Footer() {
+  const year = new Date().getFullYear()
+
   return (
-    <footer className="h-auto space-y-4 md:h-[140px] bg-[#184076] py-5 md:py-0 flex flex-col md:flex-row items-center justify-around fixed bottom-0 w-full z-50">
-      <Image src={qxutelogo} alt="logoedsfooter" className="h-[28px]" />
-      <p className="font-robotoRegular text-white">@2024 Copyright - QXUTE</p>
-      <div className="flex space-x-3 cursor-pointer">
+    <footer className="fixed bottom-0 z-50 flex h-auto w-full flex-col items-center justify-around space-y-4 border-t border-rs-border bg-rs-footer py-5 md:h-[120px] md:flex-row md:space-y-0 md:py-0">
+      <BrandLogo variant="horizontal" tone="gold" height={24} />
+      <p className="text-center text-xs text-neutral-400 md:text-sm">
+        © {year} Resenha da Sorte — Todos os direitos reservados
+      </p>
+      <div className="flex cursor-pointer space-x-3">
         <Link
           href="https://twitter.com/EsportesDaSorte"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src={twittericon} alt="twittericon" />
+          <Image src={twittericon} alt="Twitter" />
         </Link>
         <Link
           href="https://www.youtube.com/@esportesdasorteoficial"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src={youtubeicon} alt="youtubeicon" />
+          <Image src={youtubeicon} alt="YouTube" />
         </Link>
         <Link
           href="https://www.instagram.com/esportesdasorte/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src={instagramicon} alt="instagramicon" />
+          <Image src={instagramicon} alt="Instagram" />
         </Link>
       </div>
     </footer>
