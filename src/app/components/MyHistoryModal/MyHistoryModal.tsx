@@ -37,20 +37,42 @@ function getTeamLogoUrl(
   return typeof team === 'string' ? undefined : team.logoUrl
 }
 
-/** True only when match is DONE and both applicable predictions hit */
+function isZeroZeroDraw(prediction: IPredictionsGetResponse): boolean {
+  if (prediction.match.status !== 'DONE') return false
+  return (
+    (prediction.match.scoreHome ?? 0) === 0 &&
+    (prediction.match.scoreAway ?? 0) === 0
+  )
+}
+
+/**
+ * Acerto completo:
+ * - Placar correto AND jogador correto (quando há goleador)
+ * - Em jogos 0×0: apenas placar importa (ninguém marcou gol)
+ */
 function isPredictionHit(prediction: IPredictionsGetResponse): boolean {
   if (prediction.match.status !== 'DONE') return false
+
   const scoreHit = prediction.predictionScore?.status === 'HIT'
-  const hasPlayer = !!prediction.predictionPlayer?.player
-  if (hasPlayer) {
+
+  // Empate 0×0 — nenhum gol, portanto apenas o placar é avaliado
+  if (isZeroZeroDraw(prediction)) return scoreHit
+
+  const hasPlayerPred = !!prediction.predictionPlayer?.player
+  if (hasPlayerPred) {
     return scoreHit && prediction.predictionPlayer?.status === 'HIT'
   }
   return scoreHit
 }
 
-/** True only when match is DONE and at least one prediction missed */
+/** Erro: partida finalizada e pelo menos uma previsão errada */
 function isPredictionMiss(prediction: IPredictionsGetResponse): boolean {
   if (prediction.match.status !== 'DONE') return false
+
+  if (isZeroZeroDraw(prediction)) {
+    return prediction.predictionScore?.status !== 'HIT'
+  }
+
   return (
     prediction.predictionScore?.status === 'MISS' ||
     prediction.predictionPlayer?.status === 'MISS'
@@ -246,17 +268,29 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                   {visiblePredictions.map((pred, index) => {
                     const isPending = isPredictionPending(pred)
                     const isHit = isPredictionHit(pred)
+                    const isZeroZero = isZeroZeroDraw(pred)
                     const predKey =
                       pred.matchId ??
                       `${getTeamName(pred.match.teamHome)}-${getTeamName(pred.match.teamAway)}-${index}`
 
+                    const scoreHit = pred.predictionScore?.status === 'HIT'
+                    const hasUserPlayerPred = !!pred.predictionPlayer?.player
+                    const hasActualScorer = !!pred.match.lastPlayer
+                    const playerHit = pred.predictionPlayer?.status === 'HIT'
+
+                    // Exibe seção de jogador se: não for 0×0 e houver palpite
+                    // de jogador OU goleador real conhecido (apenas quando finalizado)
+                    const showPlayerSection =
+                      !isZeroZero &&
+                      (hasUserPlayerPred || (!isPending && hasActualScorer))
+
                     return (
                       <div
                         key={predKey}
-                        className="mx-auto flex w-full flex-col rounded-xl border border-rs-gold/20 bg-rs-ink p-4 text-white"
+                        className="mx-auto flex w-full flex-col rounded-xl border border-rs-gold/20 bg-rs-ink text-white overflow-hidden"
                       >
                         {/* Header */}
-                        <div className="flex w-full flex-wrap items-start justify-between gap-1">
+                        <div className="flex w-full flex-wrap items-start justify-between gap-1 px-4 pt-3 pb-0">
                           <div className="flex min-w-0 items-center space-x-1.5">
                             <Image
                               src="/sportsicon.png"
@@ -264,18 +298,19 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                               width={16}
                               height={16}
                             />
-                            <span className="max-w-[150px] truncate text-[11px] text-white sm:max-w-none">
+                            <span className="max-w-[150px] truncate text-[11px] text-white/60 sm:max-w-none">
                               {pred.match.roundName}
                             </span>
                           </div>
-                          <span className="whitespace-nowrap text-[11px] text-white">
+                          <span className="whitespace-nowrap text-[11px] text-white/60">
                             {formatMatchDateTime(pred.match.date)}
                           </span>
                         </div>
 
                         {/* Teams + Scores */}
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex flex-col items-center gap-1.5">
+                        <div className="mt-4 flex items-center justify-between px-4 pb-3">
+                          {/* Home team */}
+                          <div className="flex flex-col items-center gap-1.5 w-[30%]">
                             <Image
                               src={getLogo(
                                 getTeamName(pred.match.teamHome),
@@ -292,24 +327,43 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                             </span>
                           </div>
 
-                          <div className="flex flex-col items-center gap-0.5">
+                          {/* Center: placar palpitado × resultado real */}
+                          <div className="flex flex-col items-center gap-0.5 flex-1">
+                            <span className="text-[9px] uppercase tracking-wide text-white/40">
+                              palpite
+                            </span>
                             <span className="text-lg font-bold text-rs-gold">
                               ×
                             </span>
                             {!isPending && (
-                              <span className="text-[10px] text-rs-muted">
-                                resultado
-                              </span>
-                            )}
-                            {!isPending && (
-                              <span className="text-[11px] font-semibold text-rs-gold">
-                                {pred.match.scoreHome ?? '?'} –{' '}
-                                {pred.match.scoreAway ?? '?'}
-                              </span>
+                              <>
+                                <span className="text-[9px] uppercase tracking-wide text-white/40">
+                                  resultado
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <span
+                                    className={`text-[13px] font-bold ${scoreHit ? 'text-green-400' : 'text-[#E40000]'}`}
+                                  >
+                                    {pred.match.scoreHome ?? '?'}&nbsp;–&nbsp;
+                                    {pred.match.scoreAway ?? '?'}
+                                  </span>
+                                  <Image
+                                    src={
+                                      scoreHit
+                                        ? '/checkicon.svg'
+                                        : '/wrongicon.svg'
+                                    }
+                                    alt={scoreHit ? '✓' : '✗'}
+                                    width={13}
+                                    height={13}
+                                  />
+                                </div>
+                              </>
                             )}
                           </div>
 
-                          <div className="flex flex-col items-center gap-1.5">
+                          {/* Away team */}
+                          <div className="flex flex-col items-center gap-1.5 w-[30%]">
                             <Image
                               src={getLogo(
                                 getTeamName(pred.match.teamAway),
@@ -327,80 +381,121 @@ export default function MyHistoryModal({ isOpen, onClose }: CustomModalProps) {
                           </div>
                         </div>
 
-                        {/* Player prediction */}
-                        {pred.predictionPlayer?.player && (
-                          <div className="mt-3 w-full">
-                            <hr className="border-t border-rs-gold/30" />
-                            <p className="mt-2 text-center text-[11px] font-semibold text-rs-gold">
+                        {/* Nota 0×0 */}
+                        {isZeroZero && (
+                          <p className="pb-2 text-center text-[10px] text-white/40">
+                            Nenhum gol marcado — empate 0×0
+                          </p>
+                        )}
+
+                        {/* Seção de Último Gol */}
+                        {showPlayerSection && (
+                          <div className="border-t border-rs-gold/20 px-4 py-3">
+                            <p className="mb-2 text-center text-[11px] font-semibold text-rs-gold">
                               Último gol —{' '}
-                              {pred.predictionPlayer.team ??
+                              {pred.predictionPlayer?.team ??
                                 getTeamName(pred.match.teamHome)}
                             </p>
-                            <div className="mt-2 flex items-center justify-center gap-2">
-                              <Image
-                                src={getPlayerPhoto(
-                                  pred.predictionPlayer.photoUrl,
+
+                            <div className="flex items-start justify-around gap-2">
+                              {/* Palpite do usuário */}
+                              <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                                <span className="text-[9px] uppercase tracking-wide text-white/40">
+                                  Seu palpite
+                                </span>
+                                {hasUserPlayerPred ? (
+                                  <div className="flex flex-col items-center gap-1">
+                                    <Image
+                                      src={getPlayerPhoto(
+                                        pred.predictionPlayer!.photoUrl,
+                                      )}
+                                      alt={pred.predictionPlayer!.player!}
+                                      className="h-8 w-8 rounded-full object-cover"
+                                    />
+                                    <span className="max-w-[80px] text-center text-[11px] leading-tight text-white">
+                                      {pred.predictionPlayer!.player}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-[12px] text-white/30">
+                                    —
+                                  </span>
                                 )}
-                                alt={pred.predictionPlayer.player}
-                                className="h-7 w-7 rounded-full object-cover"
-                              />
-                              <span className="text-[13px] text-white">
-                                {pred.predictionPlayer.player}
-                              </span>
-                              {!isPending &&
-                                pred.predictionPlayer.status === 'HIT' && (
-                                  <Image
-                                    src="/checkicon.svg"
-                                    alt="acertou"
-                                    width={16}
-                                    height={16}
-                                  />
-                                )}
-                              {!isPending &&
-                                pred.predictionPlayer.status === 'MISS' && (
-                                  <Image
-                                    src="/wrongicon.svg"
-                                    alt="errou"
-                                    width={16}
-                                    height={16}
-                                  />
-                                )}
+                              </div>
+
+                              {/* Ícone HIT/MISS (somente quando finalizado e usuário fez palpite) */}
+                              {!isPending && (
+                                <div className="flex flex-col items-center justify-center pt-5">
+                                  {hasUserPlayerPred ? (
+                                    <Image
+                                      src={
+                                        playerHit
+                                          ? '/checkicon.svg'
+                                          : '/wrongicon.svg'
+                                      }
+                                      alt={playerHit ? '✓' : '✗'}
+                                      width={16}
+                                      height={16}
+                                    />
+                                  ) : (
+                                    <span className="text-[11px] text-white/30">
+                                      vs
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Goleador real — sempre exibido quando finalizado */}
+                              {!isPending && (
+                                <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                                  <span className="text-[9px] uppercase tracking-wide text-white/40">
+                                    Goleador real
+                                  </span>
+                                  {hasActualScorer ? (
+                                    <span
+                                      className={`max-w-[80px] text-center text-[11px] leading-tight font-medium ${playerHit && hasUserPlayerPred ? 'text-green-400' : 'text-rs-gold'}`}
+                                    >
+                                      {pred.match.lastPlayer}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[11px] text-white/30">
+                                      —
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            {!isPending && pred.match.lastPlayer && (
-                              <p className="mt-1 text-center text-[10px] text-rs-muted">
-                                Goleador real: {pred.match.lastPlayer}
-                              </p>
-                            )}
                           </div>
                         )}
 
                         {/* Result banner */}
-                        <hr className="mt-3 border-t border-rs-gold/30" />
-                        {isPending ? (
-                          <p className="mt-3 text-center text-[12px] text-rs-muted">
-                            ⏳ Aguardando resultado
-                          </p>
-                        ) : isHit ? (
-                          <p className="mt-3 flex items-center justify-center gap-1.5 text-[13px]">
-                            <Image
-                              src="/checkicon.svg"
-                              alt="check"
-                              width={16}
-                              height={16}
-                            />
-                            Você acertou o palpite!
-                          </p>
-                        ) : (
-                          <p className="mt-3 flex items-center justify-center gap-1.5 text-[13px]">
-                            <Image
-                              src="/wrongicon.svg"
-                              alt="errou"
-                              width={16}
-                              height={16}
-                            />
-                            Você errou o palpite.
-                          </p>
-                        )}
+                        <div className="border-t border-rs-gold/20 px-4 py-3 text-center">
+                          {isPending ? (
+                            <p className="text-[12px] text-rs-muted">
+                              ⏳ Aguardando resultado
+                            </p>
+                          ) : isHit ? (
+                            <p className="flex items-center justify-center gap-1.5 text-[13px] text-green-400">
+                              <Image
+                                src="/checkicon.svg"
+                                alt="check"
+                                width={16}
+                                height={16}
+                              />
+                              Você acertou o palpite!
+                            </p>
+                          ) : (
+                            <p className="flex items-center justify-center gap-1.5 text-[13px] text-[#E40000]">
+                              <Image
+                                src="/wrongicon.svg"
+                                alt="errou"
+                                width={16}
+                                height={16}
+                              />
+                              Você errou o palpite.
+                            </p>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
