@@ -249,14 +249,14 @@ export default function HomeUser() {
                   <div
                     className={`flex flex-col rounded-xl border border-rs-gold/20 bg-rs-ink p-4 text-white ${match?.predictions?.length !== 0 || disabledMatches[match.id] ? 'pointer-events-none opacity-50' : ''}`}
                   >
-                    <div className="flex w-full justify-between">
-                      <div className="flex space-x-2">
+                    <div className="flex w-full flex-wrap items-start justify-between gap-1">
+                      <div className="flex items-center space-x-1.5 min-w-0">
                         <Image src="/sportsicon.png" alt="sports icon" />
-                        <h1 className="text-white text-[12px] font-normal">
-                          {round.name} do {championship.name}
+                        <h1 className="text-white text-[11px] font-normal truncate max-w-[140px] sm:max-w-none">
+                          {round.name} · {championship.name}
                         </h1>
                       </div>
-                      <h1 className="text-white text-[12px] font-normal">
+                      <h1 className="text-white text-[11px] font-normal whitespace-nowrap">
                         {formatMatchDateTime(match.date)}
                       </h1>
                     </div>
@@ -270,7 +270,7 @@ export default function HomeUser() {
                           alt={match.teamHome.name}
                           className={`w-[40px] h-[40px] rounded-full mb-2 object-cover ${isDefaultLogo(getLogo(match.teamHome.name, match.teamHome.logoUrl)) ? 'bg-white p-1' : ''}`}
                         />
-                        <h1 className="text-center text-white mb-4">
+                        <h1 className="text-center text-white mb-4 text-[12px] sm:text-sm max-w-[80px] sm:max-w-none">
                           {match.teamHome.name}
                         </h1>
                         <div className="flex justify-center items-center">
@@ -321,7 +321,7 @@ export default function HomeUser() {
                           alt={match.teamAway.name}
                           className={`w-[40px] h-[40px] rounded-full mb-2 object-cover ${isDefaultLogo(getLogo(match.teamAway.name, match.teamAway.logoUrl)) ? 'bg-white p-1' : ''}`}
                         />
-                        <h1 className="text-center text-white mb-4">
+                        <h1 className="text-center text-white mb-4 text-[12px] sm:text-sm max-w-[80px] sm:max-w-none">
                           {match.teamAway.name}
                         </h1>
                         <div className="flex justify-center items-center">
@@ -365,7 +365,7 @@ export default function HomeUser() {
                 {match.lastPlayerTeam && (
                   <div key={matchIndex} className="my-8">
                     <h1
-                      className={`text-center text-rs-heading text-[18px] font-bold  mt-10`}
+                      className="text-center text-rs-heading text-[14px] sm:text-[18px] font-bold mt-8 px-2"
                     >
                       Quem fará o último gol do {match.lastPlayerTeam.name}?
                     </h1>
@@ -376,15 +376,14 @@ export default function HomeUser() {
                     <div
                       className={`mx-auto flex w-[90%] flex-col rounded-xl border border-rs-gold/20 bg-rs-ink p-4 text-white ${match?.predictions?.length !== 0 || disabledMatches[match.id] ? 'pointer-events-none opacity-50' : ''}`}
                     >
-                      <div className="flex w-full justify-between">
-                        <div className="flex space-x-2">
+                      <div className="flex w-full flex-wrap items-start justify-between gap-1">
+                        <div className="flex items-center space-x-1.5 min-w-0">
                           <Image src="/sportsicon.png" alt="sports icon" />
-                          <h1 className="text-white text-[12px] font-normal">
-                            {round.name} - {match.teamHome.name} X{' '}
-                            {match.teamAway.name}
+                          <h1 className="text-white text-[11px] font-normal truncate max-w-[140px] sm:max-w-none">
+                            {round.name} · {match.teamHome.name} × {match.teamAway.name}
                           </h1>
                         </div>
-                        <h1 className="text-white text-[12px] font-normal">
+                        <h1 className="text-white text-[11px] font-normal whitespace-nowrap">
                           {formatMatchDateTime(match.date)}
                         </h1>
                       </div>

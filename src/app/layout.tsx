@@ -10,6 +10,13 @@ import { THEME_STORAGE_KEY } from '@/context/ThemeContext'
 export const metadata: Metadata = {
   title: 'Bolão Resenha da Sorte',
   description: 'Palpite nos jogos com o bolão oficial da Resenha da Sorte.',
+  icons: {
+    icon: [
+      { url: '/brand/logo-icon-gold.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/brand/logo-icon-gold.svg',
+    shortcut: '/brand/logo-icon-gold.svg',
+  },
 }
 
 const themeInitScript = `(function(){try{var k='${THEME_STORAGE_KEY}';var t=localStorage.getItem(k);var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){}})();`
