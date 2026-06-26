@@ -14,29 +14,31 @@ declare interface IPredictionResponse {
 }
 
 declare interface IPredictionsGetResponse {
+  matchId?: string
+  round?: { id?: string; name?: string }
   match: {
+    matchId?: string
     date: Date
-    id?: string
-    lastPlayer?: string
+    lastPlayer?: string | null
     roundId?: string
     roundName?: string
-    scoreAway?: number
-    scoreHome?: number
+    scoreAway?: number | null
+    scoreHome?: number | null
     status: string
     teamAway: string | { name: string; logoUrl?: string | null }
     teamHome: string | { name: string; logoUrl?: string | null }
   }
-  predictionScore: {
-    predictionHome: number
-    predictionAway: number
-    status: 'HIT' | 'MISS'
-  }
-  predictionPlayer: {
-    player: string | null
-    team: string | null
+  predictionScore?: {
+    predictionHome?: number | null
+    predictionAway?: number | null
+    status?: 'HIT' | 'MISS' | null
+  } | null
+  predictionPlayer?: {
+    player?: string | null
+    team?: string | null
     photoUrl?: string | null
-    status: 'HIT' | 'MISS'
-  }
+    status?: 'HIT' | 'MISS' | null
+  } | null
 }
 
 declare interface IUserPredictions {
